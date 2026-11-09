@@ -136,5 +136,41 @@ void main() {
       expect(selectSide(frame), isNull);
       expect(selectSide(frame, minVisibility: 0.3)!.side, BodySide.left);
     });
+
+    test('겹친 점이면 다른 쪽 (재작업): 왼쪽 팔꿈치와 손목이 같은 좌표', () {
+      final left = _straightArmSide(BodySide.left, 0.9);
+      left[LandmarkIndex.leftWrist] = left[LandmarkIndex.leftElbow]!;
+      final frame = _frame({...left, ..._straightArmSide(BodySide.right, 0.8)});
+      expect(selectSide(frame)!.side, BodySide.right);
+    });
+
+    test('겹친 점 (재작업): 어깨-골반-발목 묶음만 겹쳐도 다른 쪽', () {
+      final left = _straightArmSide(BodySide.left, 0.9);
+      left[LandmarkIndex.leftAnkle] = left[LandmarkIndex.leftHip]!;
+      final frame = _frame({...left, ..._straightArmSide(BodySide.right, 0.8)});
+      expect(selectSide(frame)!.side, BodySide.right);
+    });
+
+    test('쓸 수 있는 쪽 없음 (재작업): 왼쪽 무릎 x가 NaN, 오른쪽 가려짐', () {
+      final left = _straightArmSide(BodySide.left, 0.9);
+      left[LandmarkIndex.leftKnee] = _p(double.nan, 0.75, visibility: 0.9);
+      final frame = _frame({...left, ..._straightArmSide(BodySide.right, 0.2)});
+      expect(selectSide(frame), isNull);
+    });
+
+    test('쓸 수 있는 쪽 없음 (재작업): 왼쪽 골반 y가 Infinity, 오른쪽 가려짐', () {
+      final left = _straightArmSide(BodySide.left, 0.9);
+      left[LandmarkIndex.leftHip] = _p(0.4, double.infinity, visibility: 0.9);
+      final frame = _frame({...left, ..._straightArmSide(BodySide.right, 0.2)});
+      expect(selectSide(frame), isNull);
+    });
+
+    test('양쪽 모두 겹친 점: null', () {
+      final left = _straightArmSide(BodySide.left, 0.9);
+      left[LandmarkIndex.leftWrist] = left[LandmarkIndex.leftElbow]!;
+      final right = _straightArmSide(BodySide.right, 0.8);
+      right[LandmarkIndex.rightKnee] = right[LandmarkIndex.rightHip]!;
+      expect(selectSide(_frame({...left, ...right})), isNull);
+    });
   });
 }

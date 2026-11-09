@@ -87,12 +87,61 @@ SideAngles anglesForSide(PoseFrame frame, BodySide side) {
 
 /// 평균 visibility가 높은 쪽의 각도를 고른다.
 ///
-/// 같으면 left, 양쪽 모두 [minVisibility] 미만이면 null.
+/// 같으면 left를 먼저 본다. 먼저 본 쪽이 [minVisibility] 미만이거나 쓸 수 없는
+/// 쪽(세 점 묶음 중 벡터 길이 0 또는 유한하지 않은 좌표)이면 다른 쪽을 보고,
+/// 둘 다 안 되면 null. `angleDeg`의 0(측정 불가)이 하류로 흘러가지 않게 한다.
 SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5}) {
   final left = anglesForSide(frame, BodySide.left);
   final right = anglesForSide(frame, BodySide.right);
-  final best = right.visibility > left.visibility ? right : left;
-  return best.visibility >= minVisibility ? best : null;
+  final ordered = right.visibility > left.visibility
+      ? [right, left]
+      : [left, right];
+  for (final candidate in ordered) {
+    if (candidate.visibility >= minVisibility &&
+        _isMeasurable(frame, candidate.side)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+/// [side] 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎,
+/// 어깨-골반-발목)이 모두 각도를 정의할 수 있으면 true.
+bool _isMeasurable(PoseFrame frame, BodySide side) {
+  final isLeft = side == BodySide.left;
+  final shoulder =
+      frame[isLeft ? LandmarkIndex.leftShoulder : LandmarkIndex.rightShoulder];
+  final elbow =
+      frame[isLeft ? LandmarkIndex.leftElbow : LandmarkIndex.rightElbow];
+  final wrist =
+      frame[isLeft ? LandmarkIndex.leftWrist : LandmarkIndex.rightWrist];
+  final hip = frame[isLeft ? LandmarkIndex.leftHip : LandmarkIndex.rightHip];
+  final knee = frame[isLeft ? LandmarkIndex.leftKnee : LandmarkIndex.rightKnee];
+  final ankle =
+      frame[isLeft ? LandmarkIndex.leftAnkle : LandmarkIndex.rightAnkle];
+
+  final ratio = frame.aspectRatio;
+  return _isDefined(shoulder, elbow, wrist, ratio) &&
+      _isDefined(hip, knee, ankle, ratio) &&
+      _isDefined(shoulder, hip, knee, ratio) &&
+      _isDefined(shoulder, hip, ankle, ratio);
+}
+
+/// a-vertex-c 두 벡터의 길이가 모두 0이 아닌 유한한 값이면 true.
+bool _isDefined(
+  PoseLandmark a,
+  PoseLandmark vertex,
+  PoseLandmark c,
+  double aspectRatio,
+) {
+  bool usableLength(PoseLandmark p) {
+    final dx = (p.x - vertex.x) * aspectRatio;
+    final dy = p.y - vertex.y;
+    final length = math.sqrt(dx * dx + dy * dy);
+    return length.isFinite && length > 0;
+  }
+
+  return usableLength(a) && usableLength(c);
 }
 
 // [QA] 2026-11-09 PASS
