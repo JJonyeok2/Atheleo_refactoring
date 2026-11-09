@@ -1,3 +1,8 @@
+// [파일] 관절 각도(팔꿈치, 무릎, 골반) 계산과 신뢰도 기반 좌우 자동 선택
+//   (순수 함수, 상태 없음).
+// [Spec] F-02 관절 각도 / [Task] TASK-05
+// [의존] 없음 (환경 변수 사용 안 함)
+
 import 'dart:math' as math;
 
 import 'package:atheleo/pose/landmarks/pose_landmark.dart';
@@ -89,3 +94,12 @@ SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5}) {
   final best = right.visibility > left.visibility ? right : left;
   return best.visibility >= minVisibility ? best : null;
 }
+
+// [QA] 2026-11-09 PASS
+// [보안] 외부 입력 없음. NaN/Infinity 좌표는 angleDeg에서 0, NaN visibility는
+//   selectSide에서 null로 떨어져 예외가 나지 않음. aspectRatio 0 이하는 막지 않음
+//   (TASK-04/19 파싱 쪽 책임).
+// [유지보수] "길이 0이면 0"은 실제 0도(완전히 접힌 관절)와 구분되지 않는다.
+//   하류(TASK-09, 15)에서 0을 정상 각도로 쓰면 이동 평균을 끌어내려 최저 각도가
+//   왜곡될 수 있음(QA-TASK-05 위험 추적 참고). 반환형을 double?로 바꿀 경우
+//   SideAngles와 TASK-06, 09, 13, 15 계약이 함께 바뀐다.
