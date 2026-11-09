@@ -33,3 +33,4 @@
 | 2026-11-09 23:01 | impl-agent | TASK-05 | 완료 | angleDeg/SideAngles/anglesForSide/selectSide 구현. test 46건 통과, analyze 0건 |
 | 2026-11-09 23:02 | qa-agent | TASK-05 | 시작 | 관절 각도/좌우 선택 QA, 0도 하류 전파 위험 추적 |
 | 2026-11-09 23:04 | qa-agent | TASK-05 | 완료 | PASS(Impl 계약 일치, test 46/analyze 0). 길이0→0도가 TASK-15 이동평균으로 흘러가는 경로 확인, selectSide 계약 보강 권고 |
+| 2026-11-09 23:05 | task-agent | TASK-05 재작업 (QA-TASK-05 1안), TASK-06, 09, 13, 15, 19 | 시작 | selectSide 사용 불가 쪽 규칙 추가 |
