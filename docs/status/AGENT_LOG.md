@@ -38,3 +38,4 @@
 | 2026-11-09 23:06 | impl-agent | TASK-05 | 시작 | 재작업(QA-TASK-05 1안): selectSide 계약 변경 반영 |
 | 2026-11-09 23:07 | impl-agent | TASK-05 | 완료 | 재작업: selectSide 사용 불가 쪽 규칙 반영. test 51건 통과, analyze 0건 |
 | 2026-11-09 23:08 | qa-agent | TASK-05 | 시작 | 재검토: selectSide 측정 불가 거르기 계약 반영분 |
+| 2026-11-09 23:09 | qa-agent | TASK-05 | 완료 | 재검토 PASS: selectSide 측정 불가 거르기가 계약과 일치, test 51/analyze 0, 네 묶음 검사 부작용 낮음 |
