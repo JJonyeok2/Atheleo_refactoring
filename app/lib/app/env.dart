@@ -1,3 +1,7 @@
+// [파일] 앱 환경 설정(서버 주소, Sentry DSN, 릴리스 여부)과 릴리스 HTTPS 검증
+// [Spec] 8장 보안(설정 분리, HTTPS), 모니터링 / [Task] TASK-02
+// [의존] API_BASE_URL, SENTRY_DSN (--dart-define 또는 --dart-define-from-file=.env)
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,3 +43,8 @@ class AppEnv {
 
 /// 앱 전역 설정 provider. 테스트에서는 override로 바꿔 끼운다.
 final appEnvProvider = Provider<AppEnv>((ref) => AppEnv.fromEnvironment());
+
+// [QA] 2026-11-09 FIX
+// [보안] 릴리스에서 https:// 가 아닌 주소는 StateError로 거부한다. 대소문자를 구분하므로
+//        HTTPS:// 도 거부된다(안전한 쪽으로 실패). 호스트가 비어 있는지는 확인하지 않는다.
+// [유지보수] .env에서 API_BASE_URL을 비워 두면 빈 문자열이 define되어 기본값이 무시된다(FIX 항목).

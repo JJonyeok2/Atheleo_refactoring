@@ -1,3 +1,7 @@
+// [파일] 오류 보고 인터페이스(ErrorReporter)와 아무것도 하지 않는 기본 구현, provider
+// [Spec] 모니터링(추론 실패, 동기화 400, 비정상 종료 보고) / [Task] TASK-02
+// [의존] 없음 (Sentry 실제 연결과 SENTRY_DSN 사용은 TASK-48)
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// 오류 보고 인터페이스. 구현체는 개인 식별 정보를 보내지 않는다.
@@ -29,3 +33,7 @@ class NoopErrorReporter implements ErrorReporter {
 final errorReporterProvider = Provider<ErrorReporter>(
   (ref) => const NoopErrorReporter(),
 );
+
+// [QA] 2026-11-09 FIX
+// [보안] 개인 식별 정보 미전송 규칙은 문서 주석에만 있다. context 필터링은 실제 구현(TASK-48)에서 강제할 것.
+// [유지보수] 없음. 인터페이스 시그니처는 TASK-28, 39, 48이 기대므로 바꾸지 않는다.
