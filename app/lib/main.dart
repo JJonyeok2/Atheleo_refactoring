@@ -1,25 +1,30 @@
-// [파일] 앱 진입점과 루트 위젯(AtheleoApp). 현재는 빈 MaterialApp 수준.
-// [Spec] 8장 비기능 요구사항(플랫폼, 기술 구성) / [Task] TASK-01
-// [의존] 없음 (환경 변수 사용 안 함)
+// [파일] 앱 진입점. 설정 검증, 세로 고정 후 ProviderScope로 AtheleoApp을 띄운다.
+// [Spec] 8장 비기능 요구사항(플랫폼, 기술 구성, 세로 고정) / [Task] TASK-01, TASK-03
+// [의존] API_BASE_URL, SENTRY_DSN (AppEnv.fromEnvironment 경유)
 
-import 'package:flutter/material.dart';
+import 'package:atheleo/app/app.dart';
+import 'package:atheleo/app/env.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  runApp(const AtheleoApp());
-}
+export 'package:atheleo/app/app.dart' show AtheleoApp;
 
-/// 앱 루트 위젯. 라우터와 테마는 TASK-03에서 교체한다.
-class AtheleoApp extends StatelessWidget {
-  /// 루트 위젯을 만든다.
-  const new({super.key});
+Future<void> main() => bootstrap();
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Atheleo',
-      home: Scaffold(),
-    );
-  }
+/// 앱을 시작한다.
+///
+/// [env]가 없으면 `AppEnv.fromEnvironment()`를 쓴다. 설정이 잘못됐으면
+/// (릴리스 + https 아님) `StateError`를 던지고 앱을 띄우지 않는다.
+/// [run]은 테스트에서 `runApp` 대신 끼워 넣는다.
+Future<void> bootstrap({
+  AppEnv? env,
+  void Function(Widget app) run = runApp,
+}) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  (env ?? AppEnv.fromEnvironment()).validate();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  run(const ProviderScope(child: AtheleoApp()));
 }
 
 // [QA] 2026-11-09 PASS
