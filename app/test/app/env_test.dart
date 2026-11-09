@@ -42,6 +42,24 @@ void main() {
     expect(env.sentryDsn, '');
   });
 
+  group('AppEnv.resolveApiBaseUrl', () {
+    test('빈 문자열이면 기본값', () {
+      expect(AppEnv.resolveApiBaseUrl(''), 'http://10.0.2.2:8000');
+    });
+
+    test('공백뿐이면 기본값', () {
+      expect(AppEnv.resolveApiBaseUrl('  '), 'http://10.0.2.2:8000');
+    });
+
+    test('정상 주소는 그대로', () {
+      expect(AppEnv.resolveApiBaseUrl('https://a.com'), 'https://a.com');
+    });
+
+    test('앞뒤 공백이 있는 정상 주소는 trim', () {
+      expect(AppEnv.resolveApiBaseUrl(' https://a.com '), 'https://a.com');
+    });
+  });
+
   test('appEnvProvider: AppEnv를 제공한다', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);

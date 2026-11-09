@@ -15,14 +15,27 @@ class AppEnv {
   });
 
   /// `--dart-define`(또는 `--dart-define-from-file=.env`) 값으로 만든다.
-  factory fromEnvironment() => const AppEnv(
-    apiBaseUrl: String.fromEnvironment(
-      'API_BASE_URL',
-      defaultValue: 'http://10.0.2.2:8000',
+  /// `API_BASE_URL`이 비었거나 공백뿐이면 개발용 기본 주소를 쓴다.
+  factory fromEnvironment() => AppEnv(
+    apiBaseUrl: resolveApiBaseUrl(
+      const String.fromEnvironment(
+        'API_BASE_URL',
+        defaultValue: _defaultApiBaseUrl,
+      ),
     ),
-    sentryDsn: String.fromEnvironment('SENTRY_DSN'),
+    sentryDsn: const String.fromEnvironment('SENTRY_DSN'),
     isRelease: kReleaseMode,
   );
+
+  static const _defaultApiBaseUrl = 'http://10.0.2.2:8000';
+
+  /// [raw]를 trim하고, 비었으면 개발용 기본 주소를 돌려준다.
+  /// `.env`에 `API_BASE_URL=`처럼 빈 값이 정의된 경우를 막는다.
+  @visibleForTesting
+  static String resolveApiBaseUrl(String raw) {
+    final trimmed = raw.trim();
+    return trimmed.isEmpty ? _defaultApiBaseUrl : trimmed;
+  }
 
   /// 서버 주소. 릴리스 빌드에서는 `https://`로 시작해야 한다.
   final String apiBaseUrl;
