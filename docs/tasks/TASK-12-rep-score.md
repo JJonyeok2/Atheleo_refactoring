@@ -3,11 +3,11 @@
 - 상태: 대기
 - 선행 Task: TASK-09
 - 실행 방식: 병렬 (그룹: G3)
-- 실행 방식 근거: `app/lib/pose/score/`만 새로 만드는 순수 함수, TASK-13, 22와 파일이 겹치지 않음
+- 실행 방식 근거: `app/lib/pose/score/`만 새로 만드는 순수 함수, TASK-13, 26과 파일이 겹치지 않음
 - Spec 출처: F-05 (3장, 7장 반복 점수 계산, 9장 인수 조건), F-07(점수 색상 기준)
 
 ## 왜 이렇게 나눴나
-점수 계산과 "점수 → 색 등급" 변환을 순수 함수로 둔다. 화면(TASK-24)은 등급만 받아 색을 칠한다.
+점수 계산과 "점수 → 색 등급" 변환을 순수 함수로 둔다. 화면(TASK-23)은 등급만 받아 색을 칠한다.
 
 ## 기능 범위 (Spec 발췌)
 - 반복 1회 종료 시 0~100점, 세트 점수는 평균
@@ -29,14 +29,14 @@
 |---|---|---|---|
 | `scoreRep` | `app/lib/pose/score/rep_score.dart` | `int scoreRep({required List<PoseErrorCode> errors, required int durationMs})` | TASK-15 |
 | `averageScore` | 같은 파일 | `int averageScore(Iterable<int> scores)` (반올림, 비면 0) | TASK-17 |
-| `ScoreGrade` | 같은 파일 | `enum ScoreGrade { good, fair, poor }` | TASK-24 |
-| `gradeFor` | 같은 파일 | `ScoreGrade gradeFor(int score)` (85 이상 good, 60 이상 fair, 나머지 poor) | TASK-24 |
+| `ScoreGrade` | 같은 파일 | `enum ScoreGrade { good, fair, poor }` | TASK-23 |
+| `gradeFor` | 같은 파일 | `ScoreGrade gradeFor(int score)` (85 이상 good, 60 이상 fair, 나머지 poor) | TASK-23, 30 |
 
 ## 범위
 - 위 함수
 
 ## 범위 밖 (건드리지 않음)
-- 색상 값과 위젯(TASK-24)
+- 색상 값과 위젯(TASK-23)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

@@ -41,7 +41,7 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `PoseErrorCode` | `app/lib/pose/judge/pose_error.dart` | `enum PoseErrorCode { puHipSag, puShallow, sqShallow, sqTorsoLean, sqKneeForward }`, 필드 `final String code`(위 표 코드), `final String voiceMessage`, `final String label`(짧은 이름), `static PoseErrorCode fromCode(String code)`(모르는 값은 `ArgumentError`) | TASK-12, 15, 17, 18, 28, 29, 30, 31, 38 |
+| `PoseErrorCode` | `app/lib/pose/judge/pose_error.dart` | `enum PoseErrorCode { puHipSag, puShallow, sqShallow, sqTorsoLean, sqKneeForward }`, 필드 `final String code`(위 표 코드), `final String voiceMessage`, `final String label`(짧은 이름), `static PoseErrorCode fromCode(String code)`(모르는 값은 `ArgumentError`) | TASK-12, 15, 17, 18, 29, 30, 32, 42 |
 | `ErrorThresholds` | `app/lib/pose/judge/error_judge.dart` | `class ErrorThresholds { const ErrorThresholds({double hipSagDeg = 160, double shallowDeg = 100, double torsoLeanDeg = 45, double kneeForwardRatio = 0.3}); }` | TASK-15 |
 | `judgeRep` | 같은 파일 | `List<PoseErrorCode> judgeRep({required ExerciseType exercise, required List<PoseFrame> repFrames, required RepEvent rep, ErrorThresholds thresholds = const ErrorThresholds()})` (운동에 맞는 코드만, 표 순서대로) | TASK-15 |
 

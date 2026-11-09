@@ -22,13 +22,13 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `RestOverlay` | `app/lib/features/workout/widgets/rest_overlay.dart` | `class RestOverlay extends StatelessWidget { const RestOverlay({super.key, required int remainingSec, required int nextSet, required int totalSets, required int targetReps, required VoidCallback onSkip}); }` (반투명 검은 배경으로 부모를 덮음) | TASK-28 |
+| `RestOverlay` | `app/lib/features/workout/widgets/rest_overlay.dart` | `class RestOverlay extends StatelessWidget { const RestOverlay({super.key, required int remainingSec, required int nextSet, required int totalSets, required int targetReps, required VoidCallback onSkip}); }` (반투명 검은 배경으로 부모를 덮음) | TASK-29 |
 
 ## 범위
 - 위 위젯
 
 ## 범위 밖 (건드리지 않음)
-- 타이머(TASK-16, 26)
+- 타이머(TASK-16, 27)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

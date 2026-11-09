@@ -30,17 +30,17 @@ TTS 엔진을 인터페이스로 감싸 가짜 구현으로 테스트한다. "�
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `TtsEngine` | `app/lib/core/tts/tts_engine.dart` | `abstract class TtsEngine { Future<void> speak(String text); Future<void> stop(); }` (speak는 말하기가 끝나면 완료되는 Future) | TASK-18, 25 |
+| `TtsEngine` | `app/lib/core/tts/tts_engine.dart` | `abstract class TtsEngine { Future<void> speak(String text); Future<void> stop(); }` (speak는 말하기가 끝나면 완료되는 Future) | TASK-27 |
 | `FlutterTtsEngine` | 같은 파일 | `class FlutterTtsEngine implements TtsEngine` (언어 `ko-KR`, `awaitSpeakCompletion(true)`) | (provider 내부) |
 | `VoicePriority` | `app/lib/core/tts/voice_guide.dart` | `enum VoicePriority { normal, high }` | TASK-18 |
-| `VoiceGuide` | 같은 파일 | `class VoiceGuide { VoiceGuide({required TtsEngine engine, Duration cooldown = const Duration(seconds: 5), DateTime Function()? clock}); Future<bool> say(String text, {VoicePriority priority = VoicePriority.normal}); Future<void> stopAll(); bool get isSpeaking; }` (say는 재생 또는 대기 칸에 들어가면 true, 쿨다운으로 버리면 false) | TASK-18, 25, 26 |
-| `voiceGuideProvider` | 같은 파일 | `final voiceGuideProvider = Provider<VoiceGuide>(...)` (FlutterTtsEngine 사용, dispose 시 stopAll) | TASK-25, 26 |
+| `VoiceGuide` | 같은 파일 | `class VoiceGuide { VoiceGuide({required TtsEngine engine, Duration cooldown = const Duration(seconds: 5), DateTime Function()? clock}); Future<bool> say(String text, {VoicePriority priority = VoicePriority.normal}); Future<void> stopAll(); bool get isSpeaking; }` (say는 재생 또는 대기 칸에 들어가면 true, 쿨다운으로 버리면 false) | TASK-27, 28 |
+| `voiceGuideProvider` | 같은 파일 | `final voiceGuideProvider = Provider<VoiceGuide>(...)` (FlutterTtsEngine 사용, dispose 시 stopAll) | TASK-27 |
 
 ## 범위
 - 위 클래스. 테스트는 `Completer`로 끝 시점을 조절하는 가짜 `TtsEngine`과 주입한 `clock`으로 작성
 
 ## 범위 밖 (건드리지 않음)
-- 문장 내용 정하기(TASK-18), 화면 연결(TASK-25, 26)
+- 문장 내용 정하기(TASK-18), 화면 연결(TASK-27, 29)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

@@ -40,12 +40,12 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `clockProvider` | `app/lib/core/clock.dart` | `final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);` | TASK-28, 38, 45 |
+| `clockProvider` | `app/lib/core/clock.dart` | `final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);` | TASK-45, 47 |
 | `WorkoutViewState` | `app/lib/features/workout/application/workout_view_state.dart` | `class WorkoutViewState { const WorkoutViewState({required WorkoutSessionState session, int? textureId, PoseFrame? frame, RepResult? lastRep, String? notice, bool askResume = false, WorkoutSummary? summary}); WorkoutViewState copyWith(...); }` | TASK-28, 29 |
-| `WorkoutController` | `app/lib/features/workout/application/workout_controller.dart` | `class WorkoutController extends AutoDisposeFamilyNotifier<WorkoutViewState, ExerciseType> { Future<void> start(); void skipRest(); void pause(); void resume(); Future<void> finish(); }` | TASK-28, 29, 36 |
-| `workoutControllerProvider` | 같은 파일 | `final workoutControllerProvider = NotifierProvider.autoDispose.family<WorkoutController, WorkoutViewState, ExerciseType>(WorkoutController.new);` | TASK-29, 36 |
-| `activeWorkoutProvider` | 같은 파일 | `final activeWorkoutProvider = NotifierProvider<ActiveWorkoutNotifier, ExerciseType?>(ActiveWorkoutNotifier.new);` (start에서 설정, 종료 시 null) | TASK-36 |
-| `lastWorkoutSummaryProvider` | 같은 파일 | `final lastWorkoutSummaryProvider = NotifierProvider<LastWorkoutSummaryNotifier, WorkoutSummary?>(LastWorkoutSummaryNotifier.new);` (`void set(WorkoutSummary? summary)`) | TASK-30, 41 |
+| `WorkoutController` | `app/lib/features/workout/application/workout_controller.dart` | `class WorkoutController extends AutoDisposeFamilyNotifier<WorkoutViewState, ExerciseType> { Future<void> start(); void skipRest(); void pause(); void resume(); Future<void> finish(); }` | TASK-28, 29, 37 |
+| `workoutControllerProvider` | 같은 파일 | `final workoutControllerProvider = NotifierProvider.autoDispose.family<WorkoutController, WorkoutViewState, ExerciseType>(WorkoutController.new);` | TASK-29, 37 |
+| `activeWorkoutProvider` | 같은 파일 | `final activeWorkoutProvider = NotifierProvider<ActiveWorkoutNotifier, ExerciseType?>(ActiveWorkoutNotifier.new);` (start에서 설정, 종료 시 null) | TASK-37 |
+| `lastWorkoutSummaryProvider` | 같은 파일 | `final lastWorkoutSummaryProvider = NotifierProvider<LastWorkoutSummaryNotifier, WorkoutSummary?>(LastWorkoutSummaryNotifier.new);` (`void set(WorkoutSummary? summary)`) | TASK-30, 40 |
 
 ## 범위
 - 위 provider와 컨트롤러. 테스트는 `fake_async`, `FakePoseDetector`, 가짜 `TtsEngine`, 고정 clock, 낮은 목표값 계획(override)으로 작성

@@ -2,7 +2,7 @@
 
 - 상태: 대기
 - 선행 Task: TASK-01
-- 실행 방식: 병렬 (그룹: G6)
+- 실행 방식: 병렬 (그룹: G3)
 - 실행 방식 근거: `app/lib/features/workout/domain/tracking_monitor.dart`만 새로 만드는 순수 로직, 공유 타입을 건드리지 않음
 - Spec 출처: F-01 (4장 예외 흐름: 사람이 안 보일 때, 추론이 느릴 때)
 

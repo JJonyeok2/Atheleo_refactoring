@@ -39,15 +39,15 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `VoiceCue` | `app/lib/features/workout/domain/voice_cues.dart` | `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }` (`==` 구현) | TASK-26, 27 |
-| `cuesForEvent` | 같은 파일 | `List<VoiceCue> cuesForEvent(WorkoutEvent event)` | TASK-26 |
-| `VoiceCues` | 같은 파일 | `abstract final class VoiceCues { static const VoiceCue noPerson; static const VoiceCue askResume; }` | TASK-27 |
+| `VoiceCue` | `app/lib/features/workout/domain/voice_cues.dart` | `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }` (`==` 구현) | TASK-27, 28 |
+| `cuesForEvent` | 같은 파일 | `List<VoiceCue> cuesForEvent(WorkoutEvent event)` | TASK-27 |
+| `VoiceCues` | 같은 파일 | `abstract final class VoiceCues { static const VoiceCue noPerson; static const VoiceCue askResume; }` | TASK-28 |
 
 ## 범위
 - 위 매핑
 
 ## 범위 밖 (건드리지 않음)
-- 실제 재생(TASK-26), 촬영 가이드 문구(TASK-14)
+- 실제 재생(TASK-27), 촬영 가이드 문구(TASK-14)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

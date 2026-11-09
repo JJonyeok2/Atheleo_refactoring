@@ -30,10 +30,10 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, double torsoLeanDeg = 15, double kneeForwardRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이. 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14 |
-| `buildSyntheticFrame` | 같은 파일 | `PoseFrame buildSyntheticFrame(SyntheticPose pose, {int timestampMs = 0})` (보이는 쪽 visibility 0.95, 반대쪽은 hiddenVisibility, aspectRatio 1.0, 측면 자세. 반대쪽 점은 보이는 쪽 점을 x로 shoulderWidthRatio × 몸통 길이만큼 옮긴 위치) | TASK-09, 13, 14 |
+| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, double torsoLeanDeg = 15, double kneeForwardRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이. 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14, 25 |
+| `buildSyntheticFrame` | 같은 파일 | `PoseFrame buildSyntheticFrame(SyntheticPose pose, {int timestampMs = 0})` (보이는 쪽 visibility 0.95, 반대쪽은 hiddenVisibility, aspectRatio 1.0, 측면 자세. 반대쪽 점은 보이는 쪽 점을 x로 shoulderWidthRatio × 몸통 길이만큼 옮긴 위치) | TASK-09, 13, 14, 25 |
 | `repAngleSequence` | 같은 파일 | `List<double> repAngleSequence({required int reps, double top = 170, double bottom = 80, int framesPerRep = 30, int padFrames = 10})` (앞뒤 padFrames만큼 top 유지, 반복마다 top→bottom→top 코사인 곡선) | TASK-08, 15 |
-| `buildSyntheticClip` | 같은 파일 | `LandmarkClip buildSyntheticClip({required ExerciseType exercise, required List<double> primaryAngles, int fps = 30, String label = 'synthetic', SyntheticPose Function(double angle)? poseFor})` (primaryAngles는 푸쉬업이면 팔꿈치, 스쿼트면 무릎. poseFor가 없으면 기본 SyntheticPose에 그 각도만 넣음. timestamp는 `i * 1000 ~/ fps`) | TASK-15, 17 |
+| `buildSyntheticClip` | 같은 파일 | `LandmarkClip buildSyntheticClip({required ExerciseType exercise, required List<double> primaryAngles, int fps = 30, String label = 'synthetic', SyntheticPose Function(double angle)? poseFor})` (primaryAngles는 푸쉬업이면 팔꿈치, 스쿼트면 무릎. poseFor가 없으면 기본 SyntheticPose에 그 각도만 넣음. timestamp는 `i * 1000 ~/ fps`) | TASK-15 |
 
 ## 범위
 - 위 유틸 구현(측면 자세의 2D 골격을 각도로부터 순방향으로 배치, z는 0)

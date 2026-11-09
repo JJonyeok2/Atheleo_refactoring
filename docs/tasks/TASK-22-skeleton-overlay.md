@@ -29,7 +29,7 @@
 |---|---|---|---|
 | `kPoseConnections` | `app/lib/features/workout/widgets/skeleton_overlay.dart` | `const List<(int, int)> kPoseConnections` | (내부) |
 | `projectLandmarks` | 같은 파일 | `List<Offset?> projectLandmarks(PoseFrame frame, Size size, {double minVisibility = 0.5})` (길이 33, 안 보이는 점은 null) | (내부) |
-| `SkeletonOverlay` | 같은 파일 | `class SkeletonOverlay extends StatelessWidget { const SkeletonOverlay({super.key, required PoseFrame? frame, Color color = Colors.white}); }` (frame이 null이면 아무것도 안 그림, 부모 크기를 꽉 채움) | TASK-28, 45 |
+| `SkeletonOverlay` | 같은 파일 | `class SkeletonOverlay extends StatelessWidget { const SkeletonOverlay({super.key, required PoseFrame? frame, Color color = Colors.white}); }` (frame이 null이면 아무것도 안 그림, 부모 크기를 꽉 채움) | TASK-29, 46 |
 
 ## 범위
 - 위 함수와 위젯

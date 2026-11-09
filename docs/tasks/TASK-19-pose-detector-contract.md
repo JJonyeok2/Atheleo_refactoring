@@ -32,12 +32,12 @@ Kotlin 구현(TASK-20, 21)보다 Dart 쪽 계약과 가짜 구현을 먼저 만�
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `PoseModel` | `app/lib/pose/detector/pose_detector.dart` | `enum PoseModel { full, lite }` (`name`이 채널 값) | TASK-21, 27 |
-| `PoseDetectionResult` | 같은 파일 | `class PoseDetectionResult { const PoseDetectionResult({required int timestampMs, required List<PoseFrame> poses, required int inferenceMs}); }` | TASK-25, 26, 27, 45 |
-| `PoseDetector` | 같은 파일 | `abstract class PoseDetector { Stream<PoseDetectionResult> get results; Future<int> start({PoseModel model = PoseModel.full}); Future<void> stop(); Future<void> setModel(PoseModel model); }` | TASK-25, 26, 27, 45 |
-| `poseDetectorProvider` | 같은 파일 | `final poseDetectorProvider = Provider<PoseDetector>((ref) => PlatformPoseDetector());` | TASK-25, 26, 45 |
+| `PoseModel` | `app/lib/pose/detector/pose_detector.dart` | `enum PoseModel { full, lite }` (`name`이 채널 값) | TASK-21, 28 |
+| `PoseDetectionResult` | 같은 파일 | `class PoseDetectionResult { const PoseDetectionResult({required int timestampMs, required List<PoseFrame> poses, required int inferenceMs}); }` | TASK-25, 27, 45, 46 |
+| `PoseDetector` | 같은 파일 | `abstract class PoseDetector { Stream<PoseDetectionResult> get results; Future<int> start({PoseModel model = PoseModel.full}); Future<void> stop(); Future<void> setModel(PoseModel model); }` | TASK-25, 27, 45, 46 |
+| `poseDetectorProvider` | 같은 파일 | `final poseDetectorProvider = Provider<PoseDetector>((ref) => PlatformPoseDetector());` | TASK-25, 27, 46 |
 | `PlatformPoseDetector` | `app/lib/pose/detector/platform_pose_detector.dart` | `class PlatformPoseDetector implements PoseDetector { PlatformPoseDetector({MethodChannel? methodChannel, EventChannel? eventChannel}); }` (위 채널 계약) | TASK-20, 21 |
-| `FakePoseDetector` | `app/test/support/fake_pose_detector.dart` | `class FakePoseDetector implements PoseDetector { void emit(PoseDetectionResult result); void emitError(Object error); List<String> get calls; PoseModel? get currentModel; }` (start는 textureId 1 반환, calls에 'start:full' 형식 기록) | TASK-25, 26, 27, 28, 45 |
+| `FakePoseDetector` | `app/test/support/fake_pose_detector.dart` | `class FakePoseDetector implements PoseDetector { void emit(PoseDetectionResult result); void emitError(Object error); List<String> get calls; PoseModel? get currentModel; }` (start는 textureId 1 반환, calls에 'start:full' 형식 기록) | TASK-25, 27, 28, 45, 46 |
 
 ## 범위
 - 위 인터페이스, 채널 구현, 가짜 구현

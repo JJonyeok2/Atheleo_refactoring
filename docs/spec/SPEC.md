@@ -114,7 +114,7 @@
 | User | id, email, nickname, created_at | int, string, string, datetime | email 유일 |
 | Profile | user_id, height_cm, weight_kg, body_shape | int, float, float, enum | body_shape는 8분류 중 하나 또는 null |
 | WorkoutSession | id, client_id, user_id, exercise, started_at, ended_at, routine_level, total_reps, avg_score, sync_status | int, uuid, int, enum(push_up, squat), datetime, datetime, enum, int, int, enum(pending, synced, rejected) | client_id 유일, sync_status는 앱 로컬 전용 |
-| WorkoutSet | session_id, set_index, target_reps, done_reps, rest_sec | int, int, int, int, int | set_index 1부터 |
+| WorkoutSet | session_id, set_index, target_reps, done_reps, partial_reps, rest_sec | int, int, int, int, int, int | set_index 1부터, partial_reps는 0 이상(부분 반복 수, 서버에도 저장) |
 | RepRecord | set_id, rep_index, score, min_angle, duration_ms, errors | int, int, int(0~100), float, int, string[] | errors는 오류 코드 목록 |
 | LandmarkClip(로컬 전용) | id, exercise, label, fps, frames | uuid, enum, string, int, 33x(x,y,z,visibility) 배열 | 서버로 보내지 않음 |
 
@@ -229,3 +229,4 @@
 | 2026-11-09 | 초안 작성: 기존 RN 앱, Colab 노트북 분석과 대화에서 정한 기본값 반영 |
 | 2026-11-09 | 사용자 승인. Q-04 해결(작업 저장소 확정) |
 | 2026-11-09 | 7장 판정 기준 수정: 횟수(DOWN 120도)와 깊이(90도) 기준 분리, 부분 반복 감지(145도) 추가, 허리 처짐과 엉덩이 들림 분리, 무릎 전진 오류를 뒤꿈치 들림으로 교체. F-03, F-04 인수 조건 갱신 |
+| 2026-11-09 | 7장 데이터 모델: WorkoutSet에 partial_reps 추가(부분 반복 수를 로컬 DB와 서버에 저장) |

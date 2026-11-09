@@ -32,16 +32,16 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `WorkoutPhase` | `app/lib/features/workout/domain/workout_session_controller.dart` | `enum WorkoutPhase { exercising, resting, paused, finished }` | TASK-26, 28 |
-| `WorkoutSessionState` | 같은 파일 | `class WorkoutSessionState { const WorkoutSessionState({required WorkoutPhase phase, required int currentSet, required int totalSets, required int targetReps, required int repsInSet, required int restRemainingSec, required List<List<RepResult>> sets}); }` | TASK-26, 28 |
-| `WorkoutEvent` 계열 | 같은 파일 | `sealed class WorkoutEvent`, `final class RepCounted extends WorkoutEvent { const RepCounted(this.rep, this.repsInSet); final RepResult rep; final int repsInSet; }`, `final class SetCompleted extends WorkoutEvent { const SetCompleted(this.setIndex, this.restSec); final int setIndex; final int restSec; }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }`, `final class WorkoutFinished extends WorkoutEvent { const WorkoutFinished(); }` | TASK-18, 26 |
-| `WorkoutSessionController` | 같은 파일 | `class WorkoutSessionController { WorkoutSessionController(RoutinePlan plan); WorkoutSessionState get state; List<WorkoutEvent> onRep(RepResult rep, int nowMs); List<WorkoutEvent> tick(int nowMs); List<WorkoutEvent> skipRest(int nowMs); void pause(int nowMs); void resume(int nowMs); List<WorkoutEvent> finish(int nowMs); }` | TASK-26 |
+| `WorkoutPhase` | `app/lib/features/workout/domain/workout_session_controller.dart` | `enum WorkoutPhase { exercising, resting, paused, finished }` | TASK-27, 29 |
+| `WorkoutSessionState` | 같은 파일 | `class WorkoutSessionState { const WorkoutSessionState({required WorkoutPhase phase, required int currentSet, required int totalSets, required int targetReps, required int repsInSet, required int restRemainingSec, required List<List<RepResult>> sets}); }` | TASK-27, 29 |
+| `WorkoutEvent` 계열 | 같은 파일 | `sealed class WorkoutEvent`, `final class RepCounted extends WorkoutEvent { const RepCounted(this.rep, this.repsInSet); final RepResult rep; final int repsInSet; }`, `final class SetCompleted extends WorkoutEvent { const SetCompleted(this.setIndex, this.restSec); final int setIndex; final int restSec; }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }`, `final class WorkoutFinished extends WorkoutEvent { const WorkoutFinished(); }` | TASK-18, 27 |
+| `WorkoutSessionController` | 같은 파일 | `class WorkoutSessionController { WorkoutSessionController(RoutinePlan plan); WorkoutSessionState get state; List<WorkoutEvent> onRep(RepResult rep, int nowMs); List<WorkoutEvent> tick(int nowMs); List<WorkoutEvent> skipRest(int nowMs); void pause(int nowMs); void resume(int nowMs); List<WorkoutEvent> finish(int nowMs); }` | TASK-27 |
 
 ## 범위
 - 위 상태 머신
 
 ## 범위 밖 (건드리지 않음)
-- 음성 문구(TASK-18), 타이머와 화면(TASK-26, 28), 결과 요약(TASK-17)
+- 음성 문구(TASK-18), 타이머와 화면(TASK-27, 29), 결과 요약(TASK-17)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

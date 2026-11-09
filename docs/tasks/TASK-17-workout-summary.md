@@ -35,15 +35,15 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class SetSummary { const SetSummary({required int setIndex, required int targetReps, required int restSec, required List<RepResult> reps}); int get doneReps; int get avgScore; }` | TASK-30, 37, 38, 40 |
-| `WorkoutSummary` | 같은 파일 | `class WorkoutSummary { const WorkoutSummary({required String clientId, required ExerciseType exercise, required RoutineLevel level, required DateTime startedAt, required DateTime endedAt, required List<SetSummary> sets}); int get totalReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }` | TASK-26, 28, 30, 31, 37, 38 |
-| `buildSummary` | 같은 파일 | `WorkoutSummary buildSummary({required String clientId, required RoutinePlan plan, required DateTime startedAt, required DateTime endedAt, required List<List<RepResult>> sets})` (sets[0]이 1세트) | TASK-26 |
+| `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class SetSummary { const SetSummary({required int setIndex, required int targetReps, required int restSec, required List<RepResult> reps}); int get doneReps; int get avgScore; }` | TASK-30, 32, 38, 42 |
+| `WorkoutSummary` | 같은 파일 | `class WorkoutSummary { const WorkoutSummary({required String clientId, required ExerciseType exercise, required RoutineLevel level, required DateTime startedAt, required DateTime endedAt, required List<SetSummary> sets}); int get totalReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }` | TASK-27, 30, 32, 38, 40, 42 |
+| `buildSummary` | 같은 파일 | `WorkoutSummary buildSummary({required String clientId, required RoutinePlan plan, required DateTime startedAt, required DateTime endedAt, required List<List<RepResult>> sets})` (sets[0]이 1세트) | TASK-27 |
 
 ## 범위
 - 위 모델과 함수
 
 ## 범위 밖 (건드리지 않음)
-- 저장, 업로드 형식(TASK-30, 37), 화면(TASK-38)
+- 저장, 업로드 형식(TASK-32, 38), 화면(TASK-30)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

@@ -36,8 +36,8 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `RepResult` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepResult { const RepResult({required int repIndex, required int score, required double minAngle, required int durationMs, required List<PoseErrorCode> errors}); }` | TASK-16, 17, 18, 26 |
-| `RepAnalyzer` | 같은 파일 | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindow = 5}); RepResult? addFrame(PoseFrame frame); int get count; double? get lastAngle; void reset(); }` | TASK-17, 26 |
+| `RepResult` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepResult { const RepResult({required int repIndex, required int score, required double minAngle, required int durationMs, required List<PoseErrorCode> errors}); }` | TASK-16, 17, 18, 27 |
+| `RepAnalyzer` | 같은 파일 | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindow = 5}); RepResult? addFrame(PoseFrame frame); int get count; double? get lastAngle; void reset(); }` | TASK-27 |
 
 ## 범위
 - 위 클래스. 반복 구간 프레임은 마지막 반복 종료 이후 프레임만 보관(메모리 누수 방지)

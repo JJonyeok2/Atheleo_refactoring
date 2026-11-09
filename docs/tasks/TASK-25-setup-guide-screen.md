@@ -37,8 +37,8 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `CameraPermission` | `app/lib/core/permission/camera_permission.dart` | `abstract class CameraPermission { Future<bool> ensureGranted(); Future<void> openSettings(); }`, `final cameraPermissionProvider = Provider<CameraPermission>(...)` (permission_handler 구현) | TASK-28, 45 |
-| `CameraPreviewView` | `app/lib/features/workout/widgets/camera_preview_view.dart` | `class CameraPreviewView extends StatelessWidget { const CameraPreviewView({super.key, required int? textureId, Widget? overlay}); }` (textureId null이면 검은 화면, 세로 비율 유지) | TASK-28, 45 |
+| `CameraPermission` | `app/lib/core/permission/camera_permission.dart` | `abstract class CameraPermission { Future<bool> ensureGranted(); Future<void> openSettings(); }`, `final cameraPermissionProvider = Provider<CameraPermission>(...)` (permission_handler 구현) | TASK-46 |
+| `CameraPreviewView` | `app/lib/features/workout/widgets/camera_preview_view.dart` | `class CameraPreviewView extends StatelessWidget { const CameraPreviewView({super.key, required int? textureId, Widget? overlay}); }` (textureId null이면 검은 화면, 세로 비율 유지) | TASK-29, 46 |
 | `SetupGuideScreen` | `app/lib/features/workout/presentation/setup_guide_screen.dart` | `class SetupGuideScreen extends ConsumerStatefulWidget { const SetupGuideScreen({super.key, required ExerciseType exercise}); }` | (라우터) |
 
 ## 범위
@@ -46,7 +46,7 @@
 - 실루엣은 간단한 사람 모양 외곽선(CustomPaint 또는 아이콘)
 
 ## 범위 밖 (건드리지 않음)
-- 운동 화면(TASK-28), 음성 안내(이 화면에서는 글자만)
+- 운동 화면(TASK-29), 음성 안내(이 화면에서는 글자만)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

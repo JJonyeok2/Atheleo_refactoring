@@ -36,20 +36,20 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `BodyShape` | `app/lib/features/routine/domain/body_shape.dart` | `enum BodyShape { invertedTriangle, rectangle, hourglass, triangle, ideal, round, tube, diamond }`, 필드 `final String code`('inverted_triangle', 'rectangle', 'hourglass', 'triangle', 'ideal', 'round', 'tube', 'diamond'), `final String label`('역삼각형', '사각체형', '모래시계형', '삼각형', '이상체형', '둥근체형', '튜브체형', '마름모형'), `static BodyShape? fromCode(String? code)`(null이나 모르는 값은 null) | TASK-39, 40 |
-| `RoutineLevel` | `app/lib/features/routine/domain/routine_plan.dart` | `enum RoutineLevel { advanced, intermediate, beginner }`, 필드 `final String code`('advanced', 'intermediate', 'beginner'), `final String label`('고강도', '중급', '초보') | TASK-17, 30 |
-| `RoutinePlan` | 같은 파일 | `class RoutinePlan { const RoutinePlan({required ExerciseType exercise, required RoutineLevel level, required int targetReps, required int sets, required int restSec, required int minScore}); }` (값 비교 가능하게 `==` 구현) | TASK-16, 17, 24, 27 |
+| `BodyShape` | `app/lib/features/routine/domain/body_shape.dart` | `enum BodyShape { invertedTriangle, rectangle, hourglass, triangle, ideal, round, tube, diamond }`, 필드 `final String code`('inverted_triangle', 'rectangle', 'hourglass', 'triangle', 'ideal', 'round', 'tube', 'diamond'), `final String label`('역삼각형', '사각체형', '모래시계형', '삼각형', '이상체형', '둥근체형', '튜브체형', '마름모형'), `static BodyShape? fromCode(String? code)`(null이나 모르는 값은 null) | TASK-43, 44 |
+| `RoutineLevel` | `app/lib/features/routine/domain/routine_plan.dart` | `enum RoutineLevel { advanced, intermediate, beginner }`, 필드 `final String code`('advanced', 'intermediate', 'beginner'), `final String label`('고강도', '중급', '초보') | TASK-17, 32, 44 |
+| `RoutinePlan` | 같은 파일 | `class RoutinePlan { const RoutinePlan({required ExerciseType exercise, required RoutineLevel level, required int targetReps, required int sets, required int restSec, required int minScore}); }` (값 비교 가능하게 `==` 구현) | TASK-16, 17, 27 |
 | `levelForBodyShape` | `app/lib/features/routine/domain/routine_table.dart` | `RoutineLevel levelForBodyShape(BodyShape? shape)` | (내부용) |
 | `routineFor` | 같은 파일 | `RoutinePlan routineFor(ExerciseType exercise, BodyShape? shape)` | (provider 내부) |
-| `currentBodyShapeProvider` | `app/lib/features/routine/routine_providers.dart` | `final currentBodyShapeProvider = NotifierProvider<CurrentBodyShapeNotifier, BodyShape?>(CurrentBodyShapeNotifier.new);` (초기값 null, `void set(BodyShape? shape)`) | TASK-39 |
-| `routinePlanProvider` | 같은 파일 | `final routinePlanProvider = Provider.family<RoutinePlan, ExerciseType>(...)` (currentBodyShapeProvider를 watch해 `routineFor` 호출) | TASK-27, 40 |
+| `currentBodyShapeProvider` | `app/lib/features/routine/routine_providers.dart` | `final currentBodyShapeProvider = NotifierProvider<CurrentBodyShapeNotifier, BodyShape?>(CurrentBodyShapeNotifier.new);` (초기값 null, `void set(BodyShape? shape)`) | TASK-43 |
+| `routinePlanProvider` | 같은 파일 | `final routinePlanProvider = Provider.family<RoutinePlan, ExerciseType>(...)` (currentBodyShapeProvider를 watch해 `routineFor` 호출) | TASK-27, 44, 47 |
 
 ## 범위
 - 위 enum, 표, provider
 - 체형 코드 문자열은 서버 확정 전 임시값(Q-01). 코드값을 한곳(`BodyShape.code`)에서만 정의
 
 ## 범위 밖 (건드리지 않음)
-- 프로필 조회와 저장(TASK-42), 판정 로직 파일
+- 프로필 조회와 저장(TASK-43), 판정 로직 파일
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

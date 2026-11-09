@@ -3,7 +3,7 @@
 - 상태: 대기
 - 선행 Task: TASK-05, TASK-06
 - 실행 방식: 병렬 (그룹: G3)
-- 실행 방식 근거: `app/lib/pose/body/`만 새로 만드는 순수 함수, TASK-12, 22와 파일이 겹치지 않음
+- 실행 방식 근거: `app/lib/pose/body/`만 새로 만드는 순수 함수, TASK-12, 26과 파일이 겹치지 않음
 - Spec 출처: F-07(촬영 가이드), 4장 예외 흐름(여러 사람, 정면)
 
 ## 왜 이렇게 나눴나
@@ -31,9 +31,9 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `isFullBodyVisible` | `app/lib/pose/body/body_check.dart` | `bool isFullBodyVisible(PoseFrame frame, {double minVisibility = 0.5})` | TASK-14, 26 |
+| `isFullBodyVisible` | `app/lib/pose/body/body_check.dart` | `bool isFullBodyVisible(PoseFrame frame, {double minVisibility = 0.5})` | TASK-14 |
 | `isFrontFacing` | 같은 파일 | `bool isFrontFacing(PoseFrame frame, {double ratioThreshold = 0.35})` | TASK-14 |
-| `selectPrimaryPose` | 같은 파일 | `PoseFrame? selectPrimaryPose(List<PoseFrame> poses)` (빈 목록이면 null) | TASK-25, 26 |
+| `selectPrimaryPose` | 같은 파일 | `PoseFrame? selectPrimaryPose(List<PoseFrame> poses)` (빈 목록이면 null) | TASK-25, 27, 45 |
 
 ## 범위
 - 위 함수

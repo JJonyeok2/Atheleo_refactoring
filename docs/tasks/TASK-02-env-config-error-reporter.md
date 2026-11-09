@@ -7,7 +7,7 @@
 - Spec 출처: 8장 보안(설정 분리, HTTPS), 모니터링
 
 ## 왜 이렇게 나눴나
-서버 주소와 Sentry DSN을 코드에 박지 않고 `--dart-define`으로 받는 통로, 그리고 Sentry를 나중에 붙일 수 있게 오류 보고 인터페이스만 먼저 만든다. Sentry 실제 연결은 TASK-47.
+서버 주소와 Sentry DSN을 코드에 박지 않고 `--dart-define`으로 받는 통로, 그리고 Sentry를 나중에 붙일 수 있게 오류 보고 인터페이스만 먼저 만든다. Sentry 실제 연결은 TASK-48.
 
 ## 기능 범위 (Spec 발췌)
 - 서버 주소, Sentry DSN 같은 설정은 `--dart-define`이나 `.env`로 분리하고 Git에는 예시 파일만 올린다.
@@ -24,11 +24,11 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `AppEnv` | `app/lib/app/env.dart` | `class AppEnv { const AppEnv({required String apiBaseUrl, required String sentryDsn, required bool isRelease}); factory AppEnv.fromEnvironment(); void validate(); }` (validate는 isRelease이고 apiBaseUrl이 `https://`로 시작하지 않으면 `StateError`) | TASK-03, 33, 45 |
-| `appEnvProvider` | `app/lib/app/env.dart` | `final appEnvProvider = Provider<AppEnv>(...)` | TASK-33, 45 |
-| `ErrorReporter` | `app/lib/core/monitoring/error_reporter.dart` | `abstract class ErrorReporter { Future<void> report(Object error, StackTrace? stackTrace, {String? tag, Map<String, Object?> context = const {}}); }` | TASK-19, 36, 45 |
-| `NoopErrorReporter` | 같은 파일 | `class NoopErrorReporter implements ErrorReporter` (아무것도 안 함) | TASK-45 |
-| `errorReporterProvider` | 같은 파일 | `final errorReporterProvider = Provider<ErrorReporter>(...)` (기본값 `NoopErrorReporter`) | TASK-19, 36, 45 |
+| `AppEnv` | `app/lib/app/env.dart` | `class AppEnv { const AppEnv({required String apiBaseUrl, required String sentryDsn, required bool isRelease}); factory AppEnv.fromEnvironment(); void validate(); }` (validate는 isRelease이고 apiBaseUrl이 `https://`로 시작하지 않으면 `StateError`) | TASK-03, 34, 48 |
+| `appEnvProvider` | `app/lib/app/env.dart` | `final appEnvProvider = Provider<AppEnv>(...)` | TASK-34, 48 |
+| `ErrorReporter` | `app/lib/core/monitoring/error_reporter.dart` | `abstract class ErrorReporter { Future<void> report(Object error, StackTrace? stackTrace, {String? tag, Map<String, Object?> context = const {}}); }` | TASK-28, 39, 48 |
+| `NoopErrorReporter` | 같은 파일 | `class NoopErrorReporter implements ErrorReporter` (아무것도 안 함) | TASK-48 |
+| `errorReporterProvider` | 같은 파일 | `final errorReporterProvider = Provider<ErrorReporter>(...)` (기본값 `NoopErrorReporter`) | TASK-28, 39, 48 |
 | `.env.example` | `app/.env.example` | 키: `API_BASE_URL`, `SENTRY_DSN` (값은 비움). 실행: `flutter run --dart-define-from-file=.env` | 사용자 |
 
 ## 범위
@@ -36,7 +36,7 @@
 - `.env.example` 작성. `.env`는 이미 루트 `.gitignore`에 있으므로 `.gitignore`는 건드리지 않음
 
 ## 범위 밖 (건드리지 않음)
-- `main.dart`에서 validate 호출(TASK-03), Sentry 초기화(TASK-47)
+- `main.dart`에서 validate 호출(TASK-03), Sentry 초기화(TASK-48)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

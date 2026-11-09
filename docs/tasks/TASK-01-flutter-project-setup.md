@@ -31,7 +31,7 @@
 ## 범위
 - `app/` 폴더에 `flutter create --platforms=android --org com.atheleo --project-name atheleo` 로 생성(생성 직후 applicationId가 `com.atheleo.app`이 되도록 맞춤)
 - minSdk 26, 세로 고정(`android:screenOrientation="portrait"`)
-- main 매니페스트에 `<uses-permission android:name="android.permission.CAMERA"/>` 추가(권한 요청 화면은 TASK-26)
+- main 매니페스트에 `<uses-permission android:name="android.permission.CAMERA"/>` 추가(권한 요청 화면은 TASK-25)
 - main 매니페스트 `android:usesCleartextTraffic="false"`, debug 매니페스트(`src/debug/AndroidManifest.xml`)에서만 `true`로 덮어씀(로컬 서버 접속용)
 - 위 의존성 추가. `flutter_riverpod`는 2.x 최신(^2.6.1)으로 고정하고 코드 생성(riverpod_generator)은 쓰지 않음. 상태는 `Notifier`/`NotifierProvider`/`Provider`로만 만든다
 - `analysis_options.yaml`에 `include: package:very_good_analysis/analysis_options.yaml`

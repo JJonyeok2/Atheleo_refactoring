@@ -36,11 +36,11 @@
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
 | `AppRoutes` | `app/lib/app/routes.dart` | `abstract final class AppRoutes` 상수 `home = '/'`, `login = '/login'`, `signup = '/signup'`, `history = '/history'`, `historyDetail = '/history/:id'`, `profile = '/profile'`, `dev = '/dev'`, `workoutResult = '/workout/result'`, `workoutSetup = '/workout/:type/setup'`, `workout = '/workout/:type'`, 함수 `static String workoutSetupPath(String type)`, `static String workoutPath(String type)`, `static String historyDetailPath(String id)` | 화면 Task 전체 |
-| `buildRouter` | `app/lib/app/router.dart` | `GoRouter buildRouter({required bool enableDevMenu, Listenable? refreshListenable, GoRouterRedirect? redirect})` (enableDevMenu가 false면 `/dev` 경로 자체를 등록하지 않음) | TASK-26, 28, 29, 35, 37, 38, 40, 41, 43 |
-| `routerProvider` | `app/lib/app/router.dart` | `final routerProvider = Provider<GoRouter>(...)` (기본 `buildRouter(enableDevMenu: kDebugMode)`) | TASK-35 |
+| `buildRouter` | `app/lib/app/router.dart` | `GoRouter buildRouter({required bool enableDevMenu, Listenable? refreshListenable, GoRouterRedirect? redirect})` (enableDevMenu가 false면 `/dev` 경로 자체를 등록하지 않음) | TASK-25, 29, 30, 36, 37, 40, 41, 42, 44, 46, 47 |
+| `routerProvider` | `app/lib/app/router.dart` | `final routerProvider = Provider<GoRouter>(...)` (기본 `buildRouter(enableDevMenu: kDebugMode)`) | TASK-37 |
 | `PlaceholderScreen` | `app/lib/app/placeholder_screen.dart` | `class PlaceholderScreen extends StatelessWidget { const PlaceholderScreen({required String title}); }` | 화면 Task(교체 대상) |
-| 없는 경로 화면 | `app/lib/app/router.dart` | errorBuilder가 '페이지를 찾을 수 없어요' 텍스트 표시 | TASK-43 |
-| `AtheleoApp` | `app/lib/app/app.dart` | `class AtheleoApp extends ConsumerWidget` (`MaterialApp.router`, `routerProvider` 사용) | TASK-45 |
+| 없는 경로 화면 | `app/lib/app/router.dart` | errorBuilder가 '페이지를 찾을 수 없어요' 텍스트 표시 | TASK-25, 46 |
+| `AtheleoApp` | `app/lib/app/app.dart` | `class AtheleoApp extends ConsumerWidget` (`MaterialApp.router`, `routerProvider` 사용) | TASK-48 |
 
 ## 범위
 - `/workout/result`는 `/workout/:type`보다 먼저 등록해 `result`가 type으로 잡히지 않게 함
@@ -48,7 +48,7 @@
 - 기본 테마(Material 3, 한국어 텍스트가 잘 보이는 기본 글꼴)
 
 ## 범위 밖 (건드리지 않음)
-- 실제 화면, 인증 redirect(TASK-36), Sentry(TASK-47)
+- 실제 화면, 인증 redirect(TASK-37), Sentry(TASK-48)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |

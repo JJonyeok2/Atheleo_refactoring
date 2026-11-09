@@ -26,14 +26,14 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `scoreColor` | `app/lib/features/workout/widgets/score_badge.dart` | `Color scoreColor(ScoreGrade grade)` | TASK-38, 42 |
-| `ScoreBadge` | 같은 파일 | `class ScoreBadge extends StatelessWidget { const ScoreBadge({super.key, required int? score, double size = 64}); }` (배경색은 `scoreColor`, 가운데 숫자, Semantics 라벨 '점수 N점') | TASK-28, 38, 42 |
+| `scoreColor` | `app/lib/features/workout/widgets/score_badge.dart` | `Color scoreColor(ScoreGrade grade)` | TASK-29, 30 |
+| `ScoreBadge` | 같은 파일 | `class ScoreBadge extends StatelessWidget { const ScoreBadge({super.key, required int? score, double size = 64}); }` (배경색은 `scoreColor`, 가운데 숫자, Semantics 라벨 '점수 N점') | TASK-29, 30, 42 |
 
 ## 범위
 - 위 함수와 위젯
 
 ## 범위 밖 (건드리지 않음)
-- 섬광 애니메이션(TASK-28)
+- 섬광 애니메이션(TASK-29)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
