@@ -1,6 +1,6 @@
 # TASK-05: 관절 각도 계산과 좌우 자동 선택
 
-- 상태: 대기
+- 상태: 재작업 대기 (QA-TASK-05 1안)
 - 선행 Task: TASK-04
 - 실행 방식: 순차
 - 실행 방식 근거: 횟수, 오류, 촬영 가이드가 모두 기대는 기반 로직
@@ -16,6 +16,7 @@
   - 팔꿈치 = 어깨-팔꿈치-손목, 무릎 = 골반-무릎-발목, 골반 = 어깨-골반-무릎
   - 2D(x, y)로 계산. 정규화 좌표의 가로세로 비율 왜곡을 막기 위해 x에 `aspectRatio`(이미지 너비/높이)를 곱한다
   - 한쪽 신뢰도 = 그쪽 어깨, 팔꿈치, 손목, 골반, 무릎, 발목 visibility 평균
+  - 사용 불가 쪽(재작업 추가): 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 본다. 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null. 사람의 관절 각도는 실제로 0도가 될 수 없으므로 `angleDeg`의 0은 "측정 불가"이며, 이 규칙으로 하류(이동 평균, 횟수)에 0이 흘러가지 않게 한다. `angleDeg`, `anglesForSide`의 동작은 바꾸지 않는다
 
 ## 연결 범위
 
@@ -34,7 +35,7 @@
 | `SideAngles` | 같은 파일 | `class SideAngles { const SideAngles({required BodySide side, required double elbow, required double knee, required double hip, required double visibility}); }` (elbow=어깨-팔꿈치-손목, knee=골반-무릎-발목, hip=어깨-골반-무릎, visibility=그쪽 6개 점 평균) | TASK-06, 09, 13, 15 |
 | (참고) | | 정면 판정, 상체 기울기처럼 이 3개 각도 밖의 기하는 각 사용 Task가 `angleDeg`로 직접 계산 | |
 | `anglesForSide` | 같은 파일 | `SideAngles anglesForSide(PoseFrame frame, BodySide side)` | TASK-06 |
-| `selectSide` | 같은 파일 | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null) | TASK-09, 13, 15 |
+| `selectSide` | 같은 파일 | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null) | TASK-09, 13, 15 |
 
 ## 범위
 - 위 함수 구현. 테스트에서는 33개 점 목록을 만드는 작은 테스트 내부 헬퍼로 필요한 점만 배치한다
@@ -45,13 +46,14 @@
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
-| 직각 | a(0,0), vertex(0,1), c(1,1) | 90 ± 0.01 |
-| 일직선 | 세 점이 한 줄 | 180 ± 0.01 |
+| 직각과 일직선 | a(0,0), vertex(0,1), c(1,1) / 세 점이 한 줄 | 90 ± 0.01 / 180 ± 0.01 |
 | 길이 0 | a와 vertex가 같은 점 | 0 |
 | aspectRatio 반영 | 정규화 좌표 직각이 aspect 2.0에서 | 90이 아닌 값(왜곡 보정 확인) |
 | 팔을 편 프레임 (F-02) | 왼팔 어깨-팔꿈치-손목 일직선, visibility 0.9 | `selectSide(...)!.elbow >= 160` |
 | 가려진 쪽 무시 (F-02) | 왼쪽 visibility 0.1, 오른쪽 0.9 | `side == BodySide.right` |
 | 둘 다 가려짐 | 양쪽 visibility 0.2 | null |
+| 겹친 점이면 다른 쪽 (재작업) | 왼쪽 visibility 0.9인데 왼쪽 팔꿈치와 손목이 같은 좌표, 오른쪽 visibility 0.8 정상 | `side == BodySide.right` |
+| 쓸 수 있는 쪽 없음 (재작업) | 왼쪽 visibility 0.9인데 왼쪽 무릎 x가 NaN(또는 골반 y가 Infinity), 오른쪽 visibility 0.2 | null |
 
 ## 바뀔 것으로 예상되는 파일
 - `app/lib/pose/angle/joint_angle.dart`
@@ -69,3 +71,8 @@
 - 기능 범위와 연결 범위만으로 판단할 수 없는 정보가 필요할 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 재작업(2026-11-09, QA-TASK-05 1안)
+- 이유: `angleDeg`가 길이 0이나 유한하지 않은 좌표에서 0을 돌려주는데, `selectSide`가 그 쪽을 그대로 골라 하류(TASK-07 이동 평균, TASK-08 횟수)에 0도가 섞이면 가짜 부분 반복이나 가짜 1회가 생길 수 있음
+- 바뀐 것: `selectSide` 계약 설명에 "사용 불가 쪽" 규칙 추가(시그니처 그대로), 기능 범위에 같은 규칙, 테스트 2건 추가(직각과 일직선은 한 행으로 합침)
+- Impl 범위: `app/lib/pose/angle/joint_angle.dart`의 `selectSide`와 그 테스트만. 기존 테스트는 모두 통과해야 함

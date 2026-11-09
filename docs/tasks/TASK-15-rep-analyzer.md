@@ -26,7 +26,7 @@
 |---|---|---|
 | `ExerciseType` | `app/lib/pose/landmarks/exercise_type.dart` | `enum ExerciseType { pushUp, squat }` |
 | `PoseFrame` | `app/lib/pose/landmarks/pose_landmark.dart` | TASK-04 계약 그대로 |
-| `selectSide`, `SideAngles` | `app/lib/pose/angle/joint_angle.dart` | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})`, `class SideAngles { const SideAngles({required BodySide side, required double elbow, required double knee, required double hip, required double visibility}); }` |
+| `selectSide`, `SideAngles` | `app/lib/pose/angle/joint_angle.dart` | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null), `class SideAngles { const SideAngles({required BodySide side, required double elbow, required double knee, required double hip, required double visibility}); }` |
 | `MovingAverage` | `app/lib/pose/angle/moving_average.dart` | `class MovingAverage { MovingAverage({int window = 5}); double add(double value); void reset(); bool get isFull; }` |
 | `RepThresholds`, `RepCounter` | `app/lib/pose/rep/rep_counter.dart` | `class RepThresholds { const RepThresholds({required double upDeg, required double descendDeg, required double downDeg, required int minRepMs}); static RepThresholds forExercise(ExerciseType exercise); }`, `class RepCounter { RepCounter(RepThresholds thresholds); RepCounterEvent? update({required int timestampMs, required double angle}); int get count; int get partialCount; RepPhase get phase; void reset(); }` |
 | `RepEvent`, `PartialRepEvent` | 같은 파일 | `final class RepEvent extends RepCounterEvent { const RepEvent({required int repIndex, required int startMs, required int bottomMs, required int endMs, required double minAngle}); int get durationMs; }`, `final class PartialRepEvent extends RepCounterEvent { const PartialRepEvent({required int startMs, required int endMs, required double minAngle}); }` |
@@ -57,7 +57,7 @@
 | 처짐과 들림 구분 (F-04) | poseFor로 bodyLineDeg 140, hipOffset below / above를 준 푸쉬업 3회 클립 | 모든 RepResult.errors에 puHipSag만 / puHipPike만 |
 | 105도 깊이 부족, 75점 (F-04, F-05) | 푸쉬업 bottom 105, 1초 반복 클립(기본 기준) | count 1, errors [puShallow], score 75 |
 | 오류 없는 반복 100점 (F-05) | 정상 푸쉬업 bottom 80, 1초 | score 100 |
-| 가려진 프레임 건너뜀 | 중간 5프레임 양쪽 visibility 0.1 | 예외 없음, 결과 수 같음 |
+| 쓸 수 없는 프레임 건너뜀 | 10회 클립 중간 5프레임을 양쪽 visibility 0.1로, 다른 5프레임은 보이는 쪽 팔꿈치와 손목을 같은 좌표로(반대쪽은 가려짐) | 예외 없음, count 10, PartialRep 0개(0도가 이동 평균에 들어가지 않음) |
 | JSON 클립 왕복 | 10회 클립을 `encode` 후 `LandmarkClip.parse`해서 넣기 | count 10 |
 
 ## 바뀔 것으로 예상되는 파일

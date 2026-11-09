@@ -72,3 +72,4 @@ Kotlin 구현(TASK-20, 21)보다 Dart 쪽 계약과 가짜 구현을 먼저 만�
 - 채널 계약을 바꿔야 할 이유가 생길 때(Kotlin Task 전에 보고)
 
 ## 추가 발췌 (오케스트레이터가 보충)
+- (QA-TASK-05, 차단 아님) 채널에서 받은 좌표(x, y, z, visibility)가 NaN/Infinity이거나 aspectRatio(width / height)가 0 이하인 프레임은 버리고 다음 프레임을 기다린다. 버린 프레임은 스트림 오류로 내보내지 않는다.

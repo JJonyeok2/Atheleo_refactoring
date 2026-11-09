@@ -25,7 +25,7 @@
 | `ExerciseType` | `app/lib/pose/landmarks/exercise_type.dart` | `enum ExerciseType { pushUp, squat }`, 필드 `final String code`('push_up', 'squat'), `final String label`('푸쉬업', '스쿼트'), `static ExerciseType fromCode(String code)`(모르는 값은 `ArgumentError`) |
 | `PoseFrame`, `PoseLandmark`, `BodySide`, `LandmarkIndex` | `app/lib/pose/landmarks/pose_landmark.dart` | TASK-04 계약 그대로 |
 | `LandmarkClip` | `app/lib/pose/landmarks/landmark_clip.dart` | `class LandmarkClip { const LandmarkClip({required String id, required ExerciseType exercise, required String label, required int fps, required List<PoseFrame> frames}); ... }` |
-| `angleDeg`, `anglesForSide`, `selectSide` | `app/lib/pose/angle/joint_angle.dart` | `double angleDeg(PoseLandmark a, PoseLandmark vertex, PoseLandmark c, {double aspectRatio = 1.0})`, `SideAngles anglesForSide(PoseFrame frame, BodySide side)`, `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (검증용) |
+| `angleDeg`, `anglesForSide`, `selectSide` | `app/lib/pose/angle/joint_angle.dart` | `double angleDeg(PoseLandmark a, PoseLandmark vertex, PoseLandmark c, {double aspectRatio = 1.0})`, `SideAngles anglesForSide(PoseFrame frame, BodySide side)`, `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null) (검증용) |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
@@ -39,6 +39,7 @@
 ## 범위
 - 위 유틸 구현(측면 자세의 2D 골격을 각도로부터 순방향으로 배치, z는 0)
 - 생성한 클립이 `LandmarkClip.encode()`로 JSON 저장 가능해야 함(나중에 실제 클립과 같은 형식)
+- 보이는 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목)은 어떤 각도 값에서도 두 점이 겹치지 않게 만든다(`selectSide`가 그쪽을 쓸 수 없는 것으로 보지 않도록). 각도 테스트들이 `selectSide`로 non-null을 받는 것으로 함께 확인됨
 
 ## 범위 밖 (건드리지 않음)
 - `app/lib/` 아래 모든 파일
