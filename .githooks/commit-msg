@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# 커밋 메시지 정리 및 검사 (macOS, Linux 공통으로 동작하도록 작성)
+#  1) Co-Authored-By, Claude-Session, "Generated with" 줄은 자동으로 지운다.
+#  2) 그 뒤에도 모델명이나 Claude라는 이름이 남아 있으면 커밋을 막는다. (파일 이름 CLAUDE.md 는 예외)
+
+msg_file="$1"
+tmp="$(mktemp)"
+
+# 금지 트레일러 줄 제거 후, 끝에 남은 빈 줄 정리
+grep -Eiv '^[[:space:]]*(co-authored-by:|claude-session:)|generated with' "$msg_file" \
+  | awk '{ lines[NR]=$0 } END { n=NR; while (n>0 && lines[n] ~ /^[[:space:]]*$/) n--; for (i=1;i<=n;i++) print lines[i] }' > "$tmp"
+cat "$tmp" > "$msg_file"
+rm -f "$tmp"
+
+banned='(^|[^[:alnum:]])(claude|anthropic|opus|sonnet|haiku|gpt-?[0-9]+|codex|gemini)([^[:alnum:]]|$)'
+if grep -v '^#' "$msg_file" | sed 's/CLAUDE\.md//g' | grep -Eiq "$banned"; then
+  echo "커밋 메시지에 모델명이나 도구 이름이 들어 있습니다. 빼고 다시 작성하세요:" >&2
+  grep -v '^#' "$msg_file" | sed 's/CLAUDE\.md//g' | grep -Ein "$banned" >&2
+  exit 1
+fi
+
+exit 0

@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.sentryclirc
+playwright-report/
+test-results/
+.claude/settings.local.json
+
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+# 학습 데이터, 모델 산출물
+tool/training/data/
+tool/training/runs/

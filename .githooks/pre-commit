@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# 사람이 직접 커밋할 때도 같은 규칙을 지키기 위한 git 훅
+
+root="$(git rev-parse --show-toplevel)"
+
+name="$(git config user.name)"
+if [ "$name" != "JJonyeok" ]; then
+  echo "커밋 작성자가 '$name' 입니다. git config user.name JJonyeok 으로 설정하세요." >&2
+  exit 1
+fi
+
+bash "$root/scripts/check-secrets.sh" --staged
