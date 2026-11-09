@@ -28,6 +28,7 @@ Future<void> bootstrap({
 }
 
 // [QA] 2026-11-09 PASS
-// [보안] 입력, 네트워크, 시크릿 없음.
-// [유지보수] 라우터와 테마는 TASK-03에서 교체. `const new(...)` 생성자 문법은
-//   최신 Dart 기능이라 익숙하지 않을 수 있음(analyze는 통과).
+// [보안] 시작 시 AppEnv.validate()를 반드시 거쳐 릴리스 빌드의 http 주소를 막는다(bootstrap).
+// [유지보수] 순서: ensureInitialized → validate → 세로 고정 → run. bootstrap은 테스트용
+//   주입 지점(Task 계약 밖 공개 함수). AtheleoApp re-export는 기존 smoke 테스트 호환용,
+//   다른 Task는 app/app.dart에서 import함. Sentry 초기화(TASK-48)는 run 자리에 붙일 것.

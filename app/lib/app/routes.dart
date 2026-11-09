@@ -1,3 +1,7 @@
+// [파일] 앱 경로 상수와 경로 파라미터를 채우는 함수 모음.
+// [Spec] 5장 화면 목록(경로) / [Task] TASK-03
+// [의존] 없음 (환경 변수 사용 안 함)
+
 /// 앱의 모든 경로 문자열과 경로 파라미터를 채우는 함수.
 abstract final class AppRoutes {
   /// 홈.
@@ -39,3 +43,8 @@ abstract final class AppRoutes {
   /// [id] 기록의 상세 주소.
   static String historyDetailPath(String id) => '/history/$id';
 }
+
+// [QA] 2026-11-09 PASS
+// [보안] 경로 함수는 type, id를 그대로 이어 붙인다(인코딩 안 함). 지금은 고정 운동
+//   종류와 내부 id만 들어오므로 문제없지만, 사용자 입력을 넣게 되면 Uri.encodeComponent 필요.
+// [유지보수] 경로 문자열은 이 파일에서만 정의하고 화면 코드는 상수, 함수만 쓸 것.

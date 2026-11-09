@@ -66,3 +66,5 @@
 - DSN 외에 새 환경 변수(예: auth token, 소스맵 업로드)가 필요할 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+- (오케스트레이터 보충, QA-TASK-03) Sentry 초기화는 `app/lib/main.dart`의 `bootstrap` 안에 붙이되, `AppEnv.fromEnvironment().validate()`가 `run`(runApp)보다 먼저 실행되는 현재 순서를 유지한다. 기존 bootstrap 테스트 2건이 계속 통과해야 한다.

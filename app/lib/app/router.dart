@@ -1,3 +1,7 @@
+// [파일] 앱 라우터(GoRouter) 생성 함수와 전역 routerProvider, 없는 경로 화면.
+// [Spec] 5장 화면 목록(경로), F-14 개발자 메뉴(릴리스 제외) / [Task] TASK-03
+// [의존] 없음 (환경 변수 사용 안 함, 개발자 메뉴 여부는 kDebugMode로 정함)
+
 import 'package:atheleo/app/placeholder_screen.dart';
 import 'package:atheleo/app/routes.dart';
 import 'package:flutter/foundation.dart';
@@ -58,3 +62,9 @@ class _NotFoundScreen extends StatelessWidget {
     return const Scaffold(body: Center(child: Text(notFoundMessage)));
   }
 }
+
+// [QA] 2026-11-09 PASS
+// [보안] 릴리스(kDebugMode false)에서는 /dev 경로 자체를 등록하지 않음. 인증 redirect는 TASK-37.
+// [유지보수] /workout/result는 /workout/:type보다 먼저 등록해야 함(순서 바꾸지 말 것).
+//   notFoundMessage는 Task 계약 밖의 공개 상수(테스트, 이후 화면에서 문구 공유용).
+//   없는 경로 화면에는 홈으로 돌아가는 버튼이 없음, 필요하면 화면 Task에서 추가.
