@@ -17,3 +17,4 @@
 | 2026-11-09 22:36 | impl-agent | TASK-02 | 완료 | AppEnv/appEnvProvider, ErrorReporter/Noop/errorReporterProvider, .env.example 추가. test 12건 통과, analyze 0건 |
 | 2026-11-09 22:37 | qa-agent | TASK-02 | 시작 | 환경 설정, 오류 보고 인터페이스 QA |
 | 2026-11-09 22:39 | qa-agent | TASK-02 | 완료 | FIX: 빈 API_BASE_URL이 기본값을 덮어씀(env.dart fromEnvironment), 헤더/푸터 추가 |
+| 2026-11-09 22:40 | impl-agent | TASK-02 FIX | 시작 | 빈/공백 API_BASE_URL 기본값 대체 |
