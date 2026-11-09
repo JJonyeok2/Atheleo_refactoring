@@ -27,3 +27,5 @@
 | 2026-11-09 22:54 | qa-agent | TASK-03 | 완료 | PASS: 계약 일치, validate 호출 경로 확인, 헤더/푸터 추가. test 25건/analyze 0건 |
 | 2026-11-09 22:54 | impl-agent | TASK-04 | 시작 | 랜드마크 모델(ExerciseType, PoseLandmark, PoseFrame, LandmarkIndex)과 LandmarkClip JSON |
 | 2026-11-09 22:56 | impl-agent | TASK-04 | 완료 | ExerciseType/PoseLandmark/PoseFrame/BodySide/LandmarkIndex/LandmarkClip + 픽스처. test 35건 통과, analyze 0건 |
+| 2026-11-09 22:56 | qa-agent | TASK-04 | 시작 | 랜드마크 모델, LandmarkClip JSON 계약 및 보안 검토 |
+| 2026-11-09 22:59 | qa-agent | TASK-04 | 완료 | PASS: 뒤 Task 계약 글자 일치, 예외 경로 FormatException 확인, 헤더/푸터 추가. test 35건/analyze 0건 |

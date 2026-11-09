@@ -123,3 +123,5 @@
 | QA-TASK-01 | `sqlite3_flutter_libs`는 지원 종료 패키지. drift_flutter가 간접 의존하므로 직접 의존 목록에서 빼는 것 검토 | TASK-31(drift 스키마) 때 확인 |
 | QA-TASK-01 | 매니페스트 테스트가 문자열 포함 검사. 검사 항목이 늘면 XML 파싱으로 교체 | 보류 |
 | TASK-01 | APK 빌드 미확인 (plugins-artifacts.gradle.org 차단) | 도메인 허용 후 확인 |
+| QA-TASK-04 | 클립 JSON 값 범위 검증 없음(좌표 유한성, fps > 0, aspect > 0). 현재 계약에 없음 | 실데이터 수집(Q-05) 때 Spec에서 판단 |
+| QA-TASK-04 | 한 클립 안에서 aspect가 바뀌면 저장 시 첫 프레임 값으로 통일됨 | 회전 중 녹화를 허용할 경우 재검토 |

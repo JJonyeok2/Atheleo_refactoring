@@ -1,3 +1,8 @@
+// [파일] 랜드마크 한 점(PoseLandmark), 한 프레임(PoseFrame), 좌우(BodySide),
+//   MediaPipe 인덱스 상수.
+// [Spec] F-01 33개 랜드마크 / [Task] TASK-04
+// [의존] 없음 (환경 변수 사용 안 함)
+
 /// 랜드마크 한 점. x, y는 0~1 정규화 이미지 좌표이고 y는 아래로 증가한다.
 class PoseLandmark {
   /// 좌표와 가시성으로 점을 만든다.
@@ -116,3 +121,8 @@ abstract final class LandmarkIndex {
   /// 랜드마크 총 개수.
   static const int count = 33;
 }
+
+// [QA] 2026-11-09 PASS
+// [보안] 좌표 값의 범위(0~1, 유한 값)는 검사하지 않는다. 생성자는 개수만 검증.
+// [유지보수] landmarks는 읽기 전용 복사본. 인덱스 상수는 MediaPipe Pose
+//   33점 기준이며 쓰는 것만 둠.

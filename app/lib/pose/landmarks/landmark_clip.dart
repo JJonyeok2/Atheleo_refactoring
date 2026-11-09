@@ -1,3 +1,8 @@
+// [파일] 녹화 랜드마크 클립과 JSON 직렬화/역직렬화
+//   (로컬 전용, 서버로 보내지 않음).
+// [Spec] 7장 LandmarkClip, 8장 테스트 가능성 / [Task] TASK-04
+// [의존] 없음 (환경 변수 사용 안 함)
+
 import 'dart:convert';
 
 import 'package:atheleo/pose/landmarks/exercise_type.dart';
@@ -133,3 +138,11 @@ class LandmarkClip {
     return value;
   }
 }
+
+// [QA] 2026-11-09 PASS
+// [보안] 형식 오류는 FormatException. 값 범위는 보지 않음: 1e400(Infinity),
+//   fps 0 이하, aspect 0 이하가 통과하고, Infinity가 든 클립은 encode에서
+//   JsonUnsupportedObjectError. 입력 크기 제한 없음(로컬 개발자 파일 전제).
+// [유지보수] fps, t는 int만 허용(30.0 거부). Dart encode는 정수를 30으로
+//   쓰므로 자체 왕복은 안전. aspect는 클립 최상위 하나뿐이라 프레임별 값이
+//   다르면 toJson에서 첫 프레임 값으로 통일됨(세로 고정 전제).
