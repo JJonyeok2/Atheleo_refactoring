@@ -29,3 +29,5 @@
 | 2026-11-09 22:56 | impl-agent | TASK-04 | 완료 | ExerciseType/PoseLandmark/PoseFrame/BodySide/LandmarkIndex/LandmarkClip + 픽스처. test 35건 통과, analyze 0건 |
 | 2026-11-09 22:56 | qa-agent | TASK-04 | 시작 | 랜드마크 모델, LandmarkClip JSON 계약 및 보안 검토 |
 | 2026-11-09 22:59 | qa-agent | TASK-04 | 완료 | PASS: 뒤 Task 계약 글자 일치, 예외 경로 FormatException 확인, 헤더/푸터 추가. test 35건/analyze 0건 |
+| 2026-11-09 23:00 | impl-agent | TASK-05 | 시작 | 관절 각도(angleDeg)와 좌우 자동 선택(anglesForSide, selectSide) |
+| 2026-11-09 23:01 | impl-agent | TASK-05 | 완료 | angleDeg/SideAngles/anglesForSide/selectSide 구현. test 46건 통과, analyze 0건 |
