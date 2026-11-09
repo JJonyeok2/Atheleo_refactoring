@@ -1,7 +1,7 @@
 # QA-TASK-01
 
 - 검토일: 2026-11-09
-- 판정: FIX
+- 판정: PASS (1차 FIX → 재검토 PASS)
 - 검토 대상 커밋: e3a5cb6 (feat: Flutter 프로젝트 생성 및 기본 설정)
 - 재실행 결과: `flutter test` 2건 통과, `flutter analyze` No issues found (헤더/푸터 주석 추가 후 다시 실행해도 동일)
 
@@ -61,3 +61,25 @@
 
 ## PEER_REVIEW 사유
 - 해당 없음
+
+## 재검토 (2026-11-09)
+
+- 최종 판정: PASS
+- 재검토 범위: FIX 반영으로 바뀐 두 파일
+- 재실행 결과: `flutter test` 6건 통과, `flutter analyze` No issues found
+
+| 파일 | 헤더/푸터 주석 | 결과 |
+|---|---|---|
+| app/android/app/src/main/AndroidManifest.xml | 제외(설정 파일) | 2번 줄에 `<uses-permission android:name="android.permission.INTERNET"/>` 추가됨. 다른 변경 없음. cleartext `false`는 그대로. FIX 항목 해소 |
+| app/test/android_manifest_test.dart | 제외(규칙상 테스트 파일) | INTERNET, CAMERA, cleartext false, portrait 4건 |
+
+테스트 검토
+- 읽는 경로가 `android/app/src/main/AndroidManifest.xml`로 고정되어 있어 debug, profile 매니페스트와 섞이지 않는다. debug 매니페스트에만 있는 INTERNET이나 cleartext `true`로 잘못 통과할 수 없다.
+- 상대 경로라 `app/`이 아닌 곳에서 실행하면 파일을 못 찾아 실패한다(잘못 통과하지는 않음). 실행 명령 계약이 `app/`에서 `flutter test`이므로 문제 아님.
+- 문자열 포함 검사라 같은 문구가 XML 주석 안에만 있어도 통과하고, 속성 순서나 공백이 바뀌면 실패한다. 지금 파일에서는 실제 요소와 일치하므로 PASS. 매니페스트 검사가 늘어나면 XML 파싱으로 바꿀 후보(참고).
+- 병합 후 결과(release는 false, debug는 true)는 이 테스트로 확인할 수 없으므로 위 "미확인" 항목은 그대로 남는다.
+
+헤더/푸터 갱신
+- app/lib/main.dart, MainActivity.kt 푸터의 판정을 PASS로 바꿈.
+
+남은 권고(판정과 무관, 오케스트레이터 판단): sqlite3_flutter_libs 계약 목록 제거 검토, 릴리스 서명 설정 Task 추가 검토.

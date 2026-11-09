@@ -22,7 +22,7 @@ class AtheleoApp extends StatelessWidget {
   }
 }
 
-// [QA] 2026-11-09 FIX
+// [QA] 2026-11-09 PASS
 // [보안] 입력, 네트워크, 시크릿 없음.
 // [유지보수] 라우터와 테마는 TASK-03에서 교체. `const new(...)` 생성자 문법은
 //   최신 Dart 기능이라 익숙하지 않을 수 있음(analyze는 통과).

@@ -10,7 +10,7 @@ import io.flutter.embedding.android.FlutterActivity
 class MainActivity : FlutterActivity()
 
 /*
- * [QA] 2026-11-09 FIX
+ * [QA] 2026-11-09 PASS
  * [보안] 로직 없음. 플랫폼 채널은 TASK-20, 21에서 이 패키지(com.atheleo.app)에 추가.
  * [유지보수] 패키지 경로는 다음 Task와의 계약이므로 옮기지 말 것.
  */
