@@ -5,3 +5,6 @@
 | 2026-11-09 19:32 | task-agent | TASK 분할 (F-01~F-14) | 완료 | TASK-01~48과 INDEX.md 작성. Spec 7장 변경 반영 필요 Task는 INDEX에 정리(오케스트레이터 수정 대기) |
 | 2026-11-09 19:33 | task-agent | Spec 7장 변경 반영 (TASK-04,06,08,09,12,15~18,27,30~32,38,42) | 시작 | 판정 기준과 partial_reps 반영 |
 | 2026-11-09 19:37 | task-agent | Spec 7장 변경 반영 (TASK-04,06,08,09,12,15~18,27,30~32,38,42) | 완료 | 판정 기준, 부분 반복, partial_reps 반영. 의존 관계 변화 없음 |
+| 2026-11-09 22:22 | impl-agent | TASK-01 | 시작 | Flutter 프로젝트 생성과 의존성 설정 착수 |
+| 2026-11-09 22:26 | impl-agent | TASK-01 | 완료 | app/ 생성, 의존성 추가, minSdk 26/세로 고정/cleartext 설정. flutter test 2건 통과, analyze 0건. debug apk 빌드는 Gradle 플러그인 저장소 403으로 미확인 |
+| 2026-11-09 22:27 | qa-agent | TASK-01 | 시작 | Flutter 프로젝트 설정 QA 착수 |
