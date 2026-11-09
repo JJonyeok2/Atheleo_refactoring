@@ -85,25 +85,26 @@
 
 | ID | 내용 | 상태 |
 |---|---|---|
-| D-01 | 횟수 DOWN 기준(100도)과 깊이 부족 기준(최저 각도 100도 초과)이 동시에 성립할 수 없던 문제 | Spec 수정으로 해결 (2026-11-09, 7장 판정 기준과 F-03, F-04 인수 조건 변경) |
+| D-01 | 횟수 판정 기준과 깊이 부족 기준이 동시에 성립할 수 없던 문제 | Spec 수정으로 해결 (2026-11-09, 7장 판정 기준과 F-03, F-04 인수 조건 변경) |
 
-## Spec 변경(2026-11-09 7장)으로 오케스트레이터가 맞춰야 할 Task
+## Spec 변경(2026-11-09 7장) 반영 기록
 
-task-agent 작업 중 Spec 7장이 바뀌었다. 지시에 따라 아래 파일은 고치지 않았다. TASK-19 이후 새로 쓴 파일 중 판정 기준에 기대는 곳도 함께 적는다.
+반영 완료(2026-11-09). task-agent가 직접 반영했다. 의존 관계와 실행 순서는 바뀌지 않았다.
 
-| Task | 바꿀 점 |
+| Task | 반영 내용 |
 |---|---|
-| TASK-06 | `SyntheticPose`의 `kneeForwardRatio` 대신 뒤꿈치 상승(정강이 길이 대비) 값, 골반이 어깨-발목 선 위/아래(엉덩이 들림/처짐)를 표현할 값. 뒤꿈치(29, 30)도 배치 |
-| TASK-04 | `LandmarkIndex`에 leftHeel 29, rightHeel 30 추가 |
-| TASK-08 | UP 160, 하강 시작 145, DOWN 120. 부분 반복(PARTIAL) 사건 출력 계약 추가. F-03 새 인수 조건(130도는 부분 반복 1번, 155도는 사건 없음) |
-| TASK-09 | 오류 코드: `PU_SHALLOW`, `PU_HIP_SAG`, `PU_HIP_PIKE`, `SQ_SHALLOW`, `SQ_TORSO_LEAN`, `SQ_HEEL_LIFT`. 깊이 기준 90도. `SQ_KNEE_FORWARD` 삭제. F-04 새 인수 조건 |
-| TASK-12 | 감점: 깊이 -25, 처짐 -30, 들림 -20, 상체 -20, 뒤꿈치 -15 |
-| TASK-15 | 부분 반복 사건 전달, 깊이 부족 75점 테스트를 기본 기준(최저 105도)으로 변경, D-01 주의 문단 삭제 |
-| TASK-16 | 부분 반복은 세트 횟수와 점수에 넣지 않고 세션에 부분 반복 수만 누적 |
-| TASK-17 | `WorkoutSummary`에 부분 반복 수 필드 |
-| TASK-18 | 부분 반복 음성 "더 내려가세요"(문구와 우선순위) |
-| TASK-27, 30 | 부분 반복 사건 전달과 결과 화면 표시 |
-| TASK-31, 32, 38 | 부분 반복 수를 저장, 업로드할지 판단 필요(Spec 7장 데이터 모델에 필드 없음 → Spec 질문 후보) |
+| TASK-04 | `LandmarkIndex`에 leftHeel 29, rightHeel 30 추가(TASK-05 계약 문구도 맞춤) |
+| TASK-06 | `kneeForwardRatio` 삭제, `hipOffset`(`HipOffset { below, above }`)과 `heelLiftRatio` 추가 |
+| TASK-08 | UP 160, 하강 시작 145, DOWN 120. `RepCounterEvent`(`RepEvent`, `PartialRepEvent`) 반환, `partialCount`. F-03 새 인수 조건 |
+| TASK-09 | 오류 코드 6종(`PU_HIP_PIKE`, `SQ_HEEL_LIFT` 추가, `SQ_KNEE_FORWARD` 삭제), 깊이 기준 90도, `ErrorThresholds` 필드 변경. F-04 새 인수 조건 |
+| TASK-12 | 감점표 갱신(들림 -20, 뒤꿈치 -15) |
+| TASK-15 | `AnalyzerOutput`(`RepResult`, `PartialRep`) 반환, 75점 테스트를 기본 기준(105도)으로, D-01 주의 문단 삭제 |
+| TASK-16 | `onPartialRep`, `PartialRepNoticed` 이벤트, `partialsPerSet` 상태 |
+| TASK-17 | `SetSummary.partialReps`, `WorkoutSummary.totalPartialReps`, `buildSummary(partialsPerSet:)` |
+| TASK-18 | `PartialRepNoticed` → '더 내려가세요' |
+| TASK-27 | `PartialRep` 처리 경로와 테스트 추가 |
+| TASK-30 | 결과 화면에 부분 반복 수 따로 표시 |
+| TASK-31, 32, 38, 42 | WorkoutSet `partial_reps`(로컬 DB 컬럼, 저장소 복원, 업로드 본문, 기록 상세 표시) |
 
 ## 보류
 

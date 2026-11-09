@@ -20,7 +20,7 @@
 ```
 {"client_id": str, "exercise": "push_up"|"squat", "started_at": ISO8601 UTC, "ended_at": ISO8601 UTC,
  "routine_level": str, "total_reps": int, "avg_score": int,
- "sets": [{"set_index": int, "target_reps": int, "done_reps": int, "rest_sec": int,
+ "sets": [{"set_index": int, "target_reps": int, "done_reps": int, "partial_reps": int, "rest_sec": int,
            "reps": [{"rep_index": int, "score": int, "min_angle": float, "duration_ms": int, "errors": [str]}]}]}
 ```
 - 401은 dio 인터셉터가 갱신을 시도한 뒤에도 실패한 경우로, 다시 시도 대상(로그인 후 다시 보냄)
@@ -51,7 +51,7 @@
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
-| 본문 형식 | 2세트 요약 `workoutToJson` | 위 형식, errors는 코드 문자열, 시각은 UTC ISO8601 |
+| 본문 형식 | 2세트 요약(partialReps 0, 2) `workoutToJson` | 위 형식, sets[1].partial_reps 2, errors는 코드 문자열, 시각은 UTC ISO8601 |
 | 201 | 가짜 서버 201 | `UploadSynced` |
 | 409는 성공 (F-11) | 409 | `UploadSynced` |
 | 400은 실패 (F-11) | 400 `{"detail": "bad"}` | `UploadRejected('bad')` |

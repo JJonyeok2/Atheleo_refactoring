@@ -17,9 +17,9 @@
 - 인수 조건(F-08): 목표 10회 루틴에서 10회를 채우면 세트가 2로 바뀌고 휴식 카운트다운이 나오며, 끝나면 다음 세트 음성이 나온다.
 - 이 Task에서 정하는 규칙:
   - `start()`: 루틴 계획 읽기 → `detector.start()` → 결과 구독, 1초 `Timer.periodic`으로 `session.tick`
-  - 결과마다 `selectPrimaryPose` → 있으면 `analyzer.addFrame` → RepResult가 나오면 `session.onRep`
+  - 결과마다 `selectPrimaryPose` → 있으면 `analyzer.addFrame` → `RepResult`면 `session.onRep`, `PartialRep`이면 `session.onPartialRep`
   - 모든 `WorkoutEvent`는 `cuesForEvent` 문구를 `voiceGuide.say`로 보냄
-  - `WorkoutFinished`가 나오면 감지기 stop, 타이머 취소, `buildSummary`로 요약을 만들어 `lastWorkoutSummaryProvider`에 넣고 state.summary 설정
+  - `WorkoutFinished`가 나오면 감지기 stop, 타이머 취소, `buildSummary`(sets와 partialsPerSet 전달)로 요약을 만들어 `lastWorkoutSummaryProvider`에 넣고 state.summary 설정
   - clientId는 `uuid` v4
 
 ## 연결 범위
@@ -29,10 +29,10 @@
 |---|---|---|
 | `PoseDetector`, `poseDetectorProvider`, `PoseDetectionResult` | `app/lib/pose/detector/pose_detector.dart` | `abstract class PoseDetector { Stream<PoseDetectionResult> get results; Future<int> start({PoseModel model = PoseModel.full}); Future<void> stop(); Future<void> setModel(PoseModel model); }`, `class PoseDetectionResult { const PoseDetectionResult({required int timestampMs, required List<PoseFrame> poses, required int inferenceMs}); }` |
 | `selectPrimaryPose` | `app/lib/pose/body/body_check.dart` | `PoseFrame? selectPrimaryPose(List<PoseFrame> poses)` |
-| `RepAnalyzer`, `RepResult` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindow = 5}); RepResult? addFrame(PoseFrame frame); int get count; double? get lastAngle; void reset(); }` |
-| `WorkoutSessionController` 외 | `app/lib/features/workout/domain/workout_session_controller.dart` | `class WorkoutSessionController { WorkoutSessionController(RoutinePlan plan); WorkoutSessionState get state; List<WorkoutEvent> onRep(RepResult rep, int nowMs); List<WorkoutEvent> tick(int nowMs); List<WorkoutEvent> skipRest(int nowMs); void pause(int nowMs); void resume(int nowMs); List<WorkoutEvent> finish(int nowMs); }`, `WorkoutSessionState`, `WorkoutPhase`, `WorkoutEvent` 계열(TASK-16 계약 그대로) |
+| `RepAnalyzer`, `AnalyzerOutput`, `RepResult`, `PartialRep` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindow = 5}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; void reset(); }`, `sealed class AnalyzerOutput`, `final class PartialRep extends AnalyzerOutput { const PartialRep({required double minAngle, required int endMs}); }` |
+| `WorkoutSessionController` 외 | `app/lib/features/workout/domain/workout_session_controller.dart` | `class WorkoutSessionController { WorkoutSessionController(RoutinePlan plan); WorkoutSessionState get state; List<WorkoutEvent> onRep(RepResult rep, int nowMs); List<WorkoutEvent> onPartialRep(int nowMs); List<WorkoutEvent> tick(int nowMs); List<WorkoutEvent> skipRest(int nowMs); void pause(int nowMs); void resume(int nowMs); List<WorkoutEvent> finish(int nowMs); }`, `WorkoutSessionState`, `WorkoutPhase`, `WorkoutEvent` 계열(TASK-16 계약 그대로) |
 | `routinePlanProvider` | `app/lib/features/routine/routine_providers.dart` | `final routinePlanProvider = Provider.family<RoutinePlan, ExerciseType>(...)` |
-| `buildSummary`, `WorkoutSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `WorkoutSummary buildSummary({required String clientId, required RoutinePlan plan, required DateTime startedAt, required DateTime endedAt, required List<List<RepResult>> sets})` |
+| `buildSummary`, `WorkoutSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `WorkoutSummary buildSummary({required String clientId, required RoutinePlan plan, required DateTime startedAt, required DateTime endedAt, required List<List<RepResult>> sets, List<int> partialsPerSet = const []})` (sets[0]이 1세트, partialsPerSet이 짧으면 나머지는 0) |
 | `cuesForEvent`, `VoiceCue` | `app/lib/features/workout/domain/voice_cues.dart` | `List<VoiceCue> cuesForEvent(WorkoutEvent event)`, `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }` |
 | `VoiceGuide`, `voiceGuideProvider` | `app/lib/core/tts/voice_guide.dart` | `Future<bool> say(String text, {VoicePriority priority = VoicePriority.normal}); Future<void> stopAll();` |
 | `FakePoseDetector` | `app/test/support/fake_pose_detector.dart` | TASK-19 계약 그대로 (테스트에서만) |
@@ -58,6 +58,7 @@
 |---|---|---|
 | 시작 | start() | 감지기 'start:full', textureId 설정, activeWorkout = 해당 운동 |
 | 반복 반영 | 1회 반복 합성 프레임 emit | session.repsInSet 1, lastRep 설정, TTS '1회' |
+| 부분 반복 반영 (F-03) | 130도까지만 내려간 합성 프레임 emit | repsInSet 0, partialsPerSet[0] 1, TTS '더 내려가세요' |
 | 10회 후 휴식과 다음 세트 (F-08) | 목표 10회 계획 override, 10회 프레임 emit, fake_async로 restSec 경과 | currentSet 2, phase resting → TTS '세트 완료, 30초 쉬세요' → 경과 후 '다음 세트를 시작하세요' |
 | 사용자 종료 | finish() | 감지기 stop, summary 설정, lastWorkoutSummaryProvider 값 존재, activeWorkout null |
 | 휴식 건너뛰기 | resting 중 skipRest() | phase exercising |

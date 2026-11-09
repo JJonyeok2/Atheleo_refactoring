@@ -11,9 +11,11 @@
 
 ## 기능 범위 (Spec 발췌)
 - 결과 화면: 총 횟수, 평균 점수, 반복별 점수 그래프, 자주 나온 오류
+- 부분 반복은 점수가 없으므로 그래프에 넣지 않고, 결과에 부분 반복 횟수를 따로 표시한다
 - 이 Task에서 정하는 것:
   - 반복별 점수 그래프는 외부 라이브러리 없이 막대(높이 = 점수, 색 = `scoreColor(gradeFor(score))`)
   - 자주 나온 오류는 상위 3개, `'${label} ${count}회'`
+  - 부분 반복: totalPartialReps가 1 이상이면 `'덜 내려간 동작 ${totalPartialReps}회 (횟수에 포함 안 됨)'`, 0이면 표시 안 함
   - 요약이 없으면(직접 주소로 들어옴) '표시할 결과가 없어요' + 홈 버튼
   - 하단 '홈으로' 버튼. 저장 영역은 빈 자리(`SizedBox` 키 `result-save-slot`)로 남김
 
@@ -23,7 +25,7 @@
 | 이름 | 위치 | 계약 |
 |---|---|---|
 | `lastWorkoutSummaryProvider` | `app/lib/features/workout/application/workout_controller.dart` | `final lastWorkoutSummaryProvider = NotifierProvider<LastWorkoutSummaryNotifier, WorkoutSummary?>(LastWorkoutSummaryNotifier.new);` |
-| `WorkoutSummary`, `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class WorkoutSummary { ...; int get totalReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }`, `class SetSummary { ...; List<RepResult> reps; int get doneReps; int get avgScore; }` (TASK-17 계약 그대로) |
+| `WorkoutSummary`, `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class WorkoutSummary { ...; int get totalReps; int get totalPartialReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }`, `class SetSummary { ...; List<RepResult> reps; int partialReps; int get doneReps; int get avgScore; }` (TASK-17 계약 그대로) |
 | `ScoreBadge`, `scoreColor` | `app/lib/features/workout/widgets/score_badge.dart` | TASK-23 계약 그대로 |
 | `gradeFor` | `app/lib/pose/score/rep_score.dart` | `ScoreGrade gradeFor(int score)` |
 | `AppRoutes` | `app/lib/app/routes.dart` | `workoutResult = '/workout/result'`, `home = '/'` |
@@ -46,6 +48,7 @@
 | 총 횟수와 평균 | 요약 override(반복 점수 100, 75, 80) | '3회', `ScoreBadge(score: 85)` |
 | 반복별 막대 | 같은 요약 | 막대 3개, 두 번째 막대 색이 fair 색 |
 | 자주 나온 오류 | sqShallow 2, sqTorsoLean 1 | '깊이 부족 2회', '상체 숙임 1회' 순서 |
+| 부분 반복 표시 | totalPartialReps 2 / 0 | '덜 내려간 동작 2회 (횟수에 포함 안 됨)' / 문구 없음 |
 | 요약 없음 | override null | '표시할 결과가 없어요' |
 | 홈으로 | 버튼 탭 | 경로 `/` |
 

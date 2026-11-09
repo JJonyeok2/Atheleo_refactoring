@@ -12,7 +12,7 @@
 ## 기능 범위 (Spec 발췌)
 - 로컬 DB에 먼저 저장 후 서버 동기화
 - WorkoutSession: client_id(uuid, 유일), exercise(push_up, squat), started_at, ended_at, routine_level, total_reps, avg_score, sync_status(pending, synced, rejected, 앱 로컬 전용)
-- WorkoutSet: session_id, set_index(1부터), target_reps, done_reps, rest_sec
+- WorkoutSet: session_id, set_index(1부터), target_reps, done_reps, partial_reps(0 이상, 부분 반복 수), rest_sec
 - RepRecord: set_id, rep_index, score(0~100), min_angle(float), duration_ms, errors(오류 코드 목록)
 - 이 Task에서 정하는 것:
   - errors는 쉼표로 이은 문자열 컬럼(`'PU_SHALLOW,PU_HIP_SAG'`, 없으면 빈 문자열)
@@ -31,7 +31,7 @@
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
 | `SyncStatus` | `app/lib/features/history/domain/sync_status.dart` | `enum SyncStatus { pending, synced, rejected }`, 필드 `final String code`('pending', 'synced', 'rejected'), `final String label`('미동기화', '동기화됨', '저장 실패'), `static SyncStatus fromCode(String code)` | TASK-32, 41 |
-| 테이블 | `app/lib/core/storage/app_database.dart` | `WorkoutSessions`(id int 자동, clientId text unique, exercise text, startedAt dateTime, endedAt dateTime, routineLevel text, totalReps int, avgScore int, syncStatus text 기본 'pending', lastError text nullable), `WorkoutSets`(id, sessionId → WorkoutSessions.id cascade, setIndex, targetReps, doneReps, restSec), `RepRecords`(id, setId → WorkoutSets.id cascade, repIndex, score, minAngle real, durationMs, errors text) | TASK-32 |
+| 테이블 | `app/lib/core/storage/app_database.dart` | `WorkoutSessions`(id int 자동, clientId text unique, exercise text, startedAt dateTime, endedAt dateTime, routineLevel text, totalReps int, avgScore int, syncStatus text 기본 'pending', lastError text nullable), `WorkoutSets`(id, sessionId → WorkoutSessions.id cascade, setIndex, targetReps, doneReps, partialReps int 기본 0, restSec), `RepRecords`(id, setId → WorkoutSets.id cascade, repIndex, score, minAngle real, durationMs, errors text) | TASK-32 |
 | `AppDatabase` | 같은 파일 | `@DriftDatabase(tables: [WorkoutSessions, WorkoutSets, RepRecords]) class AppDatabase extends _$AppDatabase { AppDatabase(QueryExecutor executor); }` | TASK-32 |
 | `appDatabaseProvider` | 같은 파일 | `final appDatabaseProvider = Provider<AppDatabase>(...)` (`driftDatabase(name: 'atheleo')`, dispose 시 close) | TASK-32 |
 
@@ -44,7 +44,7 @@
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
-| 세션, 세트, 반복 저장과 조회 | `AppDatabase(NativeDatabase.memory())`에 1세션 2세트 3반복 insert | 같은 값으로 조회 |
+| 세션, 세트, 반복 저장과 조회 | `AppDatabase(NativeDatabase.memory())`에 1세션 2세트(partialReps 0, 2) 3반복 insert | 같은 값으로 조회 |
 | 기본 동기화 상태 | syncStatus 없이 insert | 'pending' |
 | client_id 유일 | 같은 clientId 두 번 insert | 예외 |
 | cascade 삭제 | 세션 삭제 | 세트, 반복 0건 |

@@ -13,6 +13,7 @@
 - 반복할 때마다 횟수 음성 안내
 - 자세 오류가 감지되면 해당 교정 문장 음성 안내
 - 목표 횟수 달성 → "세트 완료, N초 쉬세요" → 휴식 카운트다운 → "다음 세트를 시작하세요"
+- 부분 반복(덜 내려가고 올라옴): "더 내려가세요" 음성
 - 사람이 안 보일 때: "카메라 앞에 서 주세요" 음성 안내
 - 모든 핵심 피드백(횟수, 오류, 세트, 휴식)은 음성으로도 제공한다.
 - 이 Task에서 정하는 문구와 우선순위:
@@ -23,6 +24,7 @@
 | `RepCounted`에 오류가 있을 때 | 위 문구 다음에 첫 번째 오류의 `voiceMessage` | high |
 | `SetCompleted` | `'세트 완료, ${restSec}초 쉬세요'` | high |
 | `NextSetStarted` | `'다음 세트를 시작하세요'` | high |
+| `PartialRepNoticed` | `'더 내려가세요'` | normal |
 | `WorkoutFinished` | `'운동을 마쳤어요. 수고하셨어요.'` | high |
 | 사람 안 보임 | `'카메라 앞에 서 주세요'` | high |
 | 이어서 하기 확인 | `'이어서 할까요?'` | high |
@@ -33,7 +35,7 @@
 | 이름 | 위치 | 계약 |
 |---|---|---|
 | `VoicePriority` | `app/lib/core/tts/voice_guide.dart` | `enum VoicePriority { normal, high }` |
-| `WorkoutEvent` 계열 | `app/lib/features/workout/domain/workout_session_controller.dart` | `sealed class WorkoutEvent`, `final class RepCounted extends WorkoutEvent { const RepCounted(this.rep, this.repsInSet); final RepResult rep; final int repsInSet; }`, `final class SetCompleted extends WorkoutEvent { const SetCompleted(this.setIndex, this.restSec); final int setIndex; final int restSec; }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }`, `final class WorkoutFinished extends WorkoutEvent { const WorkoutFinished(); }` |
+| `WorkoutEvent` 계열 | `app/lib/features/workout/domain/workout_session_controller.dart` | `sealed class WorkoutEvent`, `final class RepCounted extends WorkoutEvent { const RepCounted(this.rep, this.repsInSet); final RepResult rep; final int repsInSet; }`, `final class SetCompleted extends WorkoutEvent { const SetCompleted(this.setIndex, this.restSec); final int setIndex; final int restSec; }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }`, `final class WorkoutFinished extends WorkoutEvent { const WorkoutFinished(); }`, `final class PartialRepNoticed extends WorkoutEvent { const PartialRepNoticed(this.partialsInSet); final int partialsInSet; }` |
 | `RepResult`, `PoseErrorCode` | `app/lib/pose/analyzer/rep_analyzer.dart`, `app/lib/pose/judge/pose_error.dart` | `RepResult.errors`는 `List<PoseErrorCode>`, `PoseErrorCode.voiceMessage`는 `String` |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
@@ -57,6 +59,7 @@
 | 세트 완료 (F-08) | `SetCompleted(1, 30)` | `[VoiceCue('세트 완료, 30초 쉬세요', priority: high)]` |
 | 다음 세트 (F-08) | `NextSetStarted(2)` | `[VoiceCue('다음 세트를 시작하세요', priority: high)]` |
 | 운동 종료 | `WorkoutFinished()` | 문구 1개, high |
+| 부분 반복 (F-03) | `PartialRepNoticed(1)` | `[VoiceCue('더 내려가세요')]` |
 | 사람 안 보임 상수 | `VoiceCues.noPerson.text` | '카메라 앞에 서 주세요' |
 
 ## 바뀔 것으로 예상되는 파일

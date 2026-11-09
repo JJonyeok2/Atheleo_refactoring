@@ -11,7 +11,8 @@
 
 ## 기능 범위 (Spec 발췌)
 - 반복 1회 종료 시 0~100점, 세트 점수는 평균
-- 100점에서 시작해 오류 코드마다 감점: 깊이 부족 -25(`PU_SHALLOW`, `SQ_SHALLOW`), 허리 처짐 -30, 상체 숙임 -20, 무릎 전진 -15
+- 100점에서 시작해 오류 코드마다 감점: 깊이 부족 -25(`PU_SHALLOW`, `SQ_SHALLOW`), 허리 처짐 -30(`PU_HIP_SAG`), 엉덩이 들림 -20(`PU_HIP_PIKE`), 상체 숙임 -20(`SQ_TORSO_LEAN`), 뒤꿈치 들림 -15(`SQ_HEEL_LIFT`)
+- 부분 반복은 점수를 매기지 않고 세트 평균에도 넣지 않는다(이 함수로 오지 않음)
 - 1회 시간이 3초를 넘으면 -5(템포 저하), 0점 아래로 내려가지 않음
 - 점수 색상: 85 이상 초록, 60 이상 노랑, 그 아래 빨강
 - 인수 조건(F-05): 오류 없는 반복은 100점, 깊이 부족 반복은 75점으로 기록되고, 화면 점수 색이 기준대로 바뀐다(색은 등급으로 확인).
@@ -22,7 +23,7 @@
 ### 받아 쓰는 것
 | 이름 | 위치 | 계약 |
 |---|---|---|
-| `PoseErrorCode` | `app/lib/pose/judge/pose_error.dart` | `enum PoseErrorCode { puHipSag, puShallow, sqShallow, sqTorsoLean, sqKneeForward }`, 필드 `final String code`(위 표 코드), `final String voiceMessage`, `final String label`(짧은 이름), `static PoseErrorCode fromCode(String code)`(모르는 값은 `ArgumentError`) |
+| `PoseErrorCode` | `app/lib/pose/judge/pose_error.dart` | `enum PoseErrorCode { puShallow, puHipSag, puHipPike, sqShallow, sqTorsoLean, sqHeelLift }`, 필드 `final String code`(위 표 코드), `final String voiceMessage`, `final String label`(짧은 이름), `static PoseErrorCode fromCode(String code)`(모르는 값은 `ArgumentError`) |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
@@ -43,9 +44,10 @@
 |---|---|---|
 | 오류 없음 (F-05) | errors [], 1500ms | 100 |
 | 깊이 부족 (F-05) | [sqShallow], 1500ms | 75 |
-| 여러 오류 합산 | [puHipSag, puShallow], 1500ms | 45 |
+| 여러 오류 합산 | [puShallow, puHipSag], 1500ms / [puHipPike], 1500ms | 45 / 80 |
 | 템포 저하 | [], 3001ms / 3000ms | 95 / 100 |
-| 0점 하한 | 스쿼트 오류 3개 + 4000ms, 그리고 감점 합이 100 넘는 경우 | 0 이상 |
+| 스쿼트 감점 | [sqShallow, sqTorsoLean, sqHeelLift], 4000ms | 35 |
+| 0점 하한 | 감점 합이 100을 넘는 목록(같은 코드 반복 포함) | 0 |
 | 등급 경계 (F-05, F-07) | gradeFor 85, 84, 60, 59 | good, fair, fair, poor |
 | 평균 | averageScore([100, 75, 80]), [] | 85, 0 |
 

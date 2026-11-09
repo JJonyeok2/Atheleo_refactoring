@@ -26,7 +26,7 @@
 | `AppDatabase`, 테이블 | `app/lib/core/storage/app_database.dart` | `class AppDatabase extends _$AppDatabase { AppDatabase(QueryExecutor executor); }`, `WorkoutSessions`, `WorkoutSets`, `RepRecords` (TASK-31 계약 그대로) |
 | `appDatabaseProvider` | 같은 파일 | `final appDatabaseProvider = Provider<AppDatabase>(...)` |
 | `SyncStatus` | `app/lib/features/history/domain/sync_status.dart` | `enum SyncStatus { pending, synced, rejected }`, `code`, `label`, `static SyncStatus fromCode(String code)` |
-| `WorkoutSummary`, `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class SetSummary { const SetSummary({required int setIndex, required int targetReps, required int restSec, required List<RepResult> reps}); int get doneReps; int get avgScore; }`, `class WorkoutSummary { const WorkoutSummary({required String clientId, required ExerciseType exercise, required RoutineLevel level, required DateTime startedAt, required DateTime endedAt, required List<SetSummary> sets}); int get totalReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }` |
+| `WorkoutSummary`, `SetSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `class SetSummary { const SetSummary({required int setIndex, required int targetReps, required int restSec, required List<RepResult> reps, int partialReps = 0}); int get doneReps; int get avgScore; }`, `class WorkoutSummary { const WorkoutSummary({required String clientId, required ExerciseType exercise, required RoutineLevel level, required DateTime startedAt, required DateTime endedAt, required List<SetSummary> sets}); int get totalReps; int get totalPartialReps; int get avgScore; List<MapEntry<PoseErrorCode, int>> get topErrors; }` |
 | `RepResult`, `PoseErrorCode`, `ExerciseType`, `RoutineLevel` | 각 파일 | `PoseErrorCode.fromCode`, `ExerciseType.fromCode`, `RoutineLevel.code` |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
@@ -45,7 +45,7 @@
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
-| 저장 후 상세 복원 (F-12) | 2세트 요약 saveSummary → findSummary | 세트별 doneReps, 반복 점수, 오류 코드가 같음 |
+| 저장 후 상세 복원 (F-12) | 2세트 요약(partialReps 0, 2) saveSummary → findSummary | 세트별 doneReps, partialReps, 반복 점수, 오류 코드가 같음 |
 | 미동기화로 시작 (F-11) | 저장 후 watchSessions 첫 값 | syncStatus pending |
 | 중복 저장 무시 | 같은 요약 두 번 저장 | 세션 1건 |
 | 상태 변경 반영 (F-11) | markSynced / markRejected | 목록 스트림의 syncStatus가 synced / rejected로 바뀜 |

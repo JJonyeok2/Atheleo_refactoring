@@ -13,9 +13,9 @@
 - 자세 판정 로직(F-02~F-05, F-08)은 카메라 없이 녹화된 랜드마크 JSON으로 테스트할 수 있어야 한다.
 - 인수 조건(F-02): 녹화 클립에서 팔을 편 프레임을 넣으면 팔꿈치 각도가 160도 이상으로 계산되고, 반대쪽이 가려진 클립에서도 보이는 쪽 각도가 선택된다.
 - 생성기가 표현해야 하는 자세 값(오류 판정 Task에서 씀):
-  - 푸쉬업 몸통 일직선 각도(어깨-골반-발목), 160도 미만이면 허리 처짐
-  - 스쿼트 상체 기울기(어깨-골반 선과 수직선 사이 각도)
-  - 스쿼트 무릎 전진 비율(발끝보다 앞으로 나간 거리 / 정강이 길이)
+  - 푸쉬업 몸통 각도(어깨-골반-발목)와 골반이 어깨-발목 선의 위인지 아래인지(허리 처짐 / 엉덩이 들림 구분)
+  - 스쿼트 상체 기울기(어깨와 골반을 잇는 선과 수직선 사이 각도)
+  - 스쿼트 뒤꿈치 상승(랜드마크 29, 30이 시작 자세 대비 위로 이동한 거리 / 정강이 길이)
 
 ## 연결 범위
 
@@ -30,7 +30,8 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, double torsoLeanDeg = 15, double kneeForwardRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이. 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14, 25 |
+| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, HipOffset hipOffset = HipOffset.below, double torsoLeanDeg = 15, double heelLiftRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (bodyLineDeg가 180 미만일 때 hipOffset이 골반을 어깨-발목 선 아래(처짐) 또는 위(들림)로 둠. heelLiftRatio = 뒤꿈치가 바닥에서 뜬 높이 / 정강이 길이. shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이, 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14, 25 |
+| `HipOffset` | 같은 파일 | `enum HipOffset { below, above }` (이미지 좌표에서 아래 = y가 큼) | TASK-09 |
 | `buildSyntheticFrame` | 같은 파일 | `PoseFrame buildSyntheticFrame(SyntheticPose pose, {int timestampMs = 0})` (보이는 쪽 visibility 0.95, 반대쪽은 hiddenVisibility, aspectRatio 1.0, 측면 자세. 반대쪽 점은 보이는 쪽 점을 x로 shoulderWidthRatio × 몸통 길이만큼 옮긴 위치) | TASK-09, 13, 14, 25 |
 | `repAngleSequence` | 같은 파일 | `List<double> repAngleSequence({required int reps, double top = 170, double bottom = 80, int framesPerRep = 30, int padFrames = 10})` (앞뒤 padFrames만큼 top 유지, 반복마다 top→bottom→top 코사인 곡선) | TASK-08, 15 |
 | `buildSyntheticClip` | 같은 파일 | `LandmarkClip buildSyntheticClip({required ExerciseType exercise, required List<double> primaryAngles, int fps = 30, String label = 'synthetic', SyntheticPose Function(double angle)? poseFor})` (primaryAngles는 푸쉬업이면 팔꿈치, 스쿼트면 무릎. poseFor가 없으면 기본 SyntheticPose에 그 각도만 넣음. timestamp는 `i * 1000 ~/ fps`) | TASK-15 |
@@ -46,11 +47,11 @@
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
-| 팔꿈치 각도 재현 | `SyntheticPose(exercise: pushUp, elbowDeg: 90)` → `selectSide` | elbow 90 ± 1 |
-| 무릎 각도 재현 | squat, kneeDeg 75 | knee 75 ± 1 |
+| 관절 각도 재현 | `SyntheticPose(exercise: pushUp, elbowDeg: 90)`, `SyntheticPose(exercise: squat, kneeDeg: 75)` → `selectSide` | elbow 90 ± 1, knee 75 ± 1 |
 | 팔을 편 클립 (F-02) | 푸쉬업 클립 첫 프레임(top 170) | `selectSide(...)!.elbow >= 160` |
 | 반대쪽 가려진 클립 (F-02) | visibleSide right, hiddenVisibility 0.05 | 모든 프레임에서 `selectSide(...)!.side == BodySide.right` |
-| 몸통 일직선 재현 | pushUp, bodyLineDeg 140 | 어깨-골반-발목 각도 140 ± 1 (`angleDeg` 직접 계산) |
+| 몸통 각도와 처짐 방향 | pushUp, bodyLineDeg 140, hipOffset below / above | 어깨-골반-발목 각도 140 ± 1, 골반이 어깨-발목 선보다 아래 / 위 |
+| 뒤꿈치 상승 | squat, heelLiftRatio 0.2 | (발끝 y − 뒤꿈치 y) / 정강이 길이 0.2 ± 0.02 |
 | 정면 흉내 | shoulderWidthRatio 0.7 | 좌우 어깨 x 거리 / (어깨-골반 거리) 0.7 ± 0.02 |
 | 반복 시퀀스 길이 | `repAngleSequence(reps: 10, framesPerRep: 30, padFrames: 10)` | 길이 320, 최솟값 80 ± 0.5가 10번 나타남 |
 | JSON 왕복 | `LandmarkClip.parse(clip.encode())` | 프레임 수와 첫 점 좌표가 같음 |

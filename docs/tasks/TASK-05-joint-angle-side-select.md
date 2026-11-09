@@ -25,7 +25,7 @@
 | `PoseLandmark` | `app/lib/pose/landmarks/pose_landmark.dart` | `class PoseLandmark { const PoseLandmark({required double x, required double y, required double z, required double visibility}); }` (x, y는 0~1 정규화 이미지 좌표, y는 아래로 증가) |
 | `PoseFrame` | 같은 파일 | `class PoseFrame { PoseFrame({required int timestampMs, required List<PoseLandmark> landmarks, double aspectRatio = 1.0}); PoseLandmark operator [](int index); }` (landmarks 길이가 33이 아니면 `ArgumentError`, aspectRatio는 이미지 너비/높이) |
 | `BodySide` | 같은 파일 | `enum BodySide { left, right }` |
-| `LandmarkIndex` | 같은 파일 | `abstract final class LandmarkIndex` 상수: nose 0, leftShoulder 11, rightShoulder 12, leftElbow 13, rightElbow 14, leftWrist 15, rightWrist 16, leftHip 23, rightHip 24, leftKnee 25, rightKnee 26, leftAnkle 27, rightAnkle 28, leftFootIndex 31, rightFootIndex 32, count 33 |
+| `LandmarkIndex` | 같은 파일 | `abstract final class LandmarkIndex` 상수: nose 0, leftShoulder 11, rightShoulder 12, leftElbow 13, rightElbow 14, leftWrist 15, rightWrist 16, leftHip 23, rightHip 24, leftKnee 25, rightKnee 26, leftAnkle 27, rightAnkle 28, leftHeel 29, rightHeel 30, leftFootIndex 31, rightFootIndex 32, count 33 |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
