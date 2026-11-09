@@ -8,3 +8,7 @@
 | 2026-11-09 22:22 | impl-agent | TASK-01 | 시작 | Flutter 프로젝트 생성과 의존성 설정 착수 |
 | 2026-11-09 22:26 | impl-agent | TASK-01 | 완료 | app/ 생성, 의존성 추가, minSdk 26/세로 고정/cleartext 설정. flutter test 2건 통과, analyze 0건. debug apk 빌드는 Gradle 플러그인 저장소 403으로 미확인 |
 | 2026-11-09 22:27 | qa-agent | TASK-01 | 시작 | Flutter 프로젝트 설정 QA 착수 |
+| 2026-11-09 22:31 | qa-agent | TASK-01 | 완료 | FIX: main 매니페스트 INTERNET 권한 누락(릴리스 네트워크 불가). 헤더/푸터 2파일, sqlite3_flutter_libs EOL은 Task 수정 권고 |
+| 2026-11-09 22:32 | impl-agent | TASK-01 | 시작 | QA FIX 반영: main 매니페스트 INTERNET 권한 누락 |
+| 2026-11-09 22:32 | impl-agent | TASK-01 | 완료 | QA FIX 반영: main 매니페스트에 INTERNET 권한 추가, 매니페스트 테스트 4건 추가. test 6건 통과, analyze 0건 |
+| 2026-11-09 22:33 | qa-agent | TASK-01 재검토 | 시작 | INTERNET 권한 FIX 반영분 재검토 |
