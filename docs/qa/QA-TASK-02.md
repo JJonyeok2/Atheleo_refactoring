@@ -1,7 +1,7 @@
 # QA-TASK-02
 
 - 검토일: 2026-11-09
-- 판정: FIX
+- 판정: FIX (1차) → PASS (재검토, 아래 참조)
 - 대상 커밋: ba99677
 - 재실행: `flutter test` 12건 통과, `flutter analyze` 0건 (헤더/푸터 추가 후 다시 실행)
 
@@ -49,3 +49,16 @@
 
 ## PEER_REVIEW 사유
 - 없음
+
+## 재검토 (2026-11-09, 커밋 f19c242)
+- 범위: app/lib/app/env.dart, app/test/app/env_test.dart
+- 반영 확인
+  - `@visibleForTesting static String resolveApiBaseUrl(String raw)` 추가: trim 후 비면 `_defaultApiBaseUrl`로 대체. `fromEnvironment`가 이 함수를 거친다.
+  - 기본 주소는 비공개 상수 `_defaultApiBaseUrl` 하나로 모음(중복 없음).
+  - 공개 계약 유지: 생성자, `fromEnvironment`, `validate`, `appEnvProvider` 시그니처 변화 없음.
+  - 테스트 4건 추가(빈 문자열, 공백뿐, 정상 주소, 앞뒤 공백 trim). Impl 보고 기준 Red 4건 실패 확인.
+- 보안 영향: 릴리스에서 `API_BASE_URL`을 비우면 `http://10.0.2.2:8000`이 되고 `validate()`가 `StateError`로 거부한다. 우회 경로 없음. 단 `validate()` 호출은 TASK-03 몫이므로 거기서 빠지지 않게 확인할 것.
+- 재실행: `flutter test` 16건 통과, `flutter analyze` 0건.
+- 헤더/푸터: env.dart 푸터 판정을 PASS로 바꾸고 `[유지보수]` 줄을 갱신함.
+
+## 최종 판정: PASS
