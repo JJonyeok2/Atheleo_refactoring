@@ -26,3 +26,4 @@
 | 2026-11-09 22:52 | qa-agent | TASK-03 | 시작 | 앱 뼈대/라우터 QA(routes, router, app, placeholder_screen, main.dart) |
 | 2026-11-09 22:54 | qa-agent | TASK-03 | 완료 | PASS: 계약 일치, validate 호출 경로 확인, 헤더/푸터 추가. test 25건/analyze 0건 |
 | 2026-11-09 22:54 | impl-agent | TASK-04 | 시작 | 랜드마크 모델(ExerciseType, PoseLandmark, PoseFrame, LandmarkIndex)과 LandmarkClip JSON |
+| 2026-11-09 22:56 | impl-agent | TASK-04 | 완료 | ExerciseType/PoseLandmark/PoseFrame/BodySide/LandmarkIndex/LandmarkClip + 픽스처. test 35건 통과, analyze 0건 |
