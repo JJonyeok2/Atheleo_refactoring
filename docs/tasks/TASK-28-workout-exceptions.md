@@ -82,6 +82,8 @@
 
 ## 추가 발췌 (오케스트레이터가 보충)
 
+- (TASK-26 QA 반영) `TrackingMonitor.reset()`은 personLost 상태를 풀지만 personReturned를 내지 않는다. 그래서 "사람이 없어 멈춤" 플래그는 `resume()`(그리고 확인 후 재개 경로)에서 컨트롤러가 직접 풀어야 한다. reset 직후 이전 프레임 결과가 늦게 도착할 수 있으니, reset 시각보다 이른 timestampMs의 결과는 모니터에 넣지 않는다.
+
 ## 2026-11-13 설계 검토 반영
 - 휴식 중 미검출 무시, 다음 세트에서 감시 reset, 재개와 백그라운드 복귀 때 성능 측정 초기화, 자동 재개는 TASK-52 `resume()` 경로
 - 선행 Task에 TASK-02(ErrorReporter), TASK-18(VoiceCues), TASK-52 추가. `confirmResume` 사용 Task를 TASK-53으로

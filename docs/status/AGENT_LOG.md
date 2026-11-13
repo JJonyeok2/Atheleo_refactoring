@@ -96,3 +96,15 @@
 | 2026-11-13 16:41 | impl-agent | TASK-56 | 완료 | TooFastRepEvent, RepCancelledEvent, maxRepMs 추가, rep_counter 테스트 20건, 전체 143건 통과, analyze 0건 |
 | 2026-11-13 16:42 | qa-agent | TASK-56 | 시작 | rep_counter 빠른 반복, 10초 취소 QA 시작 |
 | 2026-11-13 16:43 | qa-agent | TASK-56 | 완료 | PASS: 순서, 경계, 취소 후 unknown, 부분 반복 우선, TASK-15 계약 일치, 푸터 정리, 143건 통과 |
+| 2026-11-13 16:44 | impl-agent | TASK-12 | 시작 | 반복 점수와 점수 등급 구현 시작 |
+| 2026-11-13 16:44 | impl-agent | TASK-13 | 시작 | body_check 전신, 정면, 주 인물, 자세 게이트 |
+| 2026-11-13 16:44 | impl-agent | TASK-26 | 시작 | tracking_monitor 구현 시작 |
+| 2026-11-13 16:47 | impl-agent | TASK-12 | 완료 | rep_score.dart 구현, 테스트 8건 통과, 전체 151건 통과, 내 파일 analyze 0건 |
+| 2026-11-13 16:45 | impl-agent | TASK-13 | 완료 | body_check 4함수, 테스트 14건, 전체 175건 통과, body 파일 analyze 0건 |
+| 2026-11-13 16:46 | impl-agent | TASK-26 | 완료 | TrackingMonitor 구현, 테스트 10건, 전체 175건 통과, analyze 0건 |
+| 2026-11-13 16:46 | qa-agent | TASK-12 | 시작 | rep_score.dart QA 착수 |
+| 2026-11-13 16:46 | qa-agent | TASK-13 | 시작 | body_check.dart QA 착수 |
+| 2026-11-13 16:46 | qa-agent | TASK-26 | 시작 | tracking_monitor.dart QA 착수 |
+| 2026-11-13 16:46 | qa-agent | TASK-12 | 완료 | PASS, 푸터 추가, 계약 일치, Map 감점표는 푸터 메모 |
+| 2026-11-13 16:47 | qa-agent | TASK-13 | 완료 | PASS, 푸터 교체, 테스트 주석 1곳 수정, 계약 4개 일치 |
+| 2026-11-13 16:47 | qa-agent | TASK-26 | 완료 | FIX: tracking_monitor.dart:25-30 ignore 제거(this._minFps 사용), 푸터 추가, 계약 일치 |
