@@ -93,3 +93,4 @@
 - 음성은 TASK-51로 분리. 선행 Task에 TASK-03(AppRoutes, buildRouter), TASK-06 추가, `cameraPermissionProvider`를 내보내기 표에 따로 적음
 
 - (2026-11-13 사용자 결정) 스쿼트 준비 자세 안내(notInPosture)는 '똑바로 서서 무릎을 펴 주세요'. 정면 안내(frontFacing)는 '옆으로 서 주세요' 그대로.
+- (TASK-22 QA 반영) SkeletonOverlay는 0~1 밖 좌표를 잘라내지 않고 Size.infinite로 그린다. CameraPreviewView는 overlay를 미리보기와 같은 비율 상자 안에 넣고 ClipRect로 감싼다.
