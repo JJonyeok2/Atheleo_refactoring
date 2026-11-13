@@ -1,7 +1,7 @@
 # TASK-43: 프로필 저장소와 상태(체형 → 루틴 반영)
 
 - 상태: 대기
-- 선행 Task: TASK-10, TASK-35
+- 선행 Task: TASK-10, TASK-34, TASK-35
 - 실행 방식: 순차
 - 실행 방식 근거: 인증 상태와 루틴 공유 상태를 잇는 작업
 - Spec 출처: F-13, F-09 (4장 정상 흐름 계정 3번, 6장, 7장 Profile, 9장 인수 조건 F-13)
@@ -79,3 +79,4 @@
 
 ## 2026-11-13 설계 검토 반영
 - 내보내기 표에 `profileControllerProvider`를 따로 적음, `ApiErrorKind` 값 목록을 TASK-34 최신 계약으로 맞춤. 동작과 테스트는 그대로
+- (재개 점검) 직접 받아 쓰는 TASK-34(`apiClientProvider`, `classifyError`)를 선행 Task에 명시

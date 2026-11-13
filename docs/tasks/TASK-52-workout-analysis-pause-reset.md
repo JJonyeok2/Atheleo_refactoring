@@ -1,7 +1,7 @@
 # TASK-52: 휴식, 일시정지 중 분석 중단과 분석기 초기화
 
 - 상태: 대기
-- 선행 Task: TASK-27
+- 선행 Task: TASK-06, TASK-16, TASK-19, TASK-27, TASK-49
 - 실행 방식: 순차
 - 실행 방식 근거: TASK-27과 같은 컨트롤러 파일을 고침. TASK-28이 이 재개 경로에 기댐
 - Spec 출처: F-03, F-08 (4장 정상 흐름 7번, 7장 횟수 판정 기준, 9장 인수 조건 F-03, F-08)
@@ -28,8 +28,8 @@
 | 이름 | 위치 | 계약 |
 |---|---|---|
 | `WorkoutController`, `workoutControllerProvider`, `WorkoutViewState` | `app/lib/features/workout/application/` | `class WorkoutController extends AutoDisposeFamilyNotifier<WorkoutViewState, ExerciseType> { Future<void> start(); void skipRest(); void pause(); void resume(); Future<void> finish(); }` (TASK-27 구현) |
-| `RepAnalyzer` | `app/lib/pose/analyzer/rep_analyzer.dart` | `void reset();` (이동 평균, 횟수, 측정 쪽 초기화. 이후 repIndex 1부터, 처음 UP 전 무시) |
-| `WorkoutPhase`, `NextSetStarted` | `app/lib/features/workout/domain/workout_session_controller.dart` | `enum WorkoutPhase { exercising, resting, paused, finished }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }` |
+| `RepAnalyzer` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150, int sideSwitchAfterMs = 500, double gateMaxDeg = 30}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; BodySide? get side; void reset(); }` (TASK-49 최종 계약. reset은 이동 평균, 횟수, 측정 쪽 초기화. 이후 repIndex 1부터, 처음 UP 전 무시) |
+| `WorkoutPhase`, `NextSetStarted`, `WorkoutSessionController` | `app/lib/features/workout/domain/workout_session_controller.dart` | `enum WorkoutPhase { exercising, resting, paused, finished }`, `final class NextSetStarted extends WorkoutEvent { const NextSetStarted(this.setIndex); final int setIndex; }`, `void resume(int nowMs);` (TASK-16 계약 그대로) |
 | `clockProvider` | `app/lib/core/clock.dart` | `final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);` |
 | `FakePoseDetector`, `buildSyntheticClip`, `repAngleSequence` | `app/test/support/` | TASK-06, 19 계약 그대로 (테스트에서만) |
 

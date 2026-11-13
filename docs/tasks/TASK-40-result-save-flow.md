@@ -1,7 +1,7 @@
 # TASK-40: 결과 화면의 기록 저장과 로그인 안내
 
 - 상태: 대기
-- 선행 Task: TASK-30, TASK-32, TASK-35, TASK-36, TASK-39, TASK-55
+- 선행 Task: TASK-27, TASK-30, TASK-31, TASK-32, TASK-35, TASK-36, TASK-39, TASK-55
 - 실행 방식: 순차
 - 실행 방식 근거: 인증, 저장, 동기화를 잇는 연결 지점
 - Spec 출처: F-10, F-11 (4장 정상 흐름 운동 9번, 예외 흐름 네트워크, 토큰 만료, 5장 운동 결과, 9장 인수 조건 F-10, F-11)
@@ -89,3 +89,4 @@
 ## 2026-11-13 설계 검토 반영(D3, D4)
 - 비로그인과 토큰 만료 모두 guest로 로컬 저장 후 needLogin 안내('로그인이 필요합니다' + 백업 안내). 로그인 뒤 귀속과 동기화는 TASK-55, 이 화면은 `watchStatus`로 반영
 - `ResultSaveStatus.failed` 추가, 문구 정리. 선행 Task에 TASK-32, 35, 55 추가
+- (재개 점검) 직접 받아 쓰는 TASK-27(`lastWorkoutSummaryProvider`), TASK-31(`SyncStatus`)을 선행 Task에 명시

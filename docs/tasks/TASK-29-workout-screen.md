@@ -1,7 +1,7 @@
 # TASK-29: 운동 화면(표시)
 
 - 상태: 대기
-- 선행 Task: TASK-03, TASK-11, TASK-22, TASK-23, TASK-24, TASK-25, TASK-28
+- 선행 Task: TASK-03, TASK-11, TASK-22, TASK-23, TASK-24, TASK-25, TASK-27, TASK-28
 - 실행 방식: 순차
 - 실행 방식 근거: 라우터(공유 파일) 수정, 여러 위젯과 컨트롤러를 묶는 화면
 - Spec 출처: F-01~F-08 (5장 운동 화면, 4장 정상 흐름 5번, 9장 인수 조건 F-01, F-05, F-06, F-07, F-08)
@@ -82,3 +82,4 @@
 ## 2026-11-13 설계 검토 반영
 - `CameraPreviewView(camera:)`에 스켈레톤을 overlay로 넣어 비율 일치, 글자 안내 띠(`voiceCaptionProvider`) 추가
 - 이어서 하기 대화상자는 TASK-53으로 옮기고 버튼, 뒤로 가기 확인과 함께 분리. 선행 Task에 TASK-03, TASK-11 추가
+- (재개 점검) 직접 받아 쓰는 TASK-27(`workoutControllerProvider`, `WorkoutViewState`)을 선행 Task에 명시

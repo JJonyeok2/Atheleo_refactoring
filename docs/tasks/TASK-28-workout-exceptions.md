@@ -1,7 +1,7 @@
 # TASK-28: 운동 중 예외 처리(사람 미검출, 저사양, 백그라운드, 추론 실패)
 
 - 상태: 대기
-- 선행 Task: TASK-02, TASK-18, TASK-26, TASK-52
+- 선행 Task: TASK-02, TASK-18, TASK-19, TASK-26, TASK-27, TASK-52
 - 실행 방식: 순차
 - 실행 방식 근거: TASK-27, 52와 같은 컨트롤러 파일을 고침
 - Spec 출처: F-01, F-06, F-08 (4장 예외 흐름, 9장 인수 조건 F-01, F-08), 8장 모니터링
@@ -85,3 +85,4 @@
 ## 2026-11-13 설계 검토 반영
 - 휴식 중 미검출 무시, 다음 세트에서 감시 reset, 재개와 백그라운드 복귀 때 성능 측정 초기화, 자동 재개는 TASK-52 `resume()` 경로
 - 선행 Task에 TASK-02(ErrorReporter), TASK-18(VoiceCues), TASK-52 추가. `confirmResume` 사용 Task를 TASK-53으로
+- (재개 점검) 직접 받아 쓰는 TASK-19(`PoseModel`), TASK-27(`WorkoutController`, `clockProvider`)을 선행 Task에 명시

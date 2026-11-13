@@ -1,7 +1,7 @@
 # TASK-39: 동기화 서비스(오류별 처리와 수동 재시도)
 
 - 상태: 대기
-- 선행 Task: TASK-02, TASK-35, TASK-38, TASK-54
+- 선행 Task: TASK-02, TASK-31, TASK-32, TASK-35, TASK-38, TASK-54
 - 실행 방식: 순차
 - 실행 방식 근거: 로컬 DB 상태를 바꾸고 여러 화면이 기대는 공유 서비스
 - Spec 출처: F-11, F-12 (3장, 4장 자동 동기화, 예외 흐름 네트워크, 8장 모니터링, 9장 인수 조건)
@@ -88,3 +88,4 @@
 ## 2026-11-13 설계 검토 반영
 - 오류별 처리(네트워크와 429 중단, 5xx 건너뛰기와 5회 failed, 4xx 거절, 401 중단), 현재 사용자 소유만, `retryFailed` 추가, 'sync_failed' 보고
 - 회차 시작 시점과 guest 귀속은 TASK-55로 분리(`start()` 삭제). 내보내기 표에 `networkStatusProvider`를 따로 적음
+- (재개 점검) 직접 받아 쓰는 TASK-31(`SyncStatus`), TASK-32(`pendingSummaries`, `markSynced`, `markRejected`)를 선행 Task에 명시
