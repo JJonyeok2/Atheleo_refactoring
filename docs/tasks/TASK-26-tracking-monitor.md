@@ -4,18 +4,20 @@
 - 선행 Task: TASK-01
 - 실행 방식: 병렬 (그룹: G3)
 - 실행 방식 근거: `app/lib/features/workout/domain/tracking_monitor.dart`만 새로 만드는 순수 로직, 공유 타입을 건드리지 않음
-- Spec 출처: F-01 (4장 예외 흐름: 사람이 안 보일 때, 추론이 느릴 때)
+- Spec 출처: F-01 (4장 예외 흐름: 사람이 안 보일 때, 추론이 느릴 때, 9장 인수 조건 F-01)
 
 ## 왜 이렇게 나눴나
-"언제 일시정지하고 언제 lite로 바꿀지" 판단만 시각 값으로 계산한다. 실제 일시정지, 음성, 모델 전환은 TASK-28이 이 신호를 받아 실행한다.
+"언제 일시정지하고 언제 lite로 바꿀지" 판단만 시각 값으로 계산한다. 실제 일시정지, 음성, 모델 전환, 언제 reset할지는 TASK-28이 정한다.
 
 ## 기능 범위 (Spec 발췌)
 - 사람이 안 보일 때: 2초 이상 미검출 시 일시정지, 다시 잡히면 자동 재개
-- 추론이 느릴 때(저사양): 10초 평균 10fps 미만이면 lite 모델로 전환
+- 추론이 느릴 때(저사양): 10초 평균 10fps 미만이면 lite 모델로 전환. 백그라운드 복귀와 일시정지 해제 직후에는 성능 측정을 초기화해 멈춰 있던 시간이 평균에 들어가지 않게 한다.
+- 인수 조건(F-01, 이 Task 부분): 일시정지를 30초 한 뒤 재개하거나 백그라운드에서 복귀해도 lite 모델로 바뀌지 않는다(측정 초기화).
 - 이 Task에서 정하는 규칙:
   - 미검출 시작 시각부터 2000ms 이상 지나면 `personLost` 1번. 이후 사람이 잡히면 `personReturned` 1번
-  - fps = 최근 10초 창 안 결과 개수 / 10. 첫 결과부터 10초가 지난 뒤부터 판단
+  - fps = 최근 10초 창 안 결과 개수 / 10. 측정 시작(첫 결과 또는 reset 뒤 첫 결과)부터 10초가 지난 뒤부터 판단
   - `switchToLite`는 한 번만 낸다(lite에서 full로 돌아가지 않음)
+  - `reset()`: 미검출 상태와 fps 창을 비우고 다음 결과부터 다시 잰다. `switchedToLite`는 그대로 둔다(이미 lite면 계속 lite, 신호를 다시 내지 않음)
 
 ## 연결 범위
 
@@ -26,13 +28,13 @@
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
 | `TrackingSignal` | `app/lib/features/workout/domain/tracking_monitor.dart` | `enum TrackingSignal { personLost, personReturned, switchToLite }` | TASK-28 |
-| `TrackingMonitor` | 같은 파일 | `class TrackingMonitor { TrackingMonitor({Duration lostAfter = const Duration(seconds: 2), Duration fpsWindow = const Duration(seconds: 10), double minFps = 10}); List<TrackingSignal> onResult({required int timestampMs, required bool hasPerson}); bool get isPersonLost; bool get switchedToLite; void reset(); }` | TASK-28 |
+| `TrackingMonitor` | 같은 파일 | `class TrackingMonitor { TrackingMonitor({Duration lostAfter = const Duration(seconds: 2), Duration fpsWindow = const Duration(seconds: 10), double minFps = 10}); List<TrackingSignal> onResult({required int timestampMs, required bool hasPerson}); bool get isPersonLost; bool get switchedToLite; void reset(); }` (reset은 위 규칙) | TASK-28 |
 
 ## 범위
 - 위 클래스
 
 ## 범위 밖 (건드리지 않음)
-- 감지기 호출, 음성, 화면
+- 감지기 호출, 음성, 화면, reset을 부르는 시점(TASK-28)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
@@ -43,6 +45,8 @@
 | 짧은 끊김 무시 | 1초 없음 후 다시 있음 | 신호 없음 |
 | 느린 추론 | 0~10초 동안 8fps 간격으로 결과 | 10초 이후 `[switchToLite]` 한 번 |
 | 빠른 추론 | 0~10초 동안 25fps | 신호 없음 |
+| 멈췄다 돌아오면 측정 초기화 (F-01) | 0~5초 25fps, 5~35초 결과 없음, 35초에 reset, 35~46초 25fps | switchToLite 없음 (reset 없이 같은 입력이면 35초 뒤 첫 판단에서 switchToLite가 나옴을 함께 확인) |
+| reset 뒤 미검출과 lite 유지 | 미검출 1.5초 중 reset → 1.5초 더 없음 / switchToLite 뒤 reset → 8fps 10초 | personLost 없음(reset부터 2초 안 됨) / 신호 없음, switchedToLite true |
 
 ## 바뀔 것으로 예상되는 파일
 - `app/lib/features/workout/domain/tracking_monitor.dart`
@@ -57,3 +61,6 @@
 - 범위 밖 파일을 고쳐야 할 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- `reset()` 의미를 확정(미검출과 fps 창 초기화, lite 유지). 멈췄다 돌아오는 경우와 reset 테스트 2건 추가. 시그니처는 그대로

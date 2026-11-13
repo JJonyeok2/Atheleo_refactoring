@@ -12,11 +12,11 @@
 ## 기능 범위 (Spec 발췌)
 | 운동 | 코드 | 판정 기준(초기값) | 음성 문구 | 짧은 이름 |
 |---|---|---|---|---|
-| 푸쉬업 | `PU_SHALLOW` | 횟수로 인정된 반복의 최저 팔꿈치 각도 90도 초과 | 조금 더 내려가세요. | 깊이 부족 |
+| 푸쉬업 | `PU_SHALLOW` | 횟수로 인정된 반복의 최저 팔꿈치 각도(원시 각도 기준) 90도 초과 | 조금 더 내려가세요. | 깊이 부족 |
 | 푸쉬업 | `PU_HIP_SAG` | 골반이 어깨와 발목을 잇는 선보다 아래에 있고, 어깨, 골반, 발목 각도 160도 미만 | 허리가 처졌어요. 몸을 일자로 유지하세요. | 허리 처짐 |
 | 푸쉬업 | `PU_HIP_PIKE` | 골반이 어깨와 발목을 잇는 선보다 위에 있고, 어깨, 골반, 발목 각도 160도 미만 | 엉덩이를 내리고 몸을 일자로 만드세요. | 엉덩이 들림 |
-| 스쿼트 | `SQ_SHALLOW` | 횟수로 인정된 반복의 최저 무릎 각도 90도 초과 | 더 깊이 앉으세요. | 깊이 부족 |
-| 스쿼트 | `SQ_TORSO_LEAN` | 최저점에서 상체(어깨와 골반을 잇는 선)와 수직선 각도 45도 초과 | 가슴을 펴고 상체를 세우세요. | 상체 숙임 |
+| 스쿼트 | `SQ_SHALLOW` | 횟수로 인정된 반복의 최저 무릎 각도(원시 각도 기준) 90도 초과 | 더 깊이 앉으세요. | 깊이 부족 |
+| 스쿼트 | `SQ_TORSO_LEAN` | 최저점에서 상체(어깨와 골반을 잇는 선)와 수직선 각도 45도 초과(실기기 보정 대상, Q-05) | 가슴을 펴고 상체를 세우세요. | 상체 숙임 |
 | 스쿼트 | `SQ_HEEL_LIFT` | 반복 중 발뒤꿈치(랜드마크 29, 30)가 시작 자세 대비 정강이 길이 10% 이상 위로 이동 | 뒤꿈치를 바닥에 붙이세요. | 뒤꿈치 들림 |
 
 - 허리 처짐과 엉덩이 들림은 어깨와 발목을 잇는 선 기준 골반의 위아래(부호)로 나눈다. 둘은 한 반복에 함께 나오지 않는다.
@@ -27,6 +27,8 @@
   - 상체 기울기 = 골반→어깨 벡터와 수직 위쪽 벡터 사이 각도(x에 aspectRatio 곱함)
   - "시작 자세" = `repFrames`의 첫 프레임. 뒤꿈치 상승 = 시작 대비 뒤꿈치 y 감소량의 최댓값 / 시작 프레임의 정강이(무릎-발목) 길이
   - 판정 기준값은 `ErrorThresholds`로 주입 가능하게 하고 표 값을 기본값으로 둔다(Q-05 실측 보정 대비)
+  - 깊이 부족은 `rep.minAngle`만 본다. 이 값은 TASK-08이 원시 각도 최저점 주변 3프레임 중앙값으로 이미 계산해 준다(여기서 다시 계산하지 않음)
+  - `ErrorThresholds.torsoLeanDeg` 기본값 45는 그대로 두고, 코드의 그 필드에 "실기기 보정 대상(Spec Q-05)" 주석을 단다
 - 인수 조건(F-04): 허리를 처지게 한 푸쉬업 클립은 `PU_HIP_SAG`, 엉덩이를 든 클립은 `PU_HIP_PIKE`가 기록되고 서로 바뀌어 나오지 않는다. 최저 각도 105도 반복은 `PU_SHALLOW`가 기록된다(횟수 인정은 TASK-08, 끝에서 끝 확인은 TASK-15).
 
 ## 연결 범위
@@ -37,7 +39,7 @@
 | `ExerciseType` | `app/lib/pose/landmarks/exercise_type.dart` | `enum ExerciseType { pushUp, squat }` |
 | `PoseFrame`, `LandmarkIndex` | `app/lib/pose/landmarks/pose_landmark.dart` | TASK-04 계약 그대로 (leftHeel 29, rightHeel 30 포함) |
 | `angleDeg`, `selectSide`, `SideAngles` | `app/lib/pose/angle/joint_angle.dart` | `double angleDeg(PoseLandmark a, PoseLandmark vertex, PoseLandmark c, {double aspectRatio = 1.0})`, `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null) |
-| `RepEvent` | `app/lib/pose/rep/rep_counter.dart` | `final class RepEvent extends RepCounterEvent { const RepEvent({required int repIndex, required int startMs, required int bottomMs, required int endMs, required double minAngle}); int get durationMs; }` (repIndex 1부터, bottomMs는 최저 각도 시각) |
+| `RepEvent` | `app/lib/pose/rep/rep_counter.dart` | `final class RepEvent extends RepCounterEvent { const RepEvent({required int repIndex, required int startMs, required int bottomMs, required int endMs, required double minAngle}); int get durationMs; }` (repIndex는 reset 이후 1부터, bottomMs는 원시 각도 최저 프레임 시각, minAngle은 원시 각도 최저점 주변 3프레임 중앙값) |
 | `SyntheticPose`, `HipOffset`, `buildSyntheticFrame` | `app/test/support/synthetic_clip.dart` | TASK-06 계약 그대로 (테스트에서만) |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
@@ -74,6 +76,7 @@
 - [ ] 위 테스트가 모두 통과
 - [ ] 기존 테스트가 깨지지 않음
 - [ ] F-04 인수 조건 충족
+- [ ] `torsoLeanDeg` 기본값에 보정 대상 주석이 있음
 - [ ] "내보내는 것"의 계약이 적힌 그대로임
 
 ## 중단 조건 (여기에 걸리면 멈추고 보고)
@@ -81,3 +84,6 @@
 - 합성 클립으로 판정 기준을 표현할 수 없을 때(TASK-06 계약 변경 필요)
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- 깊이 판정이 원시 각도 기준(`rep.minAngle`, TASK-08에서 계산)임을 명시. `SQ_TORSO_LEAN` 45도는 값 유지, 보정 대상 주석을 완료 조건에 추가. 계약과 테스트는 그대로

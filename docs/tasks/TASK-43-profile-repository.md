@@ -29,7 +29,7 @@
 ### 받아 쓰는 것
 | 이름 | 위치 | 계약 |
 |---|---|---|
-| `apiClientProvider`, `ApiErrorKind`, `classifyError` | `app/lib/core/network/api_client.dart` | `final apiClientProvider = Provider<Dio>(...)`, `ApiErrorKind classifyError(Object error)` |
+| `apiClientProvider`, `ApiErrorKind`, `classifyError` | `app/lib/core/network/api_client.dart` | `final apiClientProvider = Provider<Dio>(...)`, `enum ApiErrorKind { network, server, badRequest, unauthorized, forbidden, notFound, conflict, tooManyRequests, clientError, unknown }`, `ApiErrorKind classifyError(Object error)` |
 | `authControllerProvider`, `AuthStatus`, `AuthUser` | `app/lib/features/auth/` | `enum AuthStatus { unknown, signedOut, signedIn }`, `class AuthUser { const AuthUser({required int id, required String email, required String nickname}); factory AuthUser.fromJson(Map<String, dynamic> json); }` |
 | `BodyShape` | `app/lib/features/routine/domain/body_shape.dart` | `enum BodyShape {...}`, `final String code`, `final String label`, `static BodyShape? fromCode(String? code)` |
 | `currentBodyShapeProvider`, `routinePlanProvider` | `app/lib/features/routine/routine_providers.dart` | `NotifierProvider<CurrentBodyShapeNotifier, BodyShape?>`(`void set(BodyShape? shape)`), `Provider.family<RoutinePlan, ExerciseType>` |
@@ -41,7 +41,8 @@
 | `UserProfile` | `app/lib/features/profile/data/profile_repository.dart` | `class UserProfile { const UserProfile({required AuthUser user, double? heightCm, double? weightKg, BodyShape? bodyShape}); UserProfile copyWith({String? nickname, double? heightCm, double? weightKg, BodyShape? bodyShape, bool clearBodyShape = false}); }` | TASK-44 |
 | `ProfileRepository` | 같은 파일 | `abstract class ProfileRepository { Future<UserProfile> fetch(); Future<UserProfile> update(UserProfile profile); }`, `final profileRepositoryProvider = Provider<ProfileRepository>(...)` | TASK-44 |
 | `ProfileException` | 같은 파일 | `class ProfileException implements Exception { const ProfileException(this.kind, [this.message]); final ApiErrorKind kind; final String? message; }` | TASK-44 |
-| `ProfileController` | `app/lib/features/profile/application/profile_controller.dart` | `class ProfileController extends AsyncNotifier<UserProfile?> { Future<void> save(UserProfile profile); }`, `final profileControllerProvider = AsyncNotifierProvider<ProfileController, UserProfile?>(ProfileController.new);` (signedOut이면 null) | TASK-44 |
+| `ProfileController` | `app/lib/features/profile/application/profile_controller.dart` | `class ProfileController extends AsyncNotifier<UserProfile?> { Future<void> save(UserProfile profile); }` (signedOut이면 null) | TASK-44 |
+| `profileControllerProvider` | 같은 파일 | `final profileControllerProvider = AsyncNotifierProvider<ProfileController, UserProfile?>(ProfileController.new);` | TASK-44 |
 
 ## 범위
 - 위 저장소, 컨트롤러, 체형 동기화
@@ -75,3 +76,6 @@
 - 서버 응답 형식이 확정되어(Q-01) 위 가정과 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- 내보내기 표에 `profileControllerProvider`를 따로 적음, `ApiErrorKind` 값 목록을 TASK-34 최신 계약으로 맞춤. 동작과 테스트는 그대로

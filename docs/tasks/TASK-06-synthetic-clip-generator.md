@@ -1,21 +1,23 @@
 # TASK-06: 테스트용 합성 클립 생성기
 
-- 상태: 대기
+- 상태: 대기 (2026-11-09 시작 후 중단, 남은 파일 없음. 아래 계약으로 처음부터 진행)
 - 선행 Task: TASK-05
 - 실행 방식: 병렬 (그룹: G1)
 - 실행 방식 근거: `app/test/support/`만 만들고 공유 타입을 건드리지 않음. TASK-07과 파일이 겹치지 않음
-- Spec 출처: 8장 테스트 가능성, F-02 인수 조건(클립 단위)
+- Spec 출처: 8장 테스트 가능성, F-02 인수 조건(클립 단위), 7장 자세 게이트, 자세 오류 코드
 
 ## 왜 이렇게 나눴나
-실제 녹화 클립이 아직 없다(Spec Q-05). 각도 값만 주면 33개 랜드마크를 만들어 주는 유틸을 먼저 두면, 횟수, 오류, 점수 Task가 "녹화 클립을 넣으면" 형태의 인수 조건을 카메라 없이 테스트할 수 있다.
+실제 녹화 클립이 아직 없다(Spec Q-05). 각도 값만 주면 33개 랜드마크를 만들어 주는 유틸을 먼저 두면, 횟수, 오류, 점수, 자세 게이트 Task가 "녹화 클립을 넣으면" 형태의 인수 조건을 카메라 없이 테스트할 수 있다.
 
 ## 기능 범위 (Spec 발췌)
 - 자세 판정 로직(F-02~F-05, F-08)은 카메라 없이 녹화된 랜드마크 JSON으로 테스트할 수 있어야 한다.
 - 인수 조건(F-02): 녹화 클립에서 팔을 편 프레임을 넣으면 팔꿈치 각도가 160도 이상으로 계산되고, 반대쪽이 가려진 클립에서도 보이는 쪽 각도가 선택된다.
-- 생성기가 표현해야 하는 자세 값(오류 판정 Task에서 씀):
+- 생성기가 표현해야 하는 자세 값(뒤 Task에서 씀):
   - 푸쉬업 몸통 각도(어깨-골반-발목)와 골반이 어깨-발목 선의 위인지 아래인지(허리 처짐 / 엉덩이 들림 구분)
-  - 스쿼트 상체 기울기(어깨와 골반을 잇는 선과 수직선 사이 각도)
+  - 푸쉬업 자세 게이트: 몸통(어깨-발목 선)이 수평에서 얼마나 기울었는지(엎드림 0도, 서 있음 90도)
+  - 스쿼트 상체 기울기(어깨와 골반을 잇는 선과 수직선 사이 각도, 스쿼트 게이트와 `SQ_TORSO_LEAN`에 씀)
   - 스쿼트 뒤꿈치 상승(랜드마크 29, 30이 시작 자세 대비 위로 이동한 거리 / 정강이 길이)
+  - 프레임마다 다른 자세(측정 쪽 유지 규칙 테스트에서 프레임 번호별로 보이는 쪽을 바꿈)
 
 ## 연결 범위
 
@@ -24,17 +26,17 @@
 |---|---|---|
 | `ExerciseType` | `app/lib/pose/landmarks/exercise_type.dart` | `enum ExerciseType { pushUp, squat }`, 필드 `final String code`('push_up', 'squat'), `final String label`('푸쉬업', '스쿼트'), `static ExerciseType fromCode(String code)`(모르는 값은 `ArgumentError`) |
 | `PoseFrame`, `PoseLandmark`, `BodySide`, `LandmarkIndex` | `app/lib/pose/landmarks/pose_landmark.dart` | TASK-04 계약 그대로 |
-| `LandmarkClip` | `app/lib/pose/landmarks/landmark_clip.dart` | `class LandmarkClip { const LandmarkClip({required String id, required ExerciseType exercise, required String label, required int fps, required List<PoseFrame> frames}); ... }` |
+| `LandmarkClip` | `app/lib/pose/landmarks/landmark_clip.dart` | `class LandmarkClip { const LandmarkClip({required String id, required ExerciseType exercise, required String label, required int fps, required List<PoseFrame> frames}); String encode(); static LandmarkClip parse(String source); }` |
 | `angleDeg`, `anglesForSide`, `selectSide` | `app/lib/pose/angle/joint_angle.dart` | `double angleDeg(PoseLandmark a, PoseLandmark vertex, PoseLandmark c, {double aspectRatio = 1.0})`, `SideAngles anglesForSide(PoseFrame frame, BodySide side)`, `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null) (검증용) |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, HipOffset hipOffset = HipOffset.below, double torsoLeanDeg = 15, double heelLiftRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (bodyLineDeg가 180 미만일 때 hipOffset이 골반을 어깨-발목 선 아래(처짐) 또는 위(들림)로 둠. heelLiftRatio = 뒤꿈치가 바닥에서 뜬 높이 / 정강이 길이. shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이, 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14, 25 |
+| `SyntheticPose` | `app/test/support/synthetic_clip.dart` | `class SyntheticPose { const SyntheticPose({required ExerciseType exercise, double elbowDeg = 170, double kneeDeg = 170, double bodyLineDeg = 180, HipOffset hipOffset = HipOffset.below, double bodyTiltDeg = 0, double torsoLeanDeg = 15, double heelLiftRatio = 0, double shoulderWidthRatio = 0.05, BodySide visibleSide = BodySide.left, double hiddenVisibility = 0.1}); }` (pushUp은 엎드린 자세, bodyTiltDeg = 어깨-발목 선과 수평선 사이 각도(0 수평, 90 서 있음). squat은 선 자세, torsoLeanDeg = 골반→어깨 선과 수직선 사이 각도. bodyLineDeg가 180 미만일 때 hipOffset이 골반을 어깨-발목 선 아래(처짐) 또는 위(들림)로 둠. heelLiftRatio = 뒤꿈치가 바닥에서 뜬 높이 / 정강이 길이. shoulderWidthRatio = 좌우 어깨 x 거리 / 몸통 길이, 측면은 0.05, 정면 흉내는 0.6 이상) | TASK-09, 13, 14, 25, 49 |
 | `HipOffset` | 같은 파일 | `enum HipOffset { below, above }` (이미지 좌표에서 아래 = y가 큼) | TASK-09 |
-| `buildSyntheticFrame` | 같은 파일 | `PoseFrame buildSyntheticFrame(SyntheticPose pose, {int timestampMs = 0})` (보이는 쪽 visibility 0.95, 반대쪽은 hiddenVisibility, aspectRatio 1.0, 측면 자세. 반대쪽 점은 보이는 쪽 점을 x로 shoulderWidthRatio × 몸통 길이만큼 옮긴 위치) | TASK-09, 13, 14, 25 |
-| `repAngleSequence` | 같은 파일 | `List<double> repAngleSequence({required int reps, double top = 170, double bottom = 80, int framesPerRep = 30, int padFrames = 10})` (앞뒤 padFrames만큼 top 유지, 반복마다 top→bottom→top 코사인 곡선) | TASK-08, 15 |
-| `buildSyntheticClip` | 같은 파일 | `LandmarkClip buildSyntheticClip({required ExerciseType exercise, required List<double> primaryAngles, int fps = 30, String label = 'synthetic', SyntheticPose Function(double angle)? poseFor})` (primaryAngles는 푸쉬업이면 팔꿈치, 스쿼트면 무릎. poseFor가 없으면 기본 SyntheticPose에 그 각도만 넣음. timestamp는 `i * 1000 ~/ fps`) | TASK-15 |
+| `buildSyntheticFrame` | 같은 파일 | `PoseFrame buildSyntheticFrame(SyntheticPose pose, {int timestampMs = 0})` (보이는 쪽 visibility 0.95, 반대쪽은 hiddenVisibility, aspectRatio 1.0, 측면 자세. 반대쪽 점은 보이는 쪽 점을 x로 shoulderWidthRatio × 몸통 길이만큼 옮긴 위치. 기본 자세에서는 모든 점이 x, y 0~1 안) | TASK-09, 13, 14, 25, 27, 49, 51 |
+| `repAngleSequence` | 같은 파일 | `List<double> repAngleSequence({required int reps, double top = 170, double bottom = 80, int framesPerRep = 30, int padFrames = 10})` (앞뒤 padFrames만큼 top 유지, 반복마다 top→bottom→top 코사인 곡선) | TASK-08, 15, 27, 49, 52 |
+| `buildSyntheticClip` | 같은 파일 | `LandmarkClip buildSyntheticClip({required ExerciseType exercise, required List<double> primaryAngles, int fps = 30, String label = 'synthetic', SyntheticPose Function(int frameIndex, double angle)? poseFor})` (primaryAngles는 푸쉬업이면 팔꿈치, 스쿼트면 무릎. poseFor가 없으면 기본 SyntheticPose에 그 각도만 넣음. poseFor는 프레임 번호와 각도를 받음. timestamp는 `i * 1000 ~/ fps`) | TASK-15, 27, 49, 52 |
 
 ## 범위
 - 위 유틸 구현(측면 자세의 2D 골격을 각도로부터 순방향으로 배치, z는 0)
@@ -44,17 +46,18 @@
 ## 범위 밖 (건드리지 않음)
 - `app/lib/` 아래 모든 파일
 - 실제 녹화 클립 픽스처(F-14 이후 사용자가 추가)
+- 자세 게이트 판정 함수 자체(TASK-13)
 
 ## 먼저 작성할 테스트 (Red)
 | 테스트 이름 | 입력 / 동작 | 기대 결과 |
 |---|---|---|
 | 관절 각도 재현 | `SyntheticPose(exercise: pushUp, elbowDeg: 90)`, `SyntheticPose(exercise: squat, kneeDeg: 75)` → `selectSide` | elbow 90 ± 1, knee 75 ± 1 |
-| 팔을 편 클립 (F-02) | 푸쉬업 클립 첫 프레임(top 170) | `selectSide(...)!.elbow >= 160` |
-| 반대쪽 가려진 클립 (F-02) | visibleSide right, hiddenVisibility 0.05 | 모든 프레임에서 `selectSide(...)!.side == BodySide.right` |
+| F-02 클립 | 푸쉬업 클립 첫 프레임(top 170) / visibleSide right, hiddenVisibility 0.05 클립 | `selectSide(...)!.elbow >= 160` / 모든 프레임에서 `selectSide(...)!.side == BodySide.right` |
 | 몸통 각도와 처짐 방향 | pushUp, bodyLineDeg 140, hipOffset below / above | 어깨-골반-발목 각도 140 ± 1, 골반이 어깨-발목 선보다 아래 / 위 |
-| 뒤꿈치 상승 | squat, heelLiftRatio 0.2 | (발끝 y − 뒤꿈치 y) / 정강이 길이 0.2 ± 0.02 |
+| 푸쉬업 몸통 기울기 | pushUp, bodyTiltDeg 0 / 60 / 90 | 어깨→발목 선과 수평선 사이 각도 0 ± 1 / 60 ± 1 / 90 ± 1, 모든 점 x, y 0~1 안 |
+| 스쿼트 상체 기울기와 뒤꿈치 | squat, torsoLeanDeg 45 / heelLiftRatio 0.2 | 골반→어깨 선과 수직선 사이 각도 45 ± 1 / (발끝 y − 뒤꿈치 y) / 정강이 길이 0.2 ± 0.02 |
 | 정면 흉내 | shoulderWidthRatio 0.7 | 좌우 어깨 x 거리 / (어깨-골반 거리) 0.7 ± 0.02 |
-| 반복 시퀀스 길이 | `repAngleSequence(reps: 10, framesPerRep: 30, padFrames: 10)` | 길이 320, 최솟값 80 ± 0.5가 10번 나타남 |
+| 반복 시퀀스와 프레임별 자세 | `repAngleSequence(reps: 10, framesPerRep: 30, padFrames: 10)` / `buildSyntheticClip(poseFor: (i, a) => i < 5 ? 왼쪽 보임 : 오른쪽 보임)` | 길이 320, 최솟값 80 ± 0.5가 10번 / 0~4번 프레임 side left, 5번부터 right |
 | JSON 왕복 | `LandmarkClip.parse(clip.encode())` | 프레임 수와 첫 점 좌표가 같음 |
 
 ## 바뀔 것으로 예상되는 파일
@@ -72,3 +75,8 @@
 - 연결 범위의 계약과 실제 코드가 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- `SyntheticPose.bodyTiltDeg`(푸쉬업 자세 게이트용) 추가, pushUp은 엎드린 자세, squat은 선 자세임을 계약에 명시
+- `buildSyntheticClip.poseFor`가 프레임 번호도 받도록 변경(측정 쪽 유지 규칙 테스트용)
+- 테스트: F-02 두 행을 한 행으로 합치고, 몸통 기울기, 상체 기울기, 프레임별 자세 확인 추가

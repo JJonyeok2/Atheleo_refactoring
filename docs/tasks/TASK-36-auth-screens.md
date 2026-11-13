@@ -33,8 +33,9 @@
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
-| 검증 함수 | `app/lib/features/auth/domain/auth_validators.dart` | `String? validateEmail(String? v)`, `String? validatePassword(String? v, {bool forSignup = false})`, `String? validateNickname(String? v)` (통과하면 null) | TASK-44 |
-| `loginLocation` | `app/lib/app/routes.dart`에 추가 | `static String loginLocation({String? from})` (`/login?from=<인코딩된 경로>`) | TASK-37, 40 |
+| `validateEmail`, `validatePassword` | `app/lib/features/auth/domain/auth_validators.dart` | `String? validateEmail(String? v)`, `String? validatePassword(String? v, {bool forSignup = false})` (통과하면 null) | (내부) |
+| `validateNickname` | 같은 파일 | `String? validateNickname(String? v)` (통과하면 null) | TASK-44 |
+| `AppRoutes.loginLocation` | `app/lib/app/routes.dart`에 추가 | `static String loginLocation({String? from})` (`/login?from=<인코딩된 경로>`) | TASK-37, 40 |
 | `LoginScreen`, `SignupScreen` | `app/lib/features/auth/presentation/` | `class LoginScreen extends ConsumerStatefulWidget { const LoginScreen({super.key, String? from}); }`, `class SignupScreen extends ConsumerStatefulWidget { const SignupScreen({super.key, String? from}); }` | (라우터) |
 
 ## 범위
@@ -72,3 +73,6 @@
 - 서버 비밀번호 규칙이 확정되어(Q-01) 위 검증과 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- 내보내기 표 표기만 정리: `validateNickname`, `AppRoutes.loginLocation`을 이름 그대로 적음. 동작과 테스트는 그대로

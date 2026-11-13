@@ -1,7 +1,7 @@
 # TASK-46: 개발자 메뉴 화면(디버그 빌드 전용)
 
 - 상태: 대기
-- 선행 Task: TASK-25, TASK-45
+- 선행 Task: TASK-03, TASK-22, TASK-25, TASK-45
 - 실행 방식: 순차
 - 실행 방식 근거: 라우터(공유 파일) 수정
 - Spec 출처: F-14 (5장 `/dev`, 9장 인수 조건)
@@ -13,7 +13,8 @@
 - 개발자 메뉴 `/dev`(디버그 빌드만): 랜드마크 기록 시작/중지, 라벨, 내보내기, fps 표시
 - 인수 조건(F-14): 디버그 빌드 개발자 메뉴에서 기록 후 내보내면 33개 랜드마크 시퀀스 JSON 파일이 생기고, 릴리스 빌드에는 메뉴가 없다.
 - 이 Task에서 정하는 표시:
-  - 운동 선택(푸쉬업, 스쿼트), 라벨 입력(기본 'normal'), 카메라 미리보기 + 스켈레톤
+  - 운동 선택(푸쉬업, 스쿼트), 라벨 입력(기본 'normal'), 카메라 미리보기 + 스켈레톤(`CameraPreviewView(camera: start가 돌려준 PoseCameraInfo, overlay: SkeletonOverlay(...))`)
+  - 화면이 열리면 `detector.start()`. 감지기가 켜진 동안은 Kotlin이 화면 꺼짐 방지를 켠다(별도 처리 없음)
   - '기록 시작' / '기록 중지' 토글, 기록 중 프레임 수와 현재 fps
   - 중지하면 바로 내보내고 '저장됨: <파일 경로>' 표시
   - 카메라 권한이 없으면 촬영 가이드와 같은 안내 문구
@@ -26,10 +27,12 @@
 |---|---|---|
 | `ClipRecorder` | `app/lib/features/dev/domain/clip_recorder.dart` | `class ClipRecorder { void start(); void addResult(PoseDetectionResult result); LandmarkClip stop({required ExerciseType exercise, required String label, required String id}); bool get isRecording; int get frameCount; double get currentFps; }` |
 | `clipExporterProvider`, `ClipExporter` | `app/lib/features/dev/data/clip_exporter.dart` | `Future<File> export(LandmarkClip clip);` |
-| `poseDetectorProvider`, `PoseDetector` | `app/lib/pose/detector/pose_detector.dart` | TASK-19 계약 그대로 |
-| `cameraPermissionProvider`, `CameraPreviewView` | `app/lib/core/permission/camera_permission.dart`, `app/lib/features/workout/widgets/camera_preview_view.dart` | `abstract class CameraPermission { Future<bool> ensureGranted(); Future<void> openSettings(); }`, `class CameraPreviewView extends StatelessWidget { const CameraPreviewView({super.key, required int? textureId, Widget? overlay}); }` |
+| `poseDetectorProvider`, `PoseDetector`, `PoseCameraInfo` | `app/lib/pose/detector/pose_detector.dart` | `abstract class PoseDetector { Stream<PoseDetectionResult> get results; Future<PoseCameraInfo> start({PoseModel model = PoseModel.full}); Future<void> stop(); Future<void> setModel(PoseModel model); bool get isRunning; }`, `class PoseCameraInfo { const PoseCameraInfo({required int textureId, required int width, required int height}); double get aspectRatio; }` |
+| `CameraPermission`, `cameraPermissionProvider` | `app/lib/core/permission/camera_permission.dart` | `abstract class CameraPermission { Future<bool> ensureGranted(); Future<void> openSettings(); }`, `final cameraPermissionProvider = Provider<CameraPermission>(...)` |
+| `CameraPreviewView` | `app/lib/features/workout/widgets/camera_preview_view.dart` | `class CameraPreviewView extends StatelessWidget { const CameraPreviewView({super.key, required PoseCameraInfo? camera, Widget? overlay}); }` (비율 유지, overlay는 같은 상자) |
 | `SkeletonOverlay` | `app/lib/features/workout/widgets/skeleton_overlay.dart` | `class SkeletonOverlay extends StatelessWidget { const SkeletonOverlay({super.key, required PoseFrame? frame, Color color = Colors.white}); }` |
-| `buildRouter` | `app/lib/app/router.dart` | enableDevMenu가 false면 `/dev` 경로 자체를 등록하지 않음 |
+| `buildRouter` | `app/lib/app/router.dart` | `GoRouter buildRouter({required bool enableDevMenu, Listenable? refreshListenable, GoRouterRedirect? redirect})` (enableDevMenu가 false면 `/dev` 경로 자체를 등록하지 않음, errorBuilder가 '페이지를 찾을 수 없어요') |
+| `AppRoutes` | `app/lib/app/routes.dart` | `dev = '/dev'` |
 | `FakePoseDetector` | `app/test/support/fake_pose_detector.dart` | 테스트에서만 |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
@@ -67,3 +70,6 @@
 - 범위 밖 파일을 고쳐야 할 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 설계 검토 반영
+- `start()` 반환(`PoseCameraInfo`)과 `CameraPreviewView(camera:)` 계약을 최신으로. 선행 Task에 TASK-03(buildRouter, AppRoutes), TASK-22(SkeletonOverlay) 추가, `cameraPermissionProvider` 행 분리
