@@ -75,3 +75,4 @@
 ## 2026-11-13 설계 검토 반영
 - 저장, 목록, 상세, 대기 목록에 소유자(`userId`, null은 guest) 인자 추가, `watchStatus` 추가. 소유자 구분 테스트 추가
 - guest 귀속, 시도 횟수, 수동 재시도는 TASK-54로 분리
+- (TASK-31 QA 반영, 오케스트레이터 결정) DB에는 CHECK 제약이 없으므로 저장 경로에서 값을 검증한다: 점수 0~100, partialReps 0 이상, setIndex·repIndex 1 이상. 범위 밖이면 ArgumentError로 저장을 거부한다. 읽을 때 모르는 syncStatus 코드가 있으면 예외로 목록 전체를 깨지 말고 그 행을 failed로 취급한다. DateTime은 초 단위로 저장됨(밀리초 손실)을 전제로 테스트 기대값을 잡는다. lastError에는 토큰·개인정보를 넣지 않는다.
