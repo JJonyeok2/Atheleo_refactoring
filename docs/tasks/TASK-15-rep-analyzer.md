@@ -86,6 +86,8 @@
 - (TASK-07 QA 반영) `MovingAverage.add`는 프레임마다 한 번만 부른다. 같은 프레임을 두 번 넣으면 그 값이 평균에 두 번 들어간다.
 - (TASK-07 QA 반영) 측정 쪽 각도를 못 얻은 프레임(selectSide null, 유한하지 않은 각도)은 `MovingAverage`와 `RepCounter`에 넣지 않고 건너뛴다. `MovingAverage`는 유한하지 않은 값을 받으면 직전 평균을 그대로 돌려주므로, 그 값을 새 각도처럼 RepCounter에 넘기지 않는다.
 
+- (TASK-08 QA 권고) 통합 테스트에 반복 사이 꼭대기가 짧게 160도를 넘는 빠른 반복 클립(예: 30fps, 꼭대기 160~165도가 2~3프레임)을 넣어, 150ms 이동 평균이 꼭대기를 깎아 여러 회가 1회로 합쳐지지 않는지 확인한다.
+
 ## 2026-11-13 설계 검토 반영
 - 이동 평균을 시간 기준(`smoothingWindowMs = 150`)으로, RepCounter에 원시 각도 전달, reset 규칙과 rep_index 1부터를 명시
 - 측정 쪽 유지와 자세 게이트는 Task가 커져 TASK-49로 분리. 테스트: 15/30fps, 짧은 최저점, reset 추가, 기존 행 묶음
