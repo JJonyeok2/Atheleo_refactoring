@@ -48,7 +48,7 @@
 | `SetupGuideStatus` | `app/lib/features/workout/domain/setup_guide_controller.dart` | `enum SetupGuideStatus { noPerson, notFullBody, frontFacing, notInPosture, holding, countdown, ready }` | TASK-25, 51 |
 | `SetupGuideState` | 같은 파일 | `class SetupGuideState { const SetupGuideState({required SetupGuideStatus status, required String message, int? countdown}); }` (`==` 구현) | TASK-25, 51 |
 | `SetupGuideTexts`, `setupGuideTextsFor` | 같은 파일 | `class SetupGuideTexts { const SetupGuideTexts({required String distanceHint, required String postureHint}); }`, `SetupGuideTexts setupGuideTextsFor(ExerciseType exercise)` (위 Spec 문구 그대로) | TASK-25 |
-| `SetupGuideController` | 같은 파일 | `class SetupGuideController { SetupGuideController({required ExerciseType exercise, Duration stableFor = const Duration(seconds: 2), int countdownSec = 3}); SetupGuideState update(PoseFrame? frame, int timestampMs); SetupGuideState get state; void reset(); }` | TASK-25 |
+| `SetupGuideController` | 같은 파일 | `class SetupGuideController { SetupGuideController({required ExerciseType exercise, Duration stableFor = const Duration(seconds: 2), int countdownSec = 3, Duration maxFrameGap = const Duration(milliseconds: 500)}); SetupGuideState update(PoseFrame? frame, int timestampMs); SetupGuideState get state; void reset(); }` | TASK-25 |
 
 ## 범위
 - 위 상태 머신과 문구
