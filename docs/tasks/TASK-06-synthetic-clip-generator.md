@@ -76,6 +76,11 @@
 
 ## 추가 발췌 (오케스트레이터가 보충)
 
+- (QA-TASK-06 FIX 반영) 같은 운동이면 프레임 사이 축척과 기준점은 고정한다. 프레임마다 경계 상자를 다시 재서 0~1에 맞추지 않는다. 운동별로 고정 축척과 고정 기준점(스쿼트는 보이는 쪽 발목, 푸쉬업은 보이는 쪽 손목 또는 발목)을 정하고, 계약의 값 범위 끝 조합에서도 모든 점이 0~1 안에 들도록 그 고정 축척을 고른다.
+- (QA-TASK-06 FIX 반영) 뒤꿈치 상승은 시작 자세 대비다. heelLiftRatio 0이면 kneeDeg, torsoLeanDeg가 바뀌어도 발뒤꿈치 y는 시작 자세와 같아야 하고, 0.05, 0.2를 주면 그만큼(몸통 길이 비율)만 오른다.
+- (QA-TASK-06 FIX 반영) 자세 값 반영 운동: kneeDeg, torsoLeanDeg, heelLiftRatio는 스쿼트만, elbowDeg, bodyLineDeg, bodyTiltDeg, hipOffset은 푸쉬업만 반영한다. 다른 운동의 값은 무시한다. 이 내용을 계약 주석에 적는다.
+- (QA-TASK-06 FIX 반영) hipOffset의 위/아래 방향은 bodyTiltDeg 90 미만에서만 정의된다.
+
 ## 2026-11-13 설계 검토 반영
 - `SyntheticPose.bodyTiltDeg`(푸쉬업 자세 게이트용) 추가, pushUp은 엎드린 자세, squat은 선 자세임을 계약에 명시
 - `buildSyntheticClip.poseFor`가 프레임 번호도 받도록 변경(측정 쪽 유지 규칙 테스트용)
