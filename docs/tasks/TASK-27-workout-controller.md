@@ -100,3 +100,4 @@
 - `WorkoutViewState`에 `String? repHint` 추가(선택 인자라 TASK-28, 52, 53 쪽 생성 코드는 영향 없음). 받아 쓰는 표에 `VoiceCues` 추가
 - 반복 취소(10초 초과)는 분석기가 출력하지 않으므로 이 Task에서 할 일 없음
 - 테스트 1행 추가(빠른 반복 안내). 테스트 행 9개로 기준(8개)을 1개 넘지만, 같은 결과 분기 처리라 따로 떼지 않음
+- (TASK-16 QA 반영, 오케스트레이터 결정) 세션 시간(onRep/tick/pause/resume에 넘기는 nowMs)은 단조 시계(Stopwatch 기반, 테스트에서 주입 가능한 `monotonicMsProvider` 등)에서 얻고, `clockProvider`(벽시계)는 startedAt/endedAt 기록에만 쓴다. 벽시계가 앞으로 튀어 휴식이 일찍 끝나는 일을 막기 위함이다. 세션 state는 이벤트 처리나 tick 직후에 읽는다.

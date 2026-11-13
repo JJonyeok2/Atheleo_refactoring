@@ -67,3 +67,4 @@
 - TASK-27 계약을 바꿔야 할 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+- (TASK-16 QA 반영) `analyzer.reset()`을 부르는 조건에 `onRep` 결과에 들어 있는 `NextSetStarted`(휴식 0초 경로)도 포함한다.

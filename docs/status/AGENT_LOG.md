@@ -133,3 +133,15 @@
 | 2026-11-13 22:08 | impl-agent | TASK-49 최소 1회 시간 500/600ms | 완료 | forExercise 푸쉬업 500, 스쿼트 600, 신규 3건, 전체 242 통과, analyze 0건 |
 | 2026-11-13 22:08 | qa-agent | TASK-49 | 시작 | 측면 잠금/자세 게이트, 최소 1회 시간 500/600ms QA |
 | 2026-11-13 22:11 | qa-agent | TASK-49 | 완료 | PASS. 헤더/푸터 갱신([변경] 줄 제거), 기존 테스트 변경 허용 범위 확인, 242 통과, analyze 0건 |
+| 2026-11-13 22:11 | impl-agent | TASK-22 | 시작 | 스켈레톤 오버레이 위젯 Red부터 |
+| 2026-11-13 22:11 | impl-agent | TASK-17 | 시작 | 운동 결과 요약 모델 TDD |
+| 2026-11-13 22:11 | impl-agent | TASK-16 | 시작 | 세트와 휴식 세션 컨트롤러 TDD 구현 |
+| 2026-11-13 22:13 | impl-agent | TASK-22 | 완료 | projectLandmarks, kPoseConnections(35), SkeletonOverlay, 신규 14건 통과 |
+| 2026-11-13 22:13 | impl-agent | TASK-17 | 완료 | workout_summary 모델/buildSummary, 신규 테스트 통과 |
+| 2026-11-13 22:14 | qa-agent | TASK-17 | 시작 | workout_summary QA |
+| 2026-11-13 22:14 | impl-agent | TASK-16 | 완료 | 세션 컨트롤러 신규 29건 통과, 전체 296 통과, analyze 0건 |
+| 2026-11-13 22:14 | qa-agent | TASK-22 | 시작 | skeleton_overlay QA |
+| 2026-11-13 22:15 | qa-agent | TASK-16 | 시작 | workout_session_controller QA |
+| 2026-11-13 22:15 | qa-agent | TASK-17 | 완료 | PASS, 푸터 보강, 단독 테스트 11건/analyze 통과(병렬 Task로 전체 실행 생략) |
+| 2026-11-13 22:15 | qa-agent | TASK-22 | 완료 | PASS, POSE_CONNECTIONS 공식 원문과 일치, 푸터 추가 |
+| 2026-11-13 22:16 | qa-agent | TASK-16 | 완료 | PASS, 헤더/푸터 추가, 29건 통과, Task 보충 권고 3건(27, 52, 18) |

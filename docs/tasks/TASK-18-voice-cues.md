@@ -87,3 +87,4 @@
 ## 2026-11-13 TASK-08 QA 결정 반영
 - `VoiceCues.slowDown`('조금 더 천천히', normal) 추가. 빠른 반복은 세트 진행과 무관해 `WorkoutEvent`를 만들지 않고 TASK-27이 상수를 직접 씀(TASK-16 계약 변경 없음). 쿨다운 5초는 TASK-11 `VoiceGuide` 규칙 그대로
 - "사람 안 보임 상수" 테스트 행을 "고정 문구 상수"로 넓힘(행 수 그대로)
+- (TASK-16 QA 반영) 마지막 세트가 끝나면 `SetCompleted`는 오지 않고 `RepCounted` 다음 `WorkoutFinished`만 온다. 마지막 세트에 "N초 쉬세요"를 말하지 않는다.
