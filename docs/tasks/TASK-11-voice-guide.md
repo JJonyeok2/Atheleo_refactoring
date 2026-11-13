@@ -76,5 +76,10 @@ TTS 엔진을 인터페이스로 감싸 가짜 구현으로 테스트한다. "�
 
 ## 추가 발췌 (오케스트레이터가 보충)
 
+- (QA-TASK-11 반영) 쿨다운은 say가 문장을 받아들인 시각 기준이다(대기 칸에서 밀리거나 stopAll로 비워진 문장도 쿨다운에 걸린다).
+- (QA-TASK-11 반영) say가 false를 돌려주는 경우: 쿨다운 안, 대기 칸에 high가 있는데 normal이 들어옴, dispose 이후.
+- (QA-TASK-11 반영) `void dispose()`를 공개 계약에 넣는다. dispose 뒤 say는 아무것도 하지 않고 false. stopAll 안의 engine.stop() 예외는 잡아서 무시한다.
+- (QA-TASK-11 반영) 글자 안내 대체 알림은 captions 스트림만 믿지 않는다. 소비 쪽(TASK-29, 51)은 `voiceAvailable == false`이면 화면을 열 때 직접 "음성 안내를 쓸 수 없어 글자로 안내합니다"를 한 번 보여 준다.
+
 ## 2026-11-13 설계 검토 반영
 - 한국어 TTS가 없을 때 글자 모드: `TtsEngine.isKoreanAvailable`, `VoiceGuide.init`, `voiceAvailable`, `captions`, `unavailableNotice`, `voiceCaptionProvider` 추가. 테스트 2건 추가

@@ -79,6 +79,8 @@
 
 ## 추가 발췌 (오케스트레이터가 보충)
 
+- (TASK-11 QA 반영) `VoiceGuide.captions`는 broadcast라 구독 전에 나간 unavailableNotice를 놓칠 수 있다. 화면이 열릴 때 `voiceAvailable == false`(init 완료 후)이면 글자 대체 안내를 직접 한 번 보여 준다. 운동 흐름(가이드→운동) 동안 한 번만 보이도록 한다.
+
 ## 2026-11-13 설계 검토 반영
 - `CameraPreviewView(camera:)`에 스켈레톤을 overlay로 넣어 비율 일치, 글자 안내 띠(`voiceCaptionProvider`) 추가
 - 이어서 하기 대화상자는 TASK-53으로 옮기고 버튼, 뒤로 가기 확인과 함께 분리. 선행 Task에 TASK-03, TASK-11 추가

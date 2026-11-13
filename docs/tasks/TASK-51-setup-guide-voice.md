@@ -64,3 +64,6 @@
 - 연결 범위의 계약과 실제 코드가 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 추가 발췌 (오케스트레이터가 보충)
+- (TASK-11 QA 반영) `VoiceGuide.captions`는 broadcast라 구독 전에 나간 unavailableNotice를 놓칠 수 있다. 화면이 열릴 때 `voiceAvailable == false`(init 완료 후)이면 글자 대체 안내를 직접 한 번 보여 준다. 운동 흐름(가이드→운동) 동안 한 번만 보이도록 한다.
