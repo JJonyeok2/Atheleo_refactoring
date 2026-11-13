@@ -71,3 +71,11 @@
 | 2026-11-13 16:30 | impl-agent | TASK-09 | 완료 | judgeRep, PoseErrorCode 구현, 신규 19건 통과 |
 | 2026-11-13 16:32 | spec-agent | SPEC.md (TASK-08 QA 결정) | 완료 | 7장 판정 규칙, 4장 예외, F-03/F-06, 8장, 9장 F-03, Q-05, 변경 이력 반영 |
 | 2026-11-13 16:40 | impl-agent | TASK-11 | 완료 | VoiceGuide/TtsEngine 구현, 신규 9건 포함 전체 123건 통과, analyze는 info만(core/tts 6건) |
+| 2026-11-13 16:31 | qa-agent | TASK-09 | 시작 | pose_error/error_judge QA 시작 |
+| 2026-11-13 16:31 | task-agent | TASK-56 | 시작 | Spec 변경(TASK-08 QA 결정: 빠른 반복 안내, 10초 초과 반복 취소) Task 반영 시작 |
+| 2026-11-13 16:32 | qa-agent | TASK-11 | 시작 | voice_guide/tts_engine QA 시작 |
+| 2026-11-13 16:32 | impl-agent | TASK-10 | 완료 | 체형 8분류, 루틴 표, provider 구현. 신규 7건 포함 전체 통과, 내 파일 analyze 0건 |
+| 2026-11-13 16:32 | qa-agent | TASK-10 | 시작 | body_shape/routine 표/provider QA 시작 |
+| 2026-11-13 16:33 | qa-agent | TASK-09 | 완료 | FIX: _heelLift 선택불가 프레임 미건너뜀(오탐), _torsoLean 최저점 선택불가 시 놓침. 계약 일치, Task 보충 권고 4건 |
+| 2026-11-13 16:33 | qa-agent | TASK-10 | 완료 | PASS. RN 표 재대조 일치, 계약 일치, 푸터 4개 추가, test 7건/analyze 0건 |
+| 2026-11-13 16:34 | impl-agent | TASK-09 | 시작 | FIX 재작업: _heelLift 선택불가/노이즈, _torsoLean 최저점 선택불가 |
