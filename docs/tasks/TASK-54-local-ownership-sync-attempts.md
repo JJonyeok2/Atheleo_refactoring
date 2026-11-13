@@ -65,3 +65,5 @@
 - 연결 범위의 계약과 실제 코드가 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+- (TASK-32 QA 반영, 오케스트레이터 결정) 손상 행 내성: 목록(watchSessions)과 대기 목록(pendingSummaries)은 exercise·routineLevel 코드를 해석하지 못하는 행을 건너뛴다(예외로 스트림 전체를 깨지 않음). 반복의 모르는 오류 코드는 그 코드만 버린다. 상세 조회에서 해석 못 하는 세션은 null. 테스트로 고정. `app/lib/features/history/data/workout_local_repository.dart`와 그 테스트 수정은 이 Task 범위다.
+- (TASK-32 QA 반영) guest 귀속은 drift update API 또는 `customUpdate(updates: ...)`로 해 watch 스트림이 갱신되게 한다(`customStatement` 금지). 모르는 syncStatus 행은 failed로 취급되므로 수동 재시도 대상에 포함된다.
