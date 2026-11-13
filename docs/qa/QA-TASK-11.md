@@ -1,7 +1,7 @@
 # QA-TASK-11
 
 - 검토일: 2026-11-13
-- 판정: FIX
+- 판정: PASS (최초 FIX, 재검토 후 PASS)
 
 ## 검토 파일
 | 파일 | 헤더/푸터 주석 | 비고 |
@@ -65,4 +65,44 @@
 - unavailableNotice 늦은 구독 문제: VoiceGuide에 알림 보관 값을 추가하거나 TASK-29/51이 `voiceAvailable == false`를 보고 안내를 직접 띄우도록 계약 결정
 
 ## PEER_REVIEW 사유
+- 없음
+
+## 재검토 (2026-11-13, FIX 재작업 후)
+
+- 최종 판정: PASS
+
+### 이전 FIX 해소
+| 항목 | 결과 |
+|---|---|
+| tts_engine.dart 생성자 `new(...)` | 해소 |
+| voice_guide.dart `_Pending` `const new` | 해소 |
+| voice_guide.dart 생성자 private named parameter(`this._engine`, `this._cooldown`) | 해소. 호출부 `engine:`, `cooldown:`, `clock:` 유지(테스트로 확인) |
+| voice_guide_test.dart FakeEngine 생성자 | 해소 |
+| `flutter analyze lib/core/tts test/core/tts` | No issues found |
+| `flutter test test/core/tts` / 전체 | 14건 / 135건 통과 |
+| (권고) stopAll의 stop 예외 무시 | 반영, 테스트 2건(stopAll 직접, dispose 경유) |
+
+### 추가 발췌(QA-TASK-11 반영 4줄) 대조
+| 발췌 | 결과 |
+|---|---|
+| 쿨다운은 받아들인 시각 기준 | 일치 |
+| say false: 쿨다운, high 대기 중 normal, dispose 이후 | 일치 |
+| `dispose()` 공개, dispose 뒤 say 무동작 false, stop 예외 무시 | 일치, 두 번 dispose 안전 |
+| 늦은 구독은 소비 쪽(TASK-29, 51)이 voiceAvailable로 처리 | 이 Task 범위 밖. `voiceAvailable` getter 제공 확인 |
+
+### 경쟁 조건 검토
+| 시나리오 | 결과 | 근거 |
+|---|---|---|
+| init 대기 중 dispose(글자 모드) | 안전 | `_doInit`이 `!_disposed`일 때만 알림 add, say가 init 뒤 `_disposed` 재확인 후 동기 구간에서 add. 닫힌 스트림 쓰기 없음 |
+| init 대기 중 dispose(음성 모드) | 안전 | say false, speak 호출 0회 |
+| speak 진행 중 dispose | 안전 | stopAll이 await 전에 `_pending`을 동기로 비움. speak 완료 뒤 루프 종료, `isSpeaking` false. 대기 문장 재생 안 됨 |
+| dispose 두 번 | 안전 | `_disposed` 가드 |
+
+위 세 시나리오는 QA가 임시 테스트(Completer로 init, speak 완료 시점 제어)로 실행해 통과를 확인했고, 임시 파일은 삭제함. 저장소 테스트에는 없으므로 회귀 방지용으로 추가하면 좋음(권고, 필수 아님).
+
+### 메모
+- stopAll(dispose 아님) 직후 들어온 say는 진행 중 speak가 끝난 뒤 재생된다. 의도된 동작(멈춘 뒤 새 안내)으로 수용.
+- 헤더/푸터: 두 lib 파일 푸터를 재검토 결과로 갱신(계약 반영 문구). 테스트 파일은 기존대로 달지 않음.
+
+### PEER_REVIEW 사유
 - 없음
