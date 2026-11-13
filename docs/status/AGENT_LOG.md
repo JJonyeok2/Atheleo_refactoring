@@ -48,3 +48,10 @@
 | 2026-11-13 15:43 | task-agent | TASK-06~48, INDEX | 시작 | SPEC 2026-11-13 설계 검토 반영분을 Task 파일과 INDEX에 반영 |
 | 2026-11-13 16:07 | task-agent | TASK-06~55, INDEX | 시작 | 재개: 커밋 a5c8bc0 중간 결과 이어서 점검, 누락 반영, INDEX 갱신 |
 | 2026-11-13 16:12 | task-agent | TASK-06~55, INDEX | 완료 | 재개: 체크리스트 18건과 D2~D4 반영 확인, 선행 Task 표기 보강(28, 29, 39, 40, 41, 43, 49, 51~55), TASK-52 RepAnalyzer 계약을 TASK-49와 일치, INDEX 실행 순서 45단계로 재정렬. 현재 Task는 06, 07(G1) 그대로 |
+| 2026-11-13 16:13 | impl-agent | TASK-06 | 시작 | 합성 클립 생성기 TDD 착수 |
+| 2026-11-13 16:13 | impl-agent | TASK-07 | 시작 | 시간 기준 창 새 계약으로 moving_average 재작성 (TDD) |
+| 2026-11-13 16:14 | impl-agent | TASK-07 | 완료 | 새 계약(windowMs, add(value,timestampMs), length) 재작성, 테스트 10개 통과, analyze 0 issues |
+| 2026-11-13 16:15 | impl-agent | TASK-06 | 완료 | synthetic_clip.dart/test 9개 통과, 전체 70개 통과, analyze 0 issues |
+| 2026-11-13 16:16 | qa-agent | TASK-07 | 시작 | moving_average 헤더/푸터, 보안/유지보수 검토 |
+| 2026-11-13 16:16 | qa-agent | TASK-06 | 시작 | synthetic_clip 생성기 계약/각도 재현/보안·유지보수 검토 |
+| 2026-11-13 16:17 | qa-agent | TASK-07 | 완료 | PASS. 헤더/푸터 추가, 계약 일치, 테스트 70건/analyze 0건, NaN 유실 시 평균 유지는 호출측 reset 책임으로 기록 |
