@@ -1,7 +1,7 @@
 # QA-TASK-26
 
 - 검토일: 2026-11-13
-- 판정: FIX
+- 판정: PASS (재검토 후)
 
 ## 검토 파일
 | 파일 | 헤더/푸터 주석 | 비고 |
@@ -36,7 +36,15 @@
 4. reset이 switchedToLite 유지, 백그라운드 복귀 오전환: 측정 시작이 reset 뒤 첫 결과로 다시 잡히므로 멈춘 시간이 평균에 안 들어감(테스트 "멈췄다 돌아오면"에서 reset 없을 때 오전환, 있을 때 없음을 대조 확인). 남은 위험은 reset 직후 백그라운드 이전 프레임 결과가 늦게 도착해 측정 시작이 과거로 잡히는 경우뿐이며, 이는 호출부 사정이라 메모로 남김(FIX 아님).
 
 ## FIX 항목 (Impl로 회귀)
-- [ ] `app/lib/features/workout/domain/tracking_monitor.dart:25-30` — 이 저장소 Dart(SDK ^3.13.7)는 private named parameter를 지원한다(`app/lib/core/tts/voice_guide.dart:31-32`에서 이미 사용, 별도 스크래치로 `this._minFps = 10` + 호출 `M(minFps: 5)` analyze 0건, 실행 확인). 생성자 인자를 `this._minFps = 10`으로 바꾸고 이니셜라이저의 `_minFps = minFps`, `// ignore: prefer_initializing_formals`, "이름 있는 인자는 private 필드로 바로 받을 수 없다" 주석을 지운다. 공개 인자 이름은 `minFps` 그대로라 계약은 바뀌지 않는다.
+- [x] (재검토에서 해결 확인) `app/lib/features/workout/domain/tracking_monitor.dart:25-30` — 이 저장소 Dart(SDK ^3.13.7)는 private named parameter를 지원한다(`app/lib/core/tts/voice_guide.dart:31-32`에서 이미 사용, 별도 스크래치로 `this._minFps = 10` + 호출 `M(minFps: 5)` analyze 0건, 실행 확인). 생성자 인자를 `this._minFps = 10`으로 바꾸고 이니셜라이저의 `_minFps = minFps`, `// ignore: prefer_initializing_formals`, "이름 있는 인자는 private 필드로 바로 받을 수 없다" 주석을 지운다. 공개 인자 이름은 `minFps` 그대로라 계약은 바뀌지 않는다.
 
 ## PEER_REVIEW 사유
 - 해당 없음
+
+## 재검토 (FIX 1건 반영 후)
+- 재검토일: 2026-11-13
+- `tracking_monitor.dart:25-30`: 생성자 인자가 `this._minFps = 10`이고, 이니셜라이저의 `_minFps = minFps`, `ignore` 주석, 잘못된 설명 주석이 모두 사라짐(`ignore:` 0개).
+- 계약: 바깥 인자 이름 `minFps`와 기본값 10 유지. 추가된 테스트 "minFps 이름 인자가 임계값으로 적용된다"(minFps: 5 / 9 대조)가 이를 검증함.
+- 대상 2개 파일 `flutter analyze` 0건, `tracking_monitor_test.dart` 11건 전부 통과.
+- 범위 밖 변경: `git status` 기준 이번 Task 코드 변경은 대상 2개 파일뿐. 그 밖의 갱신은 docs(STATE, TASK-28 문서, AGENT_LOG)이며 TASK-14 파일은 건드리지 않음.
+- 판정: PASS. 자동 검증으로 넘긴다.

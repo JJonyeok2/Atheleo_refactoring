@@ -108,3 +108,8 @@
 | 2026-11-13 16:46 | qa-agent | TASK-12 | 완료 | PASS, 푸터 추가, 계약 일치, Map 감점표는 푸터 메모 |
 | 2026-11-13 16:47 | qa-agent | TASK-13 | 완료 | PASS, 푸터 교체, 테스트 주석 1곳 수정, 계약 4개 일치 |
 | 2026-11-13 16:47 | qa-agent | TASK-26 | 완료 | FIX: tracking_monitor.dart:25-30 ignore 제거(this._minFps 사용), 푸터 추가, 계약 일치 |
+| 2026-11-13 21:31 | impl-agent | TASK-26 | FIX | tracking_monitor minFps private named parameter 수정 시작 |
+| 2026-11-13 21:31 | impl-agent | TASK-14 | 시작 | 촬영 가이드 상태 머신 TDD 구현 시작 |
+| 2026-11-13 21:32 | impl-agent | TASK-26 | FIX | 완료: minFps private named parameter, 테스트 1건 추가 |
+| 2026-11-13 21:32 | qa-agent | TASK-26 재검토 | 시작 | FIX 1건 반영 확인 |
+| 2026-11-13 21:33 | qa-agent | TASK-26 재검토 | 완료 | PASS, FIX 반영 확인 |
