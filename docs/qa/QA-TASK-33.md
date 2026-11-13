@@ -1,7 +1,7 @@
 # QA-TASK-33
 
 - 검토일: 2026-11-13
-- 판정: FIX
+- 판정: PASS (재검토 후)
 
 ## 검토 파일
 | 파일 | 헤더/푸터 주석 | 비고 |
@@ -53,3 +53,12 @@
 
 ## PEER_REVIEW 사유
 - 해당 없음
+
+## 재검토 (FIX 반영 후)
+- 검토일: 2026-11-13. 대상 3개 파일만 `dart format`(변경 0건), `dart analyze`(0건), `flutter test test/core/storage/token_storage_test.dart`(16건 통과). TASK-32는 건드리지 않았다.
+- FIX 1 해소: `InMemoryTokenStorage.read`가 빈 access/refresh면 null. `SecureTokenStorage.read`와 의미 일치(빈 문자열 = 없음, 한쪽만 있어도 null). user_id는 두 구현 모두 write로 보존, clear로 삭제. `current` getter는 저장값 그대로. 테스트 추가됨(빈 access, 빈 refresh, write로 넣은 빈 값).
+- 권고 3 반영: `clear`가 세 키를 각각 시도하고 첫 예외를 `Error.throwWithStackTrace`로 원래 스택과 함께 재던진다. 테스트 `_FailingDeleteStorage`의 `noSuchMethod`는 `memberName == #delete`와 `namedArguments[#key]`를 쓰며, 실제 `FlutterSecureStorage.delete({required String key, ...})` named 인자 시그니처와 맞다. 시도 순서 [access, refresh, user_id]와 StateError 전파를 검증한다. 가짜가 delete 외 호출이면 StateError로 실패해 우연한 통과 가능성이 낮다.
+- 토큰 노출: 예외, toString, 로그에 값 없음 유지. 재던지는 예외는 플러그인 원본 그대로.
+- 공개 계약: AuthTokens, TokenStorage 5개 메서드, SecureTokenStorage 생성자, tokenStorageProvider 변경 없음. 범위 밖 변경 없음.
+- 잔여 참고(차단 아님): clear가 예외를 재던지므로 TASK-35 `restore()`의 clear 예외 처리는 TASK-35 QA에서 확인. 권고 1, 2, 4는 그대로 후속 Task.
+- 최종 판정: PASS
