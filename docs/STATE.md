@@ -1,7 +1,7 @@
 # 진행 상태 (오케스트레이터가 관리)
 
 - 현재 상태: IMPL
-- 현재 Task: TASK-18, TASK-23, TASK-24 (병렬 G5)
+- 현재 Task: TASK-19
 - 대기 중: 없음 (APK 빌드 확인은 plugins-artifacts.gradle.org 허용 후)
 - 마지막 갱신: 2026-11-09 23:09
 
@@ -29,7 +29,8 @@
 | TASK-16 | 병렬 | G4 | 완료 | PASS | 0 | |
 | TASK-18 | 병렬 | G5 | 완료 | PASS | 0 | 횟수 안내가 교정에 밀릴 수 있음, 최종 검증 확인 |
 | TASK-23 | 병렬 | G5 | 완료 | PASS | 1 | 글자 대비 FIX |
-| TASK-24 | 병렬 | G5 | 진행 | - | 0 | |
+| TASK-24 | 병렬 | G5 | 완료 | PASS | 0 | 배경 터치 흡수 확인 |
+| TASK-19 | 순차 | - | 진행 | - | 0 | |
 | TASK-17 | 병렬 | G4 | 완료 | PASS | 0 | |
 | TASK-22 | 병렬 | G4 | 완료 | PASS | 0 | MediaPipe 연결 35개 원문 대조 |
 

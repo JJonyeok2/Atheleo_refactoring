@@ -145,3 +145,19 @@
 | 2026-11-13 22:15 | qa-agent | TASK-17 | 완료 | PASS, 푸터 보강, 단독 테스트 11건/analyze 통과(병렬 Task로 전체 실행 생략) |
 | 2026-11-13 22:15 | qa-agent | TASK-22 | 완료 | PASS, POSE_CONNECTIONS 공식 원문과 일치, 푸터 추가 |
 | 2026-11-13 22:16 | qa-agent | TASK-16 | 완료 | PASS, 헤더/푸터 추가, 29건 통과, Task 보충 권고 3건(27, 52, 18) |
+| 2026-11-13 22:17 | impl-agent | TASK-24 | 시작 | RestOverlay 위젯 TDD |
+| 2026-11-13 22:17 | impl-agent | TASK-23 | 시작 | 점수 배지 위젯 TDD |
+| 2026-11-13 22:17 | impl-agent | TASK-18 | 시작 | voice_cues 매핑 TDD |
+| 2026-11-13 22:20 | impl-agent | TASK-24 | 완료 | RestOverlay 테스트 6건 통과, analyze 확인 |
+| 2026-11-13 22:18 | impl-agent | TASK-23 | 완료 | ScoreBadge/scoreColor, 테스트 9건 통과, 본 Task 파일 analyze 0건 |
+| 2026-11-13 22:18 | impl-agent | TASK-18 | 완료 | voice_cues.dart 구현, 단독 테스트 통과, analyze 0건(이 Task 파일) |
+| 2026-11-13 22:18 | qa-agent | TASK-23 | 시작 | score_badge.dart QA 시작 |
+| 2026-11-13 22:18 | qa-agent | TASK-18 | 시작 | voice_cues 문구/우선순위/소비 계약 검토 |
+| 2026-11-13 22:18 | qa-agent | TASK-24 | 시작 | rest_overlay 터치 통과, 표시 형식, 소비 계약 검토 |
+| 2026-11-13 22:19 | qa-agent | TASK-23 | 완료 | FIX: fair/회색 배경 흰 글자 대비 미달(1.97, 2.68:1), 글자색 분기 필요. 대상 파일만 analyze/test |
+| 2026-11-13 22:19 | impl-agent | TASK-23 | FIX | 시작: 배지 글자색 대비 FIX |
+| 2026-11-13 22:19 | qa-agent | TASK-18 | 완료 | PASS, 문구 10종/우선순위 Task 표와 일치, 헤더/푸터 추가, 테스트 12건 통과 |
+| 2026-11-13 22:20 | impl-agent | TASK-23 | FIX | 완료: 글자색 배경 밝기 기반 선택, 테스트 10건 통과 |
+| 2026-11-13 22:20 | qa-agent | TASK-23 재검토 | 시작 | FIX 반영 확인 |
+| 2026-11-13 22:20 | qa-agent | TASK-23 재검토 | 완료 | PASS, 4배경 대비비 일치, 테스트 10건 통과 |
+| 2026-11-13 22:21 | qa-agent | TASK-24 | 완료 | PASS. 배경이 터치 흡수함(실측), 헤더/푸터 추가, TASK-53 버튼 배치 권고 |
