@@ -64,3 +64,10 @@
 | 2026-11-13 16:26 | impl-agent | TASK-08 | 완료 | RepCounter 상태 머신 구현, 신규 14건 포함 전체 88건 통과, analyze 0건 |
 | 2026-11-13 16:27 | qa-agent | TASK-08 | 시작 | RepCounter 상태 머신 QA 시작 |
 | 2026-11-13 16:28 | qa-agent | TASK-08 | 완료 | PASS: 계약 일치, 14건 통과, analyze 0건, Task 보충 권고 3건(빠른 반복 무피드백, 장시간 하강 후 가짜 1회, 꼭대기 깎임 병합) |
+| 2026-11-13 16:29 | impl-agent | TASK-11 | 시작 | 음성 안내 서비스(VoiceGuide) TDD 시작 |
+| 2026-11-13 16:29 | impl-agent | TASK-09 | 시작 | 자세 오류 판정 구현 시작 |
+| 2026-11-13 16:29 | impl-agent | TASK-10 | 시작 | 체형별 루틴 데이터 구현 시작 |
+| 2026-11-13 16:30 | spec-agent | SPEC.md (TASK-08 QA 결정) | 시작 | 빠른 반복, 최대 반복 시간 규칙 반영 시작 |
+| 2026-11-13 16:30 | impl-agent | TASK-09 | 완료 | judgeRep, PoseErrorCode 구현, 신규 19건 통과 |
+| 2026-11-13 16:32 | spec-agent | SPEC.md (TASK-08 QA 결정) | 완료 | 7장 판정 규칙, 4장 예외, F-03/F-06, 8장, 9장 F-03, Q-05, 변경 이력 반영 |
+| 2026-11-13 16:40 | impl-agent | TASK-11 | 완료 | VoiceGuide/TtsEngine 구현, 신규 9건 포함 전체 123건 통과, analyze는 info만(core/tts 6건) |
