@@ -73,3 +73,4 @@
 
 ## 2026-11-13 설계 검토 반영
 - `start()` 반환(`PoseCameraInfo`)과 `CameraPreviewView(camera:)` 계약을 최신으로. 선행 Task에 TASK-03(buildRouter, AppRoutes), TASK-22(SkeletonOverlay) 추가, `cameraPermissionProvider` 행 분리
+- (TASK-19 QA 반영) FakePoseDetector는 구독 전 emit 값을 놓치므로 테스트에서는 listen과 start를 마친 뒤(pump 이후) emit한다.

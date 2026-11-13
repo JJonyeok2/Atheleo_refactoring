@@ -85,3 +85,4 @@
 ## 2026-11-13 설계 검토 반영
 - 모델 파일은 TASK-50 스크립트로 받는 것으로 바꾸고 assets 커밋과 `README-models.md`를 범위에서 뺌
 - `CameraController.start` 반환(`CameraStartInfo`), 세로 기준 크기, 후면 카메라 반전 없음 테스트 추가
+- (TASK-19 QA 반영) 이벤트의 `t`, `inferenceMs`, `width`, `height`와 start 응답의 `textureId`, `width`, `height`는 반드시 Int/Long으로 보낸다(Double 금지: Dart가 int만 받아 모든 이벤트가 형식 오류가 된다). `PoseEventMapperTest`에 이 필드들이 Double이 아님을 확인하는 단언을 넣는다. 사람이 없으면 poses는 빈 목록, 사람마다 점은 정확히 33개 `[x, y, z, v]`.

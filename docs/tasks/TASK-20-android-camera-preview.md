@@ -89,3 +89,4 @@ MediaPipe를 붙이기 전에 "카메라 미리보기가 바른 방향으로 Flu
 ## 2026-11-13 설계 검토 반영
 - start 반환을 `CameraStartInfo`(textureId, width, height) 맵으로, 실행 중 start는 같은 값(카메라 유지)
 - 텍스처 회전과 전면 좌우 반전을 Kotlin 책임으로, `FLAG_KEEP_SCREEN_ON`을 start/stop에 묶음. JVM 테스트와 수동 확인 항목 추가
+- (TASK-19 QA 반영) 네이티브 `start`는 이미 실행 중이면 카메라를 다시 열지 않고 같은 `{textureId, width, height}`(Int)를 돌려주며 모델이 다르면 모델만 바꾼다. `stop`은 실행 중이 아니어도 오류 없이 null. `setModel`은 실행 중이 아니면 다음 start용으로 저장. 회전과 전면 좌우 반전은 텍스처와 좌표에 똑같이 적용.

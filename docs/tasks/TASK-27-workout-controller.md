@@ -102,3 +102,4 @@
 - 테스트 1행 추가(빠른 반복 안내). 테스트 행 9개로 기준(8개)을 1개 넘지만, 같은 결과 분기 처리라 따로 떼지 않음
 - (TASK-16 QA 반영, 오케스트레이터 결정) 세션 시간(onRep/tick/pause/resume에 넘기는 nowMs)은 단조 시계(Stopwatch 기반, 테스트에서 주입 가능한 `monotonicMsProvider` 등)에서 얻고, `clockProvider`(벽시계)는 startedAt/endedAt 기록에만 쓴다. 벽시계가 앞으로 튀어 휴식이 일찍 끝나는 일을 막기 위함이다. 세션 state는 이벤트 처리나 tick 직후에 읽는다.
 - (TASK-18 QA 반영) VoiceGuide 대기 칸 규칙 때문에 앞 문장 재생 중 오류가 있는 반복이 오면 'N회'(normal)가 교정(high)에 밀려 빠질 수 있다. 빠른 반복 클립으로 횟수 안내가 연속으로 빠지지 않는지 테스트 1건을 두고, 결과를 보고에 적는다(사용자 최종 검증 확인 항목).
+- (TASK-19 QA 반영) 실행 중 start에서 모델이 달라 setModel이 실패하면 start가 오류를 내지만 카메라는 켜진 채다. 이때 오류를 보고하고 카메라는 그대로 쓴다(정리용 stop을 하지 않는다). FakePoseDetector 테스트는 listen과 start 뒤에 emit한다.

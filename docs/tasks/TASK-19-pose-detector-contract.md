@@ -84,3 +84,4 @@ Kotlin 구현(TASK-20, 21)보다 Dart 쪽 계약과 가짜 구현을 먼저 만�
 ## 2026-11-13 설계 검토 반영
 - `start` 반환을 `PoseCameraInfo`(textureId, width, height)로 변경, 실행 중 start는 같은 값(카메라 유지), `isRunning` 추가, results broadcast
 - 회전과 전면 좌우 반전, 화면 꺼짐 방지는 Kotlin 책임으로 채널 계약에 명시
+- (QA-TASK-19 반영, 오케스트레이터 결정) 비유한 좌표(NaN/Infinity)는 사람 단위로 버린다: 비유한 값이 있는 사람만 빼고 나머지 사람은 내보낸다. 원래 한 명 이상이었는데 모두 빠지면 그 이벤트를 버린다(빈 목록으로 내보내 '사람 없음'으로 오인되지 않게). width/height가 0 이하이면 이벤트 전체를 버린다. 형식 오류 우선 규칙은 그대로. `PoseDetectionResult.poses`는 파서에서 `List.unmodifiable`로 감싼다. 테스트: 2명 중 1명만 NaN이면 1명 프레임이 나옴, 2명 모두 NaN이면 이벤트 없음.

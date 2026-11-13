@@ -94,3 +94,4 @@
 
 - (2026-11-13 사용자 결정) 스쿼트 준비 자세 안내(notInPosture)는 '똑바로 서서 무릎을 펴 주세요'. 정면 안내(frontFacing)는 '옆으로 서 주세요' 그대로.
 - (TASK-22 QA 반영) SkeletonOverlay는 0~1 밖 좌표를 잘라내지 않고 Size.infinite로 그린다. CameraPreviewView는 overlay를 미리보기와 같은 비율 상자 안에 넣고 ClipRect로 감싼다.
+- (TASK-19 QA 반영) 운동 화면으로 넘어갈 때는 이동 호출 전에 '전환 중' 표시를 동기적으로 세우고, dispose는 그 표시만 보고 stop 여부를 정한다(넘어갈 때는 stop하지 않음). FakePoseDetector는 구독 전 emit 값을 놓치므로 테스트에서는 listen과 start를 마친 뒤(pump 이후) emit한다.
