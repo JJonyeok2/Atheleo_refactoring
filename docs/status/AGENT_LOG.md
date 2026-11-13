@@ -120,3 +120,7 @@
 | 2026-11-13 21:39 | impl-agent | TASK-14 | 완료 | FIX 반영: maxFrameGap 500ms, 스쿼트 postureHint 변경, 테스트 27건, 전체 통과, analyze 0건 |
 | 2026-11-13 21:39 | qa-agent | TASK-14 | 시작 | FIX 반영 재검토(maxFrameGap, 스쿼트 문구) |
 | 2026-11-13 21:42 | qa-agent | TASK-14 | 완료 | 재검토 PASS(FIX 해소, 문구 일치), TASK-25 테스트 표 63행 스쿼트 문구 갱신 필요 |
+| 2026-11-13 21:42 | impl-agent | TASK-15 | 시작 | 프레임 분석기(각도→횟수→오류→점수) TDD 구현 |
+| 2026-11-13 21:48 | impl-agent | TASK-15 | 완료 | RepAnalyzer 구현, 테스트 19건(전체 222) 통과, analyze 0건 |
+| 2026-11-13 21:49 | qa-agent | TASK-15 | 시작 | RepAnalyzer 헤더/푸터, 보안·유지보수성, judgeRep 프레임 범위·계약 대조 |
+| 2026-11-13 21:53 | qa-agent | TASK-15 | 완료 | PASS(계약 일치, 헤더/푸터 추가), 결정 필요: judgeRep 시작 자세=하강 시작 프레임(뒤꿈치), 스쿼트 1초=빠른 반복 |
