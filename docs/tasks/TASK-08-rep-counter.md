@@ -93,3 +93,6 @@
 - `update`에 `rawAngle` 추가. `RepEvent.minAngle`, `PartialRepEvent.minAngle`, `bottomMs`를 원시 각도 최저점 주변 3프레임 중앙값으로 정의
 - reset 뒤 repIndex가 1부터 다시 시작함을 계약과 테스트에 명시
 - 테스트: 최소 시간 두 행 합침, 3프레임 중앙값, reset 행 추가
+
+## 후속 (2026-11-13 TASK-08 QA 결정)
+- 빠른 반복 사건(`TooFastRepEvent`)과 10초 반복 취소(`RepCancelledEvent`, `RepThresholds.maxRepMs`)는 TASK-56이 이 파일에 더한다. 이 Task의 "최소 시간보다 짧은 반복은 사건을 내지 않음" 규칙은 TASK-56에서 바뀐다. 다음 Task는 TASK-56의 "내보내는 것"을 기준으로 한다

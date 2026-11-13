@@ -22,7 +22,8 @@
 - 이 Task에서 정하는 규칙:
   - `start()`: 루틴 계획 읽기 → `detector.start()`(반환 `PoseCameraInfo`를 state.camera에) → 결과 구독 → 1초 `Timer.periodic`으로 `session.tick(nowMs)`
   - `nowMs`와 `startedAt`, `endedAt`는 모두 `clockProvider`에서 얻는다. 프레임의 `timestampMs`는 `analyzer.addFrame`에만 들어간다
-  - 결과마다 `selectPrimaryPose` → state.frame 갱신 → 있으면 `analyzer.addFrame` → `RepResult`면 `session.onRep(rep, nowMs)`, `PartialRep`이면 `session.onPartialRep(nowMs)`
+  - 결과마다 `selectPrimaryPose` → state.frame 갱신 → 있으면 `analyzer.addFrame` → `RepResult`면 `session.onRep(rep, nowMs)`, `PartialRep`이면 `session.onPartialRep(nowMs)`, `TooFastRep`이면 세션은 건드리지 않고 `voiceGuide.say(VoiceCues.slowDown.text, priority: VoiceCues.slowDown.priority)`와 state.repHint = `VoiceCues.slowDown.text`
+  - 빠른 반복 안내: 최소 1회 시간보다 빠른 반복은 횟수와 부분 반복에 넣지 않고 "조금 더 천천히"를 음성과 글자로 안내한다. 같은 문장은 5초 안에 다시 말하지 않는다(`VoiceGuide` 쿨다운 그대로, 컨트롤러는 따로 막지 않음). 글자(repHint)는 다음 `RepResult` 또는 `PartialRep`이 나오면 null로 지운다
   - 모든 `WorkoutEvent`는 `cuesForEvent` 문구를 `voiceGuide.say`로 보냄
   - `WorkoutFinished`가 나오면 감지기 stop(화면 꺼짐 방지도 함께 풀림), 타이머 취소, `buildSummary`(sets와 partialsPerSet 전달)로 요약을 만들어 `lastWorkoutSummaryProvider`에 넣고 state.summary 설정
   - provider가 dispose될 때 아직 끝나지 않았으면 감지기 stop과 타이머 취소
@@ -35,11 +36,11 @@
 |---|---|---|
 | `PoseDetector`, `poseDetectorProvider`, `PoseDetectionResult`, `PoseCameraInfo` | `app/lib/pose/detector/pose_detector.dart` | `abstract class PoseDetector { Stream<PoseDetectionResult> get results; Future<PoseCameraInfo> start({PoseModel model = PoseModel.full}); Future<void> stop(); Future<void> setModel(PoseModel model); bool get isRunning; }`, `class PoseDetectionResult { const PoseDetectionResult({required int timestampMs, required List<PoseFrame> poses, required int inferenceMs}); }`, `class PoseCameraInfo { const PoseCameraInfo({required int textureId, required int width, required int height}); double get aspectRatio; }` |
 | `selectPrimaryPose` | `app/lib/pose/body/body_check.dart` | `PoseFrame? selectPrimaryPose(List<PoseFrame> poses)` |
-| `RepAnalyzer`, `AnalyzerOutput`, `RepResult`, `PartialRep` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150, int sideSwitchAfterMs = 500, double gateMaxDeg = 30}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; BodySide? get side; void reset(); }`, `sealed class AnalyzerOutput`, `final class PartialRep extends AnalyzerOutput { const PartialRep({required double minAngle, required int endMs}); }` |
+| `RepAnalyzer`, `AnalyzerOutput`, `RepResult`, `PartialRep` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150, int sideSwitchAfterMs = 500, double gateMaxDeg = 30}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; BodySide? get side; void reset(); }`, `sealed class AnalyzerOutput`, `final class PartialRep extends AnalyzerOutput { const PartialRep({required double minAngle, required int endMs}); }`, `final class TooFastRep extends AnalyzerOutput { const TooFastRep({required int durationMs, required int endMs}); }` (최소 1회 시간 미달 반복. 점수, 오류 없음, count, partialCount 미포함) |
 | `WorkoutSessionController` 외 | `app/lib/features/workout/domain/workout_session_controller.dart` | `class WorkoutSessionController { WorkoutSessionController(RoutinePlan plan); WorkoutSessionState get state; List<WorkoutEvent> onRep(RepResult rep, int nowMs); List<WorkoutEvent> onPartialRep(int nowMs); List<WorkoutEvent> tick(int nowMs); List<WorkoutEvent> skipRest(int nowMs); void pause(int nowMs); void resume(int nowMs); List<WorkoutEvent> finish(int nowMs); }`, `WorkoutSessionState`, `WorkoutPhase`, `WorkoutEvent` 계열(`RestEndingSoon` 포함, TASK-16 계약 그대로) |
 | `routinePlanProvider` | `app/lib/features/routine/routine_providers.dart` | `final routinePlanProvider = Provider.family<RoutinePlan, ExerciseType>(...)` |
 | `buildSummary`, `WorkoutSummary` | `app/lib/features/workout/domain/workout_summary.dart` | `WorkoutSummary buildSummary({required String clientId, required RoutinePlan plan, required DateTime startedAt, required DateTime endedAt, required List<List<RepResult>> sets, List<int> partialsPerSet = const []})` |
-| `cuesForEvent`, `VoiceCue` | `app/lib/features/workout/domain/voice_cues.dart` | `List<VoiceCue> cuesForEvent(WorkoutEvent event)`, `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }` |
+| `cuesForEvent`, `VoiceCue`, `VoiceCues` | `app/lib/features/workout/domain/voice_cues.dart` | `List<VoiceCue> cuesForEvent(WorkoutEvent event)`, `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }`, `abstract final class VoiceCues { static const VoiceCue noPerson; static const VoiceCue askResume; static const VoiceCue slowDown; }` (slowDown은 `VoiceCue('조금 더 천천히')`, priority normal) |
 | `VoiceGuide`, `voiceGuideProvider` | `app/lib/core/tts/voice_guide.dart` | `Future<bool> say(String text, {VoicePriority priority = VoicePriority.normal}); Future<void> stopAll();` |
 | `FakePoseDetector`, `buildSyntheticClip`, `repAngleSequence` | `app/test/support/` | TASK-06, 19 계약 그대로 (테스트에서만) |
 
@@ -47,7 +48,7 @@
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
 | `clockProvider` | `app/lib/core/clock.dart` | `final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);` (세션 시간의 유일한 출처) | TASK-28, 45, 47, 52 |
-| `WorkoutViewState` | `app/lib/features/workout/application/workout_view_state.dart` | `class WorkoutViewState { const WorkoutViewState({required WorkoutSessionState session, PoseCameraInfo? camera, PoseFrame? frame, RepResult? lastRep, String? notice, bool askResume = false, WorkoutSummary? summary}); WorkoutViewState copyWith(...); }` | TASK-28, 29, 52, 53 |
+| `WorkoutViewState` | `app/lib/features/workout/application/workout_view_state.dart` | `class WorkoutViewState { const WorkoutViewState({required WorkoutSessionState session, PoseCameraInfo? camera, PoseFrame? frame, RepResult? lastRep, String? notice, String? repHint, bool askResume = false, WorkoutSummary? summary}); WorkoutViewState copyWith(...); }` (repHint는 반복 단위 안내 글자, 지금은 빠른 반복의 '조금 더 천천히'만. copyWith에서 null로 지울 수 있어야 함) | TASK-28, 29, 52, 53 |
 | `WorkoutController` | `app/lib/features/workout/application/workout_controller.dart` | `class WorkoutController extends AutoDisposeFamilyNotifier<WorkoutViewState, ExerciseType> { Future<void> start(); void skipRest(); void pause(); void resume(); Future<void> finish(); }` | TASK-28, 29, 52, 53 |
 | `workoutControllerProvider` | 같은 파일 | `final workoutControllerProvider = NotifierProvider.autoDispose.family<WorkoutController, WorkoutViewState, ExerciseType>(WorkoutController.new);` | TASK-29, 53 |
 | `lastWorkoutSummaryProvider` | 같은 파일 | `final lastWorkoutSummaryProvider = NotifierProvider<LastWorkoutSummaryNotifier, WorkoutSummary?>(LastWorkoutSummaryNotifier.new);` (`void set(WorkoutSummary? summary)`) | TASK-30, 40 |
@@ -64,6 +65,7 @@
 | 시작과 카메라 유지 (F-01) | 이미 start된 FakePoseDetector(camera textureId 5)로 start() | state.camera.textureId 5, calls에 'stop' 없음 |
 | 반복 반영 | 1회 반복 합성 프레임 emit | session.repsInSet 1, lastRep 설정, TTS '1회' |
 | 부분 반복 반영 (F-03) | 130도까지만 내려간 합성 프레임 emit | repsInSet 0, partialsPerSet[0] 1, TTS '더 내려가세요' |
+| 빠른 반복 안내 (F-03, F-06) | 하강부터 복귀까지 0.6초 미만인 푸쉬업 반복 2번을 5초 안에 emit → 이어서 정상 1회 | 빠른 반복 뒤: repsInSet 0, partialsPerSet[0] 0, state.repHint '조금 더 천천히', TTS '조금 더 천천히' 1번(두 번째는 쿨다운으로 재생 안 됨) / 정상 1회 뒤: repsInSet 1, repHint null |
 | 10회 후 휴식과 다음 세트 (F-08, F-06) | 목표 10회, restSec 30 계획 override, 10회 프레임 emit, fake_async와 가짜 clock을 30초 진행 | currentSet 2, phase resting → TTS '세트 완료, 30초 쉬세요' → 27초에 '3초 뒤 다음 세트를 시작해요' → 30초에 '다음 세트를 시작하세요' |
 | 세션 시간은 앱 시계 | 프레임 t를 1,000,000,000부터 주고 clock은 10:00:00에서 시작, 30초 진행 후 finish() | restRemainingSec가 clock 기준으로 줄어듦, summary.startedAt 10:00:00, endedAt 10:00:30 |
 | 사용자 종료 | finish() | 감지기 stop, summary 설정, lastWorkoutSummaryProvider 값 존재 |
@@ -92,3 +94,9 @@
 - `WorkoutViewState.textureId` → `camera`(`PoseCameraInfo`), 세션 시간은 `clockProvider`만 사용, 휴식 종료 3초 전 음성, dispose 시 stop
 - `activeWorkoutProvider` 삭제: 토큰 만료 시 운동 중 이동하지 않는 규칙(D3)으로 바뀌어 TASK-37이 경로로 판단함
 - 선행 Task를 TASK-15에서 TASK-49(분석기 최종 계약)로 바꿈. 휴식, 일시정지 중 분석 중단은 TASK-52로 분리
+
+## 2026-11-13 TASK-08 QA 결정 반영
+- `TooFastRep`(TASK-15) 처리: 세션 미반영, `VoiceCues.slowDown` 음성, `WorkoutViewState.repHint` 글자. 다음 반복이나 부분 반복에서 repHint 지움
+- `WorkoutViewState`에 `String? repHint` 추가(선택 인자라 TASK-28, 52, 53 쪽 생성 코드는 영향 없음). 받아 쓰는 표에 `VoiceCues` 추가
+- 반복 취소(10초 초과)는 분석기가 출력하지 않으므로 이 Task에서 할 일 없음
+- 테스트 1행 추가(빠른 반복 안내). 테스트 행 9개로 기준(8개)을 1개 넘지만, 같은 결과 분기 처리라 따로 떼지 않음

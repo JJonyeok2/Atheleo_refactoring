@@ -79,3 +79,13 @@
 | 2026-11-13 16:33 | qa-agent | TASK-09 | 완료 | FIX: _heelLift 선택불가 프레임 미건너뜀(오탐), _torsoLean 최저점 선택불가 시 놓침. 계약 일치, Task 보충 권고 4건 |
 | 2026-11-13 16:33 | qa-agent | TASK-10 | 완료 | PASS. RN 표 재대조 일치, 계약 일치, 푸터 4개 추가, test 7건/analyze 0건 |
 | 2026-11-13 16:34 | impl-agent | TASK-09 | 시작 | FIX 재작업: _heelLift 선택불가/노이즈, _torsoLean 최저점 선택불가 |
+| 2026-11-13 16:34 | qa-agent | TASK-11 | 완료 | FIX: core/tts analyze info 6건(new 문법, private named param으로 해결 가능 확인), 헤더/푸터 추가, notice 늦은 구독 문제는 Task 보충 권고 |
+| 2026-11-13 16:34 | impl-agent | TASK-11 | 시작 | FIX 재작업 |
+| 2026-11-13 16:35 | impl-agent | TASK-09 | 완료 | FIX 재작업: 선택불가 프레임 건너뜀, 뒤꿈치 3프레임 중앙값+visibility, 상체 3프레임 중앙값, 신규 7건, judge 26건 통과 |
+| 2026-11-13 16:35 | impl-agent | TASK-11 | 완료 | FIX 재작업: 린트 0건, dispose/stop 예외 처리, 테스트 135건 통과 |
+| 2026-11-13 16:35 | qa-agent | TASK-11 | 시작 | FIX 재작업 재검토 |
+| 2026-11-13 16:35 | qa-agent | TASK-09 | 시작 | FIX 재작업 재검토 |
+| 2026-11-13 16:36 | qa-agent | TASK-11 | 완료 | 재검토 PASS: 린트 0, 경쟁 조건 3건 임시 테스트로 안전 확인, 135건 통과 |
+| 2026-11-13 16:37 | qa-agent | TASK-09 | 완료 | 재검토 FIX: 이전 FIX 3건 해소, 시작 프레임 뒤꿈치 유효성 미검사로 오탐 1건 |
+| 2026-11-13 16:37 | task-agent | TASK-56 | 완료 | TASK-56 신설(빠른 반복 사건, 10초 취소), TASK-08/15/18/27/28/29/49, INDEX 순서(56은 G2 뒤 G3 앞), STATE 행 추가 |
+| 2026-11-13 16:37 | impl-agent | TASK-09 | 시작 | 2차 FIX: _heelLift 시작 프레임 유효성 |

@@ -15,7 +15,8 @@
 - 목표 횟수 달성 → "세트 완료, N초 쉬세요" → 휴식 카운트다운 → 휴식 종료 3초 전 음성 안내 → "다음 세트를 시작하세요"
 - 부분 반복(덜 내려가고 올라옴): "더 내려가세요" 음성
 - 사람이 안 보일 때: "카메라 앞에 서 주세요" 음성 안내
-- 모든 핵심 피드백(횟수, 오류, 세트, 휴식과 휴식 종료 3초 전)은 음성으로도 제공한다.
+- 너무 빠른 반복(최소 1회 시간 미달): "조금 더 천천히" 음성과 글자 안내. 같은 문장 5초 쿨다운을 그대로 따른다(쿨다운은 `VoiceGuide`가 처리)
+- 모든 핵심 피드백(횟수, 오류, 너무 빠른 반복 안내, 세트, 휴식과 휴식 종료 3초 전)은 음성으로도 제공한다.
 - 인수 조건(F-06, 이 Task 부분): 휴식이 3초 남았을 때 안내 음성이 나온다(문구 매핑).
 - 이 Task에서 정하는 문구와 우선순위:
 
@@ -29,6 +30,7 @@
 | `PartialRepNoticed` | `'더 내려가세요'` | normal |
 | `WorkoutFinished` | `'운동을 마쳤어요. 수고하셨어요.'` | high |
 | 사람 안 보임 | `'카메라 앞에 서 주세요'` | high |
+| 너무 빠른 반복(`VoiceCues.slowDown`, `WorkoutEvent`가 아니라 TASK-27이 `TooFastRep`을 받을 때 직접 씀) | `'조금 더 천천히'` | normal |
 | 이어서 하기 확인 | `'이어서 할까요?'` | high |
 
 ## 연결 범위
@@ -45,7 +47,7 @@
 |---|---|---|---|
 | `VoiceCue` | `app/lib/features/workout/domain/voice_cues.dart` | `class VoiceCue { const VoiceCue(this.text, {this.priority = VoicePriority.normal}); final String text; final VoicePriority priority; }` (`==` 구현) | TASK-27, 28 |
 | `cuesForEvent` | 같은 파일 | `List<VoiceCue> cuesForEvent(WorkoutEvent event)` | TASK-27 |
-| `VoiceCues` | 같은 파일 | `abstract final class VoiceCues { static const VoiceCue noPerson; static const VoiceCue askResume; }` | TASK-28 |
+| `VoiceCues` | 같은 파일 | `abstract final class VoiceCues { static const VoiceCue noPerson; static const VoiceCue askResume; static const VoiceCue slowDown; }` (slowDown은 `VoiceCue('조금 더 천천히')`, priority normal) | TASK-27, 28 |
 
 ## 범위
 - 위 매핑
@@ -63,7 +65,7 @@
 | 다음 세트 (F-08) | `NextSetStarted(2)` | `[VoiceCue('다음 세트를 시작하세요', priority: high)]` |
 | 운동 종료 | `WorkoutFinished()` | 문구 1개, high |
 | 부분 반복 (F-03) | `PartialRepNoticed(1)` | `[VoiceCue('더 내려가세요')]` |
-| 사람 안 보임 상수 | `VoiceCues.noPerson.text` | '카메라 앞에 서 주세요' |
+| 고정 문구 상수 (F-03, F-06) | `VoiceCues.noPerson`, `VoiceCues.slowDown` | noPerson.text '카메라 앞에 서 주세요' / slowDown == `VoiceCue('조금 더 천천히')`(priority normal) |
 
 ## 바뀔 것으로 예상되는 파일
 - `app/lib/features/workout/domain/voice_cues.dart`
@@ -81,3 +83,7 @@
 
 ## 2026-11-13 설계 검토 반영
 - `RestEndingSoon` → '${remainingSec}초 뒤 다음 세트를 시작해요'(high) 추가. 가이드 상태와 카운트다운 음성은 TASK-51, 글자 대체는 TASK-11 범위로 명시
+
+## 2026-11-13 TASK-08 QA 결정 반영
+- `VoiceCues.slowDown`('조금 더 천천히', normal) 추가. 빠른 반복은 세트 진행과 무관해 `WorkoutEvent`를 만들지 않고 TASK-27이 상수를 직접 씀(TASK-16 계약 변경 없음). 쿨다운 5초는 TASK-11 `VoiceGuide` 규칙 그대로
+- "사람 안 보임 상수" 테스트 행을 "고정 문구 상수"로 넓힘(행 수 그대로)

@@ -20,7 +20,8 @@
   - F-01: 전신이 보이게 서면 33개 점의 스켈레톤이 그려진다(화면에서는 `SkeletonOverlay`에 frame 전달 확인)
   - F-05: 화면 점수 색이 기준대로 바뀐다.
   - F-08: 10회를 채우면 세트가 2로 바뀌고 휴식 카운트다운이 나온다.
-- 이 Task에서 정하는 표시: 횟수 `'$repsInSet / $targetReps'`, 세트 `'$currentSet / $totalSets 세트'`, 오류 문구는 lastRep 첫 오류의 `voiceMessage`, 상단 안내 띠(notice가 있으면 notice, 없으면 `voiceCaptionProvider`의 마지막 값)
+- 너무 빠른 반복(최소 1회 시간 미달)은 "조금 더 천천히"를 음성과 글자로 안내한다(글자는 컨트롤러가 `repHint`로 줌)
+- 이 Task에서 정하는 표시: 횟수 `'$repsInSet / $targetReps'`, 세트 `'$currentSet / $totalSets 세트'`, 오류 문구 자리는 `repHint`가 있으면 repHint, 없으면 lastRep 첫 오류의 `voiceMessage`, 상단 안내 띠(notice가 있으면 notice, 없으면 `voiceCaptionProvider`의 마지막 값)
 - 미리보기: `CameraPreviewView(camera: state.camera, overlay: SkeletonOverlay(frame: state.frame))`(비율 상자 안에 스켈레톤)
 - 화면 생성 시 `start()`, `AppLifecycleListener`로 `onAppLifecycle` 호출
 
@@ -30,7 +31,7 @@
 | 이름 | 위치 | 계약 |
 |---|---|---|
 | `workoutControllerProvider`, `WorkoutController` | `app/lib/features/workout/application/workout_controller.dart` | `final workoutControllerProvider = NotifierProvider.autoDispose.family<WorkoutController, WorkoutViewState, ExerciseType>(WorkoutController.new);`, `Future<void> start(); void skipRest(); void onAppLifecycle(AppLifecycleState state)` |
-| `WorkoutViewState` | `app/lib/features/workout/application/workout_view_state.dart` | `class WorkoutViewState { const WorkoutViewState({required WorkoutSessionState session, PoseCameraInfo? camera, PoseFrame? frame, RepResult? lastRep, String? notice, bool askResume = false, WorkoutSummary? summary}); }` |
+| `WorkoutViewState` | `app/lib/features/workout/application/workout_view_state.dart` | `class WorkoutViewState { const WorkoutViewState({required WorkoutSessionState session, PoseCameraInfo? camera, PoseFrame? frame, RepResult? lastRep, String? notice, String? repHint, bool askResume = false, WorkoutSummary? summary}); WorkoutViewState copyWith(...); }` (repHint는 반복 단위 안내 글자, 지금은 빠른 반복의 '조금 더 천천히'만. copyWith에서 null로 지울 수 있어야 함) |
 | `WorkoutPhase` | `app/lib/features/workout/domain/workout_session_controller.dart` | `enum WorkoutPhase { exercising, resting, paused, finished }` |
 | `SkeletonOverlay` | `app/lib/features/workout/widgets/skeleton_overlay.dart` | `class SkeletonOverlay extends StatelessWidget { const SkeletonOverlay({super.key, required PoseFrame? frame, Color color = Colors.white}); }` |
 | `ScoreBadge`, `scoreColor` | `app/lib/features/workout/widgets/score_badge.dart` | `class ScoreBadge extends StatelessWidget { const ScoreBadge({super.key, required int? score, double size = 64}); }`, `Color scoreColor(ScoreGrade grade)` |
@@ -58,7 +59,7 @@
 | 횟수와 세트 | repsInSet 3, targetReps 10, currentSet 1, totalSets 3 | '3 / 10', '1 / 3 세트' |
 | 점수 색 (F-05) | lastRep score 75 | `ScoreBadge(score: 75)` 표시, 섬광 색이 fair 색 |
 | 휴식 오버레이 (F-08) | phase resting, currentSet 2, restRemainingSec 30 | `RestOverlay` 표시, '30', '2 / 3 세트' |
-| 오류 문구 | lastRep errors [puHipSag] | '허리가 처졌어요. 몸을 일자로 유지하세요.' |
+| 오류 문구와 빠른 반복 글자 (F-03) | lastRep errors [puHipSag] / 같은 상태에 repHint '조금 더 천천히' | '허리가 처졌어요. 몸을 일자로 유지하세요.' / 그 자리에 '조금 더 천천히'(오류 문구는 보이지 않음) |
 | 안내 띠 (F-06) | notice '카메라 앞에 서 주세요' / notice 없이 voiceCaptionProvider가 '3회' 발행 | 띠에 notice / 띠에 '3회' |
 | 끝나면 결과로 | summary가 생김 | 경로 `/workout/result` |
 
@@ -85,3 +86,7 @@
 - `CameraPreviewView(camera:)`에 스켈레톤을 overlay로 넣어 비율 일치, 글자 안내 띠(`voiceCaptionProvider`) 추가
 - 이어서 하기 대화상자는 TASK-53으로 옮기고 버튼, 뒤로 가기 확인과 함께 분리. 선행 Task에 TASK-03, TASK-11 추가
 - (재개 점검) 직접 받아 쓰는 TASK-27(`workoutControllerProvider`, `WorkoutViewState`)을 선행 Task에 명시
+
+## 2026-11-13 TASK-08 QA 결정 반영
+- `WorkoutViewState.repHint`(TASK-27) 표시: 오류 문구 자리에 repHint 우선. "오류 문구" 테스트 행을 넓힘(행 수 그대로)
+- 한국어 음성이 없는 기기에서는 같은 문장이 안내 띠(captions)에도 나올 수 있다. 두 곳 표시는 허용(띠는 음성 대체, 오류 문구 자리는 반복 피드백)

@@ -1,7 +1,7 @@
 # TASK-49: 분석기 측정 쪽 유지 규칙과 자세 게이트
 
 - 상태: 대기
-- 선행 Task: TASK-06, TASK-08, TASK-13, TASK-15
+- 선행 Task: TASK-06, TASK-08, TASK-13, TASK-15, TASK-56
 - 실행 방식: 순차
 - 실행 방식 근거: TASK-15와 같은 파일(`rep_analyzer.dart`)을 고치고, 운동 진행 컨트롤러(TASK-27)가 이 최종 계약에 기댐
 - Spec 출처: F-02, F-03, F-07 (7장 측정 쪽 유지 규칙, 자세 게이트, 9장 인수 조건)
@@ -40,14 +40,14 @@
 | `RepAnalyzer` 외 | `app/lib/pose/analyzer/rep_analyzer.dart` | TASK-15 계약: `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; void reset(); }` |
 | `selectSide`, `anglesForSide`, `SideAngles` | `app/lib/pose/angle/joint_angle.dart` | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})`, `SideAngles anglesForSide(PoseFrame frame, BodySide side)` (TASK-05 계약 그대로, 고치지 않음) |
 | `passesPostureGate` | `app/lib/pose/body/body_check.dart` | `bool passesPostureGate(PoseFrame frame, ExerciseType exercise, {BodySide? side, double maxDeg = 30})` |
-| `RepPhase` | `app/lib/pose/rep/rep_counter.dart` | `enum RepPhase { unknown, up, descending, down }` |
+| `RepPhase` | `app/lib/pose/rep/rep_counter.dart` | `enum RepPhase { unknown, up, descending, down }` (TASK-56: 반복 취소 `RepCancelledEvent` 뒤에도 unknown으로 돌아감) |
 | `buildSyntheticClip`, `repAngleSequence`, `SyntheticPose` | `app/test/support/synthetic_clip.dart` | TASK-06 계약 그대로 (테스트에서만, `poseFor: (frameIndex, angle)`, `bodyTiltDeg`, `torsoLeanDeg`, `visibleSide`) |
 
 ### 내보내는 것 (다음 Task가 기대는 것, 바꾸면 안 됨)
 | 이름 | 위치 | 계약 | 쓰는 Task |
 |---|---|---|---|
 | `RepAnalyzer` | `app/lib/pose/analyzer/rep_analyzer.dart` | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150, int sideSwitchAfterMs = 500, double gateMaxDeg = 30}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; BodySide? get side; void reset(); }` (side는 현재 측정 쪽, 세트 시작 전 null. reset은 측정 쪽도 지움) | TASK-27, 52 |
-| `AnalyzerOutput`, `RepResult`, `PartialRep` | 같은 파일 | TASK-15 계약 그대로 | TASK-16, 17, 18, 27 |
+| `AnalyzerOutput`, `RepResult`, `PartialRep`, `TooFastRep` | 같은 파일 | TASK-15 계약 그대로 | TASK-16, 17, 18, 27 |
 
 ## 범위
 - 위 규칙을 `RepAnalyzer`에 추가
@@ -81,3 +81,8 @@
 - 연결 범위의 계약과 실제 코드가 다를 때
 
 ## 추가 발췌 (오케스트레이터가 보충)
+
+## 2026-11-13 TASK-08 QA 결정 반영 (TASK-56)
+- RepCounter는 하강 시작 후 10초(`maxRepMs`)가 지나면 반복을 취소하고 phase를 unknown으로 돌린다. 그래서 스쿼트 게이트("phase가 unknown인 동안만 적용")는 취소 뒤 다시 UP을 인정할 때도 적용된다. 이것이 의도된 동작이다(취소 뒤 UP 재도달 = 새 출발점)
+- 게이트나 측정 쪽 규칙으로 건너뛴 프레임은 RepCounter에 들어가지 않으므로, 10초 경과는 다음에 들어가는 정상 프레임의 시각으로 판단된다(별도 처리 불필요)
+- 내보내기 `AnalyzerOutput` 하위 타입에 `TooFastRep`(TASK-15)이 포함됨. 이 Task에서 동작을 바꾸지 않음. 테스트 추가 없음

@@ -1,7 +1,7 @@
 # TASK-15: 프레임 분석기(각도 → 횟수 → 오류 → 점수)
 
 - 상태: 대기
-- 선행 Task: TASK-07, TASK-08, TASK-09, TASK-12
+- 선행 Task: TASK-07, TASK-08, TASK-09, TASK-12, TASK-56
 - 실행 방식: 순차
 - 실행 방식 근거: 판정 조각들을 묶는 연결 지점, 세션과 화면이 기댐
 - Spec 출처: F-02~F-05 (7장 횟수 판정 기준, 깊이 판정, 시간 기준, 9장 인수 조건), 8장 테스트 가능성
@@ -20,9 +20,11 @@
   - 원시 각도를 `MovingAverage.add(raw, t)`에 넣은 값을 `angle`로, 원시 각도를 `rawAngle`로 `RepCounter.update`에 넘긴다
   - 반복이 끝나면(`RepEvent`) 그 반복 구간(startMs~endMs) 프레임으로 `judgeRep` 후 `scoreRep`
   - 부분 반복(`PartialRepEvent`)은 점수를 매기지 않고 그대로 알린다(오류 판정, 점수 계산 안 함)
+  - 빠른 반복(`TooFastRepEvent`, 최소 1회 시간 미달)은 `TooFastRep`으로 알린다. 오류 판정, 점수 계산을 하지 않고 count, partialCount도 오르지 않는다("조금 더 천천히" 안내는 출력을 받는 쪽 몫)
+  - 반복 취소(`RepCancelledEvent`, 하강 시작 후 10초 초과)는 아무것도 출력하지 않고 보관 프레임만 비운다. 다음 반복은 다시 UP에 도달한 뒤부터 센다(RepCounter가 처리)
   - `reset()`은 이동 평균, RepCounter, 보관 프레임을 모두 비운다
 - 인수 조건:
-  - F-03: 푸쉬업 10회 녹화 클립을 넣으면 정확히 10이 나온다. 130도까지만 내려갔다 올라온 동작은 세지 않고 부분 반복 사건이 1번 나온다. 155도까지만 흔들린 동작은 아무 사건도 나오지 않는다. 같은 클립을 15fps와 30fps로 넣어도 횟수가 같다. 재개 직후 처음 UP 전 움직임은 세지 않는다.
+  - F-03: 푸쉬업 10회 녹화 클립을 넣으면 정확히 10이 나온다. 130도까지만 내려갔다 올라온 동작은 세지 않고 부분 반복 사건이 1번 나온다. 155도까지만 흔들린 동작은 아무 사건도 나오지 않는다. 같은 클립을 15fps와 30fps로 넣어도 횟수가 같다. 재개 직후 처음 UP 전 움직임은 세지 않는다. 푸쉬업을 0.6초보다 빠르게 한 번 하면 횟수와 부분 반복이 오르지 않는다(빠른 반복 출력). 하강 시작 후 10초가 지나도 올라오지 않으면 그 반복은 횟수와 부분 반복 어디에도 들어가지 않고, 다시 UP이 된 뒤의 반복부터 센다.
   - F-04: 허리를 처지게 한 푸쉬업 클립은 `PU_HIP_SAG`, 엉덩이를 든 클립은 `PU_HIP_PIKE`가 기록되고 서로 바뀌어 나오지 않는다. 최저 각도 105도 반복은 횟수로 세면서 `PU_SHALLOW`가 기록된다. 최저점이 1~2프레임만 짧게 88도를 찍는 85~95도 반복에서 min_angle은 최저점 주변 3프레임 원시 각도의 중앙값으로 기록되고, 이동 평균 때문에 실제보다 얕게 판정되지 않는다.
   - F-05: 오류 없는 반복은 100점, 깊이 부족 반복은 75점으로 기록된다.
 
@@ -35,8 +37,9 @@
 | `PoseFrame` | `app/lib/pose/landmarks/pose_landmark.dart` | TASK-04 계약 그대로 |
 | `selectSide`, `SideAngles` | `app/lib/pose/angle/joint_angle.dart` | `SideAngles? selectSide(PoseFrame frame, {double minVisibility = 0.5})` (평균 visibility 높은 쪽, 같으면 left, 둘 다 기준 미만이면 null. 고른 쪽의 세 점 묶음(어깨-팔꿈치-손목, 골반-무릎-발목, 어깨-골반-무릎, 어깨-골반-발목) 중 하나라도 벡터 길이가 0이거나 좌표가 유한하지 않으면 그쪽은 쓸 수 없는 것으로 보고, 다른 쪽이 visibility 기준과 이 조건을 만족하면 다른 쪽을, 둘 다 안 되면 null), `class SideAngles { const SideAngles({required BodySide side, required double elbow, required double knee, required double hip, required double visibility}); }` |
 | `MovingAverage` | `app/lib/pose/angle/moving_average.dart` | `class MovingAverage { MovingAverage({int windowMs = 150}); double add(double value, int timestampMs); void reset(); int get length; }` |
-| `RepThresholds`, `RepCounter` | `app/lib/pose/rep/rep_counter.dart` | `class RepThresholds { const RepThresholds({required double upDeg, required double descendDeg, required double downDeg, required int minRepMs}); static RepThresholds forExercise(ExerciseType exercise); }`, `class RepCounter { RepCounter(RepThresholds thresholds); RepCounterEvent? update({required int timestampMs, required double angle, double? rawAngle}); int get count; int get partialCount; RepPhase get phase; void reset(); }` |
+| `RepThresholds`, `RepCounter` | `app/lib/pose/rep/rep_counter.dart` | `class RepThresholds { const RepThresholds({required double upDeg, required double descendDeg, required double downDeg, required int minRepMs, int maxRepMs = 10000}); static RepThresholds forExercise(ExerciseType exercise); }` (TASK-56 계약, maxRepMs 기본 10000), `class RepCounter { RepCounter(RepThresholds thresholds); RepCounterEvent? update({required int timestampMs, required double angle, double? rawAngle}); int get count; int get partialCount; RepPhase get phase; void reset(); }` |
 | `RepEvent`, `PartialRepEvent` | 같은 파일 | `final class RepEvent extends RepCounterEvent { const RepEvent({required int repIndex, required int startMs, required int bottomMs, required int endMs, required double minAngle}); int get durationMs; }`, `final class PartialRepEvent extends RepCounterEvent { const PartialRepEvent({required int startMs, required int endMs, required double minAngle}); }` (minAngle은 원시 각도 최저점 주변 3프레임 중앙값) |
+| `TooFastRepEvent`, `RepCancelledEvent` | 같은 파일 | `final class TooFastRepEvent extends RepCounterEvent { const TooFastRepEvent({required int startMs, required int endMs}); int get durationMs; }` (DOWN 도달 후 UP 복귀했지만 minRepMs 미만. count, partialCount 미포함), `final class RepCancelledEvent extends RepCounterEvent { const RepCancelledEvent({required int startMs, required int cancelledMs}); }` (하강 시작 후 maxRepMs 초과. 이후 phase unknown, UP 재도달 전에는 반복 시작 안 함) (TASK-56) |
 | `PoseErrorCode`, `ErrorThresholds`, `judgeRep` | `app/lib/pose/judge/` | `List<PoseErrorCode> judgeRep({required ExerciseType exercise, required List<PoseFrame> repFrames, required RepEvent rep, ErrorThresholds thresholds = const ErrorThresholds()})` |
 | `scoreRep` | `app/lib/pose/score/rep_score.dart` | `int scoreRep({required List<PoseErrorCode> errors, required int durationMs})` |
 | `repAngleSequence`, `buildSyntheticClip`, `SyntheticPose`, `HipOffset` | `app/test/support/synthetic_clip.dart` | TASK-06 계약 그대로 (테스트에서만, `poseFor`는 `(int frameIndex, double angle)`) |
@@ -47,10 +50,11 @@
 | `AnalyzerOutput` | `app/lib/pose/analyzer/rep_analyzer.dart` | `sealed class AnalyzerOutput` | TASK-27 |
 | `RepResult` | 같은 파일 | `final class RepResult extends AnalyzerOutput { const RepResult({required int repIndex, required int score, required double minAngle, required int durationMs, required List<PoseErrorCode> errors}); }` (repIndex는 reset 이후 1부터) | TASK-16, 17, 18, 27 |
 | `PartialRep` | 같은 파일 | `final class PartialRep extends AnalyzerOutput { const PartialRep({required double minAngle, required int endMs}); }` | TASK-27 |
+| `TooFastRep` | 같은 파일 | `final class TooFastRep extends AnalyzerOutput { const TooFastRep({required int durationMs, required int endMs}); }` (최소 1회 시간 미달 반복. 점수, 오류 없음, count, partialCount 미포함) | TASK-27 |
 | `RepAnalyzer` | 같은 파일 | `class RepAnalyzer { RepAnalyzer({required ExerciseType exercise, RepThresholds? repThresholds, ErrorThresholds errorThresholds = const ErrorThresholds(), int smoothingWindowMs = 150}); AnalyzerOutput? addFrame(PoseFrame frame); int get count; int get partialCount; double? get lastAngle; void reset(); }` (lastAngle은 마지막 이동 평균 각도) | TASK-49 (TASK-49가 생성자 인자와 `side`를 더해 최종 계약을 TASK-27에 넘김) |
 
 ## 범위
-- 위 클래스. 반복 구간 프레임은 마지막 사건(반복 또는 부분 반복) 이후 프레임만 보관(메모리 누수 방지)
+- 위 클래스. 반복 구간 프레임은 마지막 사건(반복, 부분 반복, 빠른 반복, 반복 취소) 이후 프레임만 보관(메모리 누수 방지)
 
 ## 범위 밖 (건드리지 않음)
 - 측정 쪽 유지 규칙(0.5초), 자세 게이트(TASK-49), 세트, 휴식(TASK-16), 판정 기준값 변경
@@ -65,6 +69,7 @@
 | 짧은 최저점은 얕게 판정하지 않음 (F-04) | 팔꿈치 원시 각도가 ... 95, 92, 88, 88, 92, 95 ...인 1회(그 밖은 완만한 곡선) | RepResult.minAngle 88 ± 0.5, errors에 puShallow 없음 |
 | 쓸 수 없는 프레임 건너뜀 | 10회 클립 중간 5프레임을 양쪽 visibility 0.1로, 다른 5프레임은 보이는 쪽 팔꿈치와 손목을 같은 좌표로(반대쪽은 가려짐) | 예외 없음, count 10, PartialRep 0개(0도가 이동 평균에 들어가지 않음) |
 | reset 후 처음부터 (F-03) | 3회 넣고 reset → 팔꿈치 90에서 시작하는 동작 → 정상 1회 | reset 뒤 count 0, 90에서 시작한 동작은 출력 없음, 다음 RepResult.repIndex 1 |
+| 빠른 반복과 10초 취소 (F-03) | 푸쉬업 bottom 80 반복 1회를 하강 시작부터 UP 복귀까지 0.6초 미만이 되게(예: `repAngleSequence(reps: 1, framesPerRep: 12)`, 30fps) / 팔꿈치 90도로 내려가 11초 유지한 뒤 170으로 펴고, 이어서 정상 1회(1초) | `TooFastRep` 1개(durationMs < 600), RepResult 0개, count 0, partialCount 0 / 취소된 동작은 출력 없음, 다음 RepResult.repIndex 1, count 1, partialCount 0 |
 | JSON 클립 왕복 | 10회 클립을 `encode` 후 `LandmarkClip.parse`해서 넣기 | count 10 |
 
 ## 바뀔 것으로 예상되는 파일
@@ -91,3 +96,8 @@
 ## 2026-11-13 설계 검토 반영
 - 이동 평균을 시간 기준(`smoothingWindowMs = 150`)으로, RepCounter에 원시 각도 전달, reset 규칙과 rep_index 1부터를 명시
 - 측정 쪽 유지와 자세 게이트는 Task가 커져 TASK-49로 분리. 테스트: 15/30fps, 짧은 최저점, reset 추가, 기존 행 묶음
+
+## 2026-11-13 TASK-08 QA 결정 반영
+- 선행에 TASK-56 추가. `RepThresholds.maxRepMs`, `TooFastRepEvent`, `RepCancelledEvent`를 받아 씀
+- 내보내기에 `TooFastRep` 추가(빠른 반복 → TASK-27이 "조금 더 천천히" 안내). 반복 취소는 출력 없이 보관 프레임만 비움
+- 테스트 1행 추가(빠른 반복과 10초 취소). 테스트 행이 9개라 기준(8개)을 1개 넘지만, 새 사건을 출력으로 옮기는 같은 연결 지점이라 따로 떼지 않음

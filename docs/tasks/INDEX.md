@@ -21,54 +21,55 @@
 | 8 | TASK-09 자세 오류 판정 | 병렬 | G2 | 08 | app/lib/pose/judge/* |
 | 8 | TASK-10 체형별 루틴 데이터 | 병렬 | G2 | 04 | app/lib/features/routine/* |
 | 8 | TASK-11 음성 안내 서비스(글자 안내 대체 포함) | 병렬 | G2 | 01 | app/lib/core/tts/* |
-| 9 | TASK-12 반복 점수와 점수 등급 | 병렬 | G3 | 09 | app/lib/pose/score/rep_score.dart |
-| 9 | TASK-13 전신 인식, 정면 판정, 주 인물, 자세 게이트 | 병렬 | G3 | 05, 06 | app/lib/pose/body/body_check.dart |
-| 9 | TASK-26 추적 감시(미검출, 저사양, reset) | 병렬 | G3 | 01 | workout/domain/tracking_monitor.dart |
-| 10 | TASK-14 촬영 가이드 상태 머신(운동별 조건과 문구) | 순차 | - | 13 | workout/domain/setup_guide_controller.dart |
-| 11 | TASK-15 프레임 분석기 | 순차 | - | 07, 08, 09, 12 | app/lib/pose/analyzer/rep_analyzer.dart |
-| 12 | TASK-49 분석기 측정 쪽 유지 규칙과 자세 게이트 (새) | 순차 | - | 06, 08, 13, 15 | app/lib/pose/analyzer/rep_analyzer.dart |
-| 13 | TASK-16 세트와 휴식 세션 컨트롤러 | 병렬 | G4 | 10, 15 | workout/domain/workout_session_controller.dart |
-| 13 | TASK-17 운동 결과 요약 모델 | 병렬 | G4 | 10, 12, 15 | workout/domain/workout_summary.dart |
-| 13 | TASK-22 스켈레톤 오버레이 위젯 | 병렬 | G4 | 04 | workout/widgets/skeleton_overlay.dart |
-| 14 | TASK-18 운동 이벤트별 음성 문구 | 병렬 | G5 | 11, 16 | workout/domain/voice_cues.dart |
-| 14 | TASK-23 점수 배지 위젯 | 병렬 | G5 | 03, 12 | workout/widgets/score_badge.dart |
-| 14 | TASK-24 휴식 오버레이 위젯 | 병렬 | G5 | 03 | workout/widgets/rest_overlay.dart |
-| 15 | TASK-19 자세 추정 채널 계약(Dart) | 순차 | - | 04 | app/lib/pose/detector/*, app/test/support/fake_pose_detector.dart |
-| 16 | TASK-20 Android 카메라 미리보기(회전, 반전, 화면 꺼짐 방지) | 순차 | - | 19 | build.gradle.kts, kotlin/com/atheleo/app/{MainActivity,pose/CameraController,pose/PoseChannelHandler}.kt, src/test/kotlin/.../CameraStartInfoTest.kt |
-| 17 | TASK-50 포즈 모델 다운로드 스크립트와 체크섬 (새) | 순차 | - | 20 | scripts/{download_pose_models.sh,pose_models.sha256,test_download_pose_models.sh}, build.gradle.kts, .gitignore |
-| 18 | TASK-21 MediaPipe Pose Landmarker 연결 | 순차 | - | 20, 50 | build.gradle.kts, kotlin/.../pose/{PoseLandmarkerHelper,PoseChannelHandler,PoseEventMapper}.kt, src/test/kotlin/.../PoseEventMapperTest.kt |
-| 19 | TASK-25 촬영 가이드 화면(권한, 미리보기 비율) | 순차 | - | 03, 06, 13, 14, 19, 21 | app/lib/core/permission/*, workout/widgets/camera_preview_view.dart, workout/presentation/setup_guide_screen.dart, router.dart |
-| 20 | TASK-51 촬영 가이드 음성 안내와 글자 안내 띠 (새) | 순차 | - | 06, 11, 14, 19, 25 | workout/presentation/setup_guide_screen.dart |
-| 21 | TASK-27 운동 진행 컨트롤러 | 순차 | - | 11, 13, 16, 17, 18, 19, 49 | app/lib/core/clock.dart, workout/application/{workout_view_state,workout_controller}.dart |
-| 22 | TASK-52 휴식, 일시정지 중 분석 중단과 분석기 초기화 (새) | 순차 | - | 06, 16, 19, 27, 49 | workout/application/workout_controller.dart |
-| 23 | TASK-28 운동 중 예외 처리 | 순차 | - | 02, 18, 19, 26, 27, 52 | workout/application/workout_controller.dart |
-| 24 | TASK-29 운동 화면(표시) | 순차 | - | 03, 11, 22, 23, 24, 25, 27, 28 | workout/presentation/workout_screen.dart, router.dart |
-| 25 | TASK-53 운동 화면 조작(일시정지, 종료, 뒤로 가기 확인) (새) | 순차 | - | 16, 27, 28, 29, 52 | workout/presentation/workout_screen.dart |
-| 26 | TASK-30 운동 결과 화면(표시) | 순차 | - | 23, 27 | workout/presentation/workout_result_screen.dart, workout/widgets/rep_score_chart.dart, router.dart |
-| 27 | TASK-31 로컬 DB 스키마(drift) | 순차 | - | 01 | app/lib/core/storage/app_database.dart, history/domain/sync_status.dart |
-| 28 | TASK-32 운동 기록 로컬 저장소(소유자별) | 순차 | - | 17, 31 | history/data/workout_local_repository.dart |
-| 29 | TASK-54 기록 guest 귀속과 동기화 실패 횟수 (새) | 순차 | - | 31, 32 | history/data/workout_local_repository.dart |
-| 30 | TASK-33 토큰과 사용자 id 암호화 저장소 | 순차 | - | 01 | app/lib/core/storage/token_storage.dart, app/test/support/in_memory_token_storage.dart |
-| 31 | TASK-34 API 클라이언트 | 순차 | - | 02, 33 | app/lib/core/network/{api_client,session_events}.dart, app/test/support/fake_http_adapter.dart |
-| 32 | TASK-35 인증 저장소와 로그인 상태 | 순차 | - | 33, 34 | app/lib/features/auth/{data,application}/* |
-| 33 | TASK-36 로그인, 회원가입 화면 | 순차 | - | 03, 35 | app/lib/features/auth/{domain,presentation}/*, routes.dart, router.dart |
-| 34 | TASK-37 인증 가드와 토큰 만료 이동 | 순차 | - | 03, 34, 35, 36 | app/lib/app/auth_redirect.dart, router.dart |
-| 35 | TASK-38 운동 기록 업로드 API | 병렬 | G6 | 17, 34 | history/data/workout_remote_api.dart |
-| 35 | TASK-45 랜드마크 클립 기록과 내보내기 | 병렬 | G6 | 13, 19, 27 | app/lib/features/dev/{domain,data}/* |
-| 36 | TASK-39 동기화 서비스(오류별 처리, 수동 재시도) | 순차 | - | 02, 31, 32, 35, 38, 54 | app/lib/core/network/network_status.dart, history/application/sync_service.dart |
-| 37 | TASK-55 자동 동기화 실행 시점과 guest 귀속 (새) | 순차 | - | 03, 33, 34, 35, 39, 54 | history/application/sync_service.dart, app/lib/app/app_startup.dart, app/lib/main.dart, app/test/smoke_test.dart |
-| 38 | TASK-40 결과 화면 저장과 로그인 안내 | 순차 | - | 27, 30, 31, 32, 35, 36, 39, 55 | workout/application/result_save_controller.dart, workout/widgets/result_save_section.dart, router.dart |
-| 39 | TASK-41 기록 목록 화면 | 순차 | - | 31, 32, 35, 37, 39, 54, 55 | history/{domain/group_by_day,widgets/sync_status_chip,presentation/history_list_screen}.dart, router.dart |
-| 40 | TASK-42 기록 상세 화면 | 순차 | - | 23, 30, 35, 41 | history/presentation/history_detail_screen.dart, router.dart |
-| 41 | TASK-43 프로필 저장소와 상태 | 순차 | - | 10, 34, 35 | app/lib/features/profile/{data,application}/* |
-| 42 | TASK-44 프로필 화면 | 순차 | - | 36, 37, 43 | profile/presentation/profile_screen.dart, router.dart |
-| 43 | TASK-46 개발자 메뉴 화면 | 순차 | - | 03, 22, 25, 45 | dev/presentation/dev_menu_screen.dart, router.dart |
-| 44 | TASK-47 홈 화면 | 순차 | - | 03, 10, 27, 32, 35, 46 | home/presentation/home_screen.dart, router.dart |
-| 45 | TASK-48 Sentry 연결 | 순차 | - | 02, 03, 28, 39, 47, 55 | app/lib/core/monitoring/sentry_error_reporter.dart, app/lib/main.dart |
+| 9 | TASK-56 빠른 반복 사건과 10초 반복 취소 (새) | 순차 | - | 08 | app/lib/pose/rep/rep_counter.dart |
+| 10 | TASK-12 반복 점수와 점수 등급 | 병렬 | G3 | 09 | app/lib/pose/score/rep_score.dart |
+| 10 | TASK-13 전신 인식, 정면 판정, 주 인물, 자세 게이트 | 병렬 | G3 | 05, 06 | app/lib/pose/body/body_check.dart |
+| 10 | TASK-26 추적 감시(미검출, 저사양, reset) | 병렬 | G3 | 01 | workout/domain/tracking_monitor.dart |
+| 11 | TASK-14 촬영 가이드 상태 머신(운동별 조건과 문구) | 순차 | - | 13 | workout/domain/setup_guide_controller.dart |
+| 12 | TASK-15 프레임 분석기 | 순차 | - | 07, 08, 09, 12, 56 | app/lib/pose/analyzer/rep_analyzer.dart |
+| 13 | TASK-49 분석기 측정 쪽 유지 규칙과 자세 게이트 (새) | 순차 | - | 06, 08, 13, 15, 56 | app/lib/pose/analyzer/rep_analyzer.dart |
+| 14 | TASK-16 세트와 휴식 세션 컨트롤러 | 병렬 | G4 | 10, 15 | workout/domain/workout_session_controller.dart |
+| 14 | TASK-17 운동 결과 요약 모델 | 병렬 | G4 | 10, 12, 15 | workout/domain/workout_summary.dart |
+| 14 | TASK-22 스켈레톤 오버레이 위젯 | 병렬 | G4 | 04 | workout/widgets/skeleton_overlay.dart |
+| 15 | TASK-18 운동 이벤트별 음성 문구 | 병렬 | G5 | 11, 16 | workout/domain/voice_cues.dart |
+| 15 | TASK-23 점수 배지 위젯 | 병렬 | G5 | 03, 12 | workout/widgets/score_badge.dart |
+| 15 | TASK-24 휴식 오버레이 위젯 | 병렬 | G5 | 03 | workout/widgets/rest_overlay.dart |
+| 16 | TASK-19 자세 추정 채널 계약(Dart) | 순차 | - | 04 | app/lib/pose/detector/*, app/test/support/fake_pose_detector.dart |
+| 17 | TASK-20 Android 카메라 미리보기(회전, 반전, 화면 꺼짐 방지) | 순차 | - | 19 | build.gradle.kts, kotlin/com/atheleo/app/{MainActivity,pose/CameraController,pose/PoseChannelHandler}.kt, src/test/kotlin/.../CameraStartInfoTest.kt |
+| 18 | TASK-50 포즈 모델 다운로드 스크립트와 체크섬 (새) | 순차 | - | 20 | scripts/{download_pose_models.sh,pose_models.sha256,test_download_pose_models.sh}, build.gradle.kts, .gitignore |
+| 19 | TASK-21 MediaPipe Pose Landmarker 연결 | 순차 | - | 20, 50 | build.gradle.kts, kotlin/.../pose/{PoseLandmarkerHelper,PoseChannelHandler,PoseEventMapper}.kt, src/test/kotlin/.../PoseEventMapperTest.kt |
+| 20 | TASK-25 촬영 가이드 화면(권한, 미리보기 비율) | 순차 | - | 03, 06, 13, 14, 19, 21 | app/lib/core/permission/*, workout/widgets/camera_preview_view.dart, workout/presentation/setup_guide_screen.dart, router.dart |
+| 21 | TASK-51 촬영 가이드 음성 안내와 글자 안내 띠 (새) | 순차 | - | 06, 11, 14, 19, 25 | workout/presentation/setup_guide_screen.dart |
+| 22 | TASK-27 운동 진행 컨트롤러 | 순차 | - | 11, 13, 16, 17, 18, 19, 49 | app/lib/core/clock.dart, workout/application/{workout_view_state,workout_controller}.dart |
+| 23 | TASK-52 휴식, 일시정지 중 분석 중단과 분석기 초기화 (새) | 순차 | - | 06, 16, 19, 27, 49 | workout/application/workout_controller.dart |
+| 24 | TASK-28 운동 중 예외 처리 | 순차 | - | 02, 18, 19, 26, 27, 52 | workout/application/workout_controller.dart |
+| 25 | TASK-29 운동 화면(표시) | 순차 | - | 03, 11, 22, 23, 24, 25, 27, 28 | workout/presentation/workout_screen.dart, router.dart |
+| 26 | TASK-53 운동 화면 조작(일시정지, 종료, 뒤로 가기 확인) (새) | 순차 | - | 16, 27, 28, 29, 52 | workout/presentation/workout_screen.dart |
+| 27 | TASK-30 운동 결과 화면(표시) | 순차 | - | 23, 27 | workout/presentation/workout_result_screen.dart, workout/widgets/rep_score_chart.dart, router.dart |
+| 28 | TASK-31 로컬 DB 스키마(drift) | 순차 | - | 01 | app/lib/core/storage/app_database.dart, history/domain/sync_status.dart |
+| 29 | TASK-32 운동 기록 로컬 저장소(소유자별) | 순차 | - | 17, 31 | history/data/workout_local_repository.dart |
+| 30 | TASK-54 기록 guest 귀속과 동기화 실패 횟수 (새) | 순차 | - | 31, 32 | history/data/workout_local_repository.dart |
+| 31 | TASK-33 토큰과 사용자 id 암호화 저장소 | 순차 | - | 01 | app/lib/core/storage/token_storage.dart, app/test/support/in_memory_token_storage.dart |
+| 32 | TASK-34 API 클라이언트 | 순차 | - | 02, 33 | app/lib/core/network/{api_client,session_events}.dart, app/test/support/fake_http_adapter.dart |
+| 33 | TASK-35 인증 저장소와 로그인 상태 | 순차 | - | 33, 34 | app/lib/features/auth/{data,application}/* |
+| 34 | TASK-36 로그인, 회원가입 화면 | 순차 | - | 03, 35 | app/lib/features/auth/{domain,presentation}/*, routes.dart, router.dart |
+| 35 | TASK-37 인증 가드와 토큰 만료 이동 | 순차 | - | 03, 34, 35, 36 | app/lib/app/auth_redirect.dart, router.dart |
+| 36 | TASK-38 운동 기록 업로드 API | 병렬 | G6 | 17, 34 | history/data/workout_remote_api.dart |
+| 36 | TASK-45 랜드마크 클립 기록과 내보내기 | 병렬 | G6 | 13, 19, 27 | app/lib/features/dev/{domain,data}/* |
+| 37 | TASK-39 동기화 서비스(오류별 처리, 수동 재시도) | 순차 | - | 02, 31, 32, 35, 38, 54 | app/lib/core/network/network_status.dart, history/application/sync_service.dart |
+| 38 | TASK-55 자동 동기화 실행 시점과 guest 귀속 (새) | 순차 | - | 03, 33, 34, 35, 39, 54 | history/application/sync_service.dart, app/lib/app/app_startup.dart, app/lib/main.dart, app/test/smoke_test.dart |
+| 39 | TASK-40 결과 화면 저장과 로그인 안내 | 순차 | - | 27, 30, 31, 32, 35, 36, 39, 55 | workout/application/result_save_controller.dart, workout/widgets/result_save_section.dart, router.dart |
+| 40 | TASK-41 기록 목록 화면 | 순차 | - | 31, 32, 35, 37, 39, 54, 55 | history/{domain/group_by_day,widgets/sync_status_chip,presentation/history_list_screen}.dart, router.dart |
+| 41 | TASK-42 기록 상세 화면 | 순차 | - | 23, 30, 35, 41 | history/presentation/history_detail_screen.dart, router.dart |
+| 42 | TASK-43 프로필 저장소와 상태 | 순차 | - | 10, 34, 35 | app/lib/features/profile/{data,application}/* |
+| 43 | TASK-44 프로필 화면 | 순차 | - | 36, 37, 43 | profile/presentation/profile_screen.dart, router.dart |
+| 44 | TASK-46 개발자 메뉴 화면 | 순차 | - | 03, 22, 25, 45 | dev/presentation/dev_menu_screen.dart, router.dart |
+| 45 | TASK-47 홈 화면 | 순차 | - | 03, 10, 27, 32, 35, 46 | home/presentation/home_screen.dart, router.dart |
+| 46 | TASK-48 Sentry 연결 | 순차 | - | 02, 03, 28, 39, 47, 55 | app/lib/core/monitoring/sentry_error_reporter.dart, app/lib/main.dart |
 
 - 경로 앞부분 생략: `workout/`, `history/`, `profile/`, `dev/`, `home/`은 `app/lib/features/` 아래, `kotlin/`은 `app/android/app/src/main/kotlin/`, `src/test/kotlin/`은 `app/android/app/src/test/kotlin/`, `build.gradle.kts`는 `app/android/app/build.gradle.kts`, `router.dart`, `routes.dart`는 `app/lib/app/`. 각 Task의 테스트 파일은 표에서 뺐다(TASK-55의 `smoke_test.dart`는 기존 파일 수정이라 적음).
 - TASK-31, 33은 선행이 TASK-01뿐이고, TASK-19 → 20 → 50 → 21은 TASK-04만 필요해 더 일찍 돌려도 된다. 순차 Task끼리 겹치지 않게 위 순서를 기본으로 둔다.
-- 같은 파일을 차례로 고치는 묶음(앞 Task가 통과한 뒤 다음 Task): `rep_analyzer.dart` 15 → 49, `workout_controller.dart` 27 → 52 → 28, `setup_guide_screen.dart` 25 → 51, `workout_screen.dart` 29 → 53, `workout_local_repository.dart` 32 → 54, `sync_service.dart` 39 → 55, `main.dart` 55 → 48, `build.gradle.kts` 20 → 50 → 21.
+- 같은 파일을 차례로 고치는 묶음(앞 Task가 통과한 뒤 다음 Task): `rep_counter.dart` 08 → 56, `rep_analyzer.dart` 15 → 49, `workout_controller.dart` 27 → 52 → 28, `setup_guide_screen.dart` 25 → 51, `workout_screen.dart` 29 → 53, `workout_local_repository.dart` 32 → 54, `sync_service.dart` 39 → 55, `main.dart` 55 → 48, `build.gradle.kts` 20 → 50 → 21.
 
 ## 기능별 대응
 
@@ -76,10 +77,10 @@
 |---|---|---|
 | F-01 자세 추정, 카메라 유지, 모델 다운로드 | 19, 20, 21, 25, 26, 27, 28, 50 | 19(채널 계약), 20, 21(실기기 수동), 22, 25(카메라 유지), 26, 28(측정 초기화), 29, 50(체크섬) |
 | F-02 각도, 측정 쪽 유지 | 05, 49 | 05, 06, 49 |
-| F-03 횟수, 자세 게이트, 초기화 | 07, 08, 13, 15, 49, 52 | 08, 13, 15(15/30fps), 49(게이트), 52(rep_index, 재개) |
+| F-03 횟수, 자세 게이트, 초기화, 빠른 반복, 10초 취소 | 07, 08, 13, 15, 49, 52, 56 | 08, 13, 15(15/30fps, 빠른 반복, 취소), 27(빠른 반복 안내), 29(빠른 반복 글자), 49(게이트), 52(rep_index, 재개), 56(빠른 반복, 최저점 정지, 10초 취소) |
 | F-04 오류 판정, 원시 최저점 | 08, 09 | 08, 09, 15 |
 | F-05 반복 점수 | 12 | 12, 15, 23, 29 |
-| F-06 음성 안내, 글자 대체 | 11, 16, 18, 27, 51 | 11, 16, 18, 27(휴식 3초 전), 29(글자 띠), 51(가이드 상태, 3·2·1) |
+| F-06 음성 안내, 글자 대체 | 11, 16, 18, 27, 51 | 11, 16, 18('조금 더 천천히' 상수), 27(휴식 3초 전, 빠른 반복 쿨다운), 29(글자 띠), 51(가이드 상태, 3·2·1) |
 | F-07 시각 피드백, 촬영 가이드 | 13, 14, 20, 21, 22, 23, 25 | 13, 14, 22, 25, 49(스쿼트 게이트) |
 | F-08 세트, 휴식, 화면 꺼짐 방지, 뒤로 가기 | 16, 20, 27, 28, 52, 53 | 16, 20(수동), 27, 28(휴식 중 미검출), 29, 52(휴식 중 미투입), 53(뒤로 가기) |
 | F-09 체형별 루틴 | 10 | 10, 47 |
@@ -200,6 +201,38 @@
 | TASK-01 `build.gradle.kts`, `.gitignore` | 모델 파일 Git 제외와 빌드 전 체크섬 검사 | TASK-50이 작업만 추가(기존 블록 유지) |
 | TASK-04 `PoseFrame.aspectRatio` | 채널 width/height로 채움 | TASK-19가 `width / height`로 채움(TASK-04 계약 변경 없음) |
 
+## 2026-11-13 TASK-08 QA 결정 반영
+
+반영 완료(2026-11-13). Spec 변경 이력 2026-11-13 "TASK-08 QA 결정 반영" 행(빠른 반복은 횟수, 부분 반복 미포함과 "조금 더 천천히" 음성, 글자 안내(5초 쿨다운), 하강 시작 후 10초 초과 반복 취소와 UP 재도달 필요)을 Task에 반영했다. 구현 완료된 TASK-08 코드는 새 Task가 고치고, 진행 중인 TASK-09, 10, 11 파일은 건드리지 않았다.
+
+### 새 Task
+
+| Task | 역할 | 끼어든 자리 |
+|---|---|---|
+| TASK-56 | `RepThresholds.maxRepMs`(기본 10000, 푸쉬업, 스쿼트 모두 10000), `TooFastRepEvent`(최소 시간 미달, 횟수 미포함), `RepCancelledEvent`(하강 시작 후 10초 초과, 이후 phase unknown) | TASK-08 다음, G2(09, 10, 11) 뒤, G3 앞. TASK-15 앞 |
+
+### 바뀐 Task
+
+| Task | 바뀐 내용 |
+|---|---|
+| TASK-08 | 끝에 후속 안내 한 줄(계약 확장은 TASK-56). 본문 계약은 그대로 |
+| TASK-15 | 선행에 56. `TooFastRepEvent` → `TooFastRep` 출력, `RepCancelledEvent` → 출력 없이 보관 프레임 비움. 받아 쓰는 `RepThresholds`에 maxRepMs. 테스트 1행(빠른 반복과 10초 취소) |
+| TASK-49 | 선행에 56. 취소 뒤 phase unknown이라 스쿼트 게이트가 다시 적용됨을 명시. 내보내기 `AnalyzerOutput` 하위 타입에 `TooFastRep` |
+| TASK-18 | `VoiceCues.slowDown`('조금 더 천천히', normal). 빠른 반복은 `WorkoutEvent`가 아님(TASK-16 변경 없음). 상수 테스트 행 넓힘 |
+| TASK-27 | `TooFastRep` → 세션 미반영, `VoiceCues.slowDown` 음성(쿨다운은 `VoiceGuide`), `WorkoutViewState.repHint` 글자, 다음 반복/부분 반복에서 지움. `WorkoutViewState`에 `String? repHint` 추가. 테스트 1행 |
+| TASK-28 | 받아 쓰는 `VoiceCues` 계약 문구를 최신으로(쓰는 상수는 그대로) |
+| TASK-29 | 오류 문구 자리에 `repHint` 우선 표시. 받아 쓰는 `WorkoutViewState` 계약 갱신. 오류 문구 테스트 행 넓힘 |
+
+- 바뀌지 않은 Task: TASK-16, 17(빠른 반복은 세트 기록, 요약에 들어가지 않음), 52, 53, 그 밖 전부. TASK-09, 10, 11은 진행 중이라 손대지 않았고 바꿀 내용도 없음(TASK-09는 `RepEvent`만 받음)
+
+### 순서 변경
+
+| 변경 | 이유 |
+|---|---|
+| 순서 9에 TASK-56(순차)을 넣고 G3 이후 순서 번호를 1씩 미룸 | TASK-56은 `rep_counter.dart` 공개 계약을 넓히는 기반 작업이라 순차. G2(09, 10, 11)와 수정 파일은 겹치지 않지만, TASK-09가 `rep_counter.dart`를 import하고 지금 TASK-09 QA가 돌고 있어 그 사이 이 파일이 바뀌면 QA 결과가 흔들림. G3(12, 13, 26)과도 파일은 겹치지 않지만 G3가 이미 3개라 동시 실행 상한(3)을 넘음. 그래서 G2 완료 뒤, G3 시작 전에 단독으로 돌림 |
+| TASK-15, 49 선행에 56 추가 | 새 사건과 `maxRepMs` 계약에 기댐 |
+| G3를 TASK-56과 함께 돌리고 싶으면 | G3 중 하나(예: TASK-26)를 56 뒤로 미루면 56을 G3에 넣어도 된다(파일 겹침 없음). 기본은 위 순서 |
+
 ## 보류
 
 | 항목 | 이유 | 다음 행동 |
@@ -207,7 +240,7 @@
 | 서버(Django) Task | Spec Q-01: 백엔드 저장소 미확인. 앱은 저장소 인터페이스와 가짜 서버(`FakeHttpAdapter`)로 진행 | Q-01 해결 후 서버 Task 추가(인증, 프로필, 운동 업로드 API, sentry-sdk, docker-compose) |
 | 서버 응답 형식 가정 | TASK-35, 38, 43이 Q-01 확정 전 형식을 가정함 | Q-01 해결 후 해당 Task의 "추가 발췌"에 실제 형식 보충 |
 | 실기기 확인 | Spec Q-02: 테스트 기기 미정. TASK-20, 21의 수동 확인 항목(반전, 화면 꺼짐 방지, 카메라 유지) | 기기 확정 후 verify 단계에서 확인 |
-| 판정 기준 1차 보정 | Spec Q-05: 횟수 각도, `SQ_TORSO_LEAN` 45도, 푸쉬업 게이트 30도, 스쿼트 게이트 30도. TASK-49 완료 직후 본인 영상으로 보정 권장 | TASK-45(클립 내보내기)가 먼저 필요하면 순서 조정 검토 |
+| 판정 기준 1차 보정 | Spec Q-05: 횟수 각도, 최소 반복 시간(0.6초, 0.8초), 최대 반복 시간 10초, `SQ_TORSO_LEAN` 45도, 푸쉬업 게이트 30도, 스쿼트 게이트 30도. TASK-49 완료 직후 본인 영상으로 보정 권장 | TASK-45(클립 내보내기)가 먼저 필요하면 순서 조정 검토 |
 | 모델 파일 체크섬 값 | TASK-50은 공식 배포처에서 실제로 받은 파일로만 체크섬을 정함. 네트워크 제한이면 중단 조건 | 도메인 허용 또는 사용자가 받은 파일로 값 확정 |
 
 ## QA에서 올라온 후속 후보 (오케스트레이터 판단 대기)
