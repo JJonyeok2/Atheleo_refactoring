@@ -92,3 +92,4 @@
 ## 2026-11-13 설계 검토 반영
 - 사용자 id 저장과 복원, `AuthState.userId`, `currentUserIdProvider`(비로그인은 guest = null), `AuthRepository.storedUserId` 추가
 - 로그아웃과 만료가 로컬 기록을 지우지 않음을 명시. 테스트: 오프라인 재시작 추가, 만료와 로그아웃 합침. 선행 Task에 TASK-33 명시
+- (TASK-33 QA 반영) TokenStorage.clear()는 예외를 던질 수 있다(저장소 고장 기기). restore/logout에서 clear 예외가 나도 상태는 signedOut으로 두고 예외는 ErrorReporter로 보고한다(값은 보내지 않음).

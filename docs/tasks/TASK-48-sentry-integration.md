@@ -73,3 +73,4 @@
 ## 2026-11-13 설계 검토 반영
 - 보고 대상에 동기화 실패(failed, 'sync_failed') 추가, 사용자 id도 지우는 항목에 추가
 - `main.dart`가 TASK-55에서 `AppStartup`으로 감싸졌으므로 그 구조를 유지. 선행 Task에 TASK-02, 03, 55 추가
+- (TASK-33 QA 반영) SecureTokenStorage의 읽기 예외는 지금 null로 조용히 처리된다. Sentry 연결 시 선택 인자로 ErrorReporter를 받아 예외 타입과 키 이름만 보고한다(토큰 값, 예외 메시지 본문 금지).

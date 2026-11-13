@@ -90,3 +90,4 @@ MediaPipe를 붙이기 전에 "카메라 미리보기가 바른 방향으로 Flu
 - start 반환을 `CameraStartInfo`(textureId, width, height) 맵으로, 실행 중 start는 같은 값(카메라 유지)
 - 텍스처 회전과 전면 좌우 반전을 Kotlin 책임으로, `FLAG_KEEP_SCREEN_ON`을 start/stop에 묶음. JVM 테스트와 수동 확인 항목 추가
 - (TASK-19 QA 반영) 네이티브 `start`는 이미 실행 중이면 카메라를 다시 열지 않고 같은 `{textureId, width, height}`(Int)를 돌려주며 모델이 다르면 모델만 바꾼다. `stop`은 실행 중이 아니어도 오류 없이 null. `setModel`은 실행 중이 아니면 다음 start용으로 저장. 회전과 전면 좌우 반전은 텍스처와 좌표에 똑같이 적용.
+- (TASK-33 QA 반영, 오케스트레이터 결정) AndroidManifest의 application에 `android:allowBackup="false"`를 명시한다. 암호화 저장소는 백업 복원 시 복호화가 실패하고, 기록은 서버에 백업되므로 기기 백업을 끈다. 기존 매니페스트 검사 테스트(app/test/android_manifest_test.dart)에 이 속성 확인을 추가한다.

@@ -14,7 +14,7 @@
 - 토큰과 사용자 id는 암호화 저장소(flutter_secure_storage)에만 저장한다.
 - 인수 조건(F-10, 이 Task 부분): 로그인 후 앱을 껐다 켜도 로그인 상태와 사용자 id가 유지된다(저장 부분).
 - 이 Task에서 정하는 것:
-  - 키 `auth.access`, `auth.refresh`, `auth.user_id`(정수를 문자열로), Android 옵션 `encryptedSharedPreferences: true`
+  - 키 `auth.access`, `auth.refresh`, `auth.user_id`(정수를 문자열로), Android 옵션은 기본값(flutter_secure_storage 11.x: AES-GCM + RSA OAEP 키 래핑. 11.x에는 encryptedSharedPreferences 인자가 없음, TASK-33 Impl 확인)
   - access, refresh 둘 중 하나라도 없으면 `read()`는 null
   - user_id가 없거나 정수가 아니면 `readUserId()`는 null
   - `write(tokens)`는 user_id를 건드리지 않는다(토큰 갱신 시 사용자 id 유지)
@@ -70,3 +70,4 @@
 
 ## 2026-11-13 설계 검토 반영
 - 사용자 id 저장(`readUserId`, `writeUserId`, 키 `auth.user_id`), clear가 세 키를 모두 지움, `InMemoryTokenStorage`에 userId 추가
+- (QA-TASK-33 FIX 반영) InMemoryTokenStorage도 빈 문자열 access/refresh를 '없음'(null)으로 본다(SecureTokenStorage와 같은 의미). clear()는 세 키 삭제를 각각 시도한 뒤 첫 예외를 다시 던진다(앞 키 실패로 뒤 키가 남지 않게).
