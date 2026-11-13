@@ -70,3 +70,23 @@
 
 ## PEER_REVIEW 사유
 - 해당 없음
+
+## 재검토 (2026-11-13, 오케스트레이터 결정 반영 재작업 후)
+- 판정: PASS
+- 대상: platform_pose_detector.dart, platform_pose_detector_test.dart. 범위 밖 변경 없음(변경은 app/lib/pose/detector, app/test/pose/detector, app/test/support/fake_pose_detector.dart, AGENT_LOG뿐. 저장소에 커밋 이력이 없어 untracked 목록으로 확인).
+- 결정 문구와 구현 일치: `_parseEvent`가 사람 목록을 끝까지 파싱한 뒤(형식 오류 우선) 크기 0 이하는 이벤트 버림, 비유한 사람만 제외, 원래 1명 이상인데 모두 빠지면 버림, `poses`는 `List.unmodifiable`.
+- 경계 동작(코드 추적)
+  | 경우 | 결과 | 테스트 |
+  |---|---|---|
+  | 원래 0명 | 빈 poses로 내보냄 | 있음(381행) |
+  | 1명 중 1명 NaN | 이벤트 버림, 오류 없음 | 있음(x NaN 등 3건) |
+  | 2명 중 1명 NaN | 1명 프레임 | 있음(506행) |
+  | 2명 모두 NaN | 이벤트 버림 | 있음(516행) |
+  | width 0 이하 + NaN 동시 | 버림(오류 없음) | 없음(코드상 확실) |
+  | 형식 오류 + NaN 동시 | FormatException(파싱이 필터보다 먼저) | 없음(코드상 확실) |
+  | poses 수정 | UnsupportedError | 있음(525행) |
+- 검증: `flutter analyze` 0건, `dart format` 변경 없음, 전체 374건 통과, 대상 50건 통과.
+- 푸터: 내용이 구현과 일치(사람 단위 버림, poses 수정 불가). [QA]/[변경 반영] 줄 이미 갱신되어 있음.
+- 권고(차단 아님): 위 "없음" 2건은 혼합 경계 회귀 방지용 테스트 추가를 선택적으로 권고.
+- FIX 항목: 없음. 앞선 "결정 시 FIX 항목"은 모두 반영됨.
+

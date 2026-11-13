@@ -161,3 +161,11 @@
 | 2026-11-13 22:20 | qa-agent | TASK-23 재검토 | 시작 | FIX 반영 확인 |
 | 2026-11-13 22:20 | qa-agent | TASK-23 재검토 | 완료 | PASS, 4배경 대비비 일치, 테스트 10건 통과 |
 | 2026-11-13 22:21 | qa-agent | TASK-24 | 완료 | PASS. 배경이 터치 흡수함(실측), 헤더/푸터 추가, TASK-53 버튼 배치 권고 |
+| 2026-11-13 22:23 | impl-agent | TASK-19 | 시작 | 자세 추정 채널 계약 Dart 쪽 TDD |
+| 2026-11-13 22:27 | impl-agent | TASK-19 | 완료 | 채널 계약 Dart 쪽, 테스트 47건 추가(전체 371 통과), analyze 0건 |
+| 2026-11-13 22:28 | qa-agent | TASK-19 | 시작 | 자세 추정 채널 계약 Dart 쪽 QA |
+| 2026-11-13 22:30 | qa-agent | TASK-19 | 완료 | PASS. 헤더/푸터 3파일, NaN 버림 단위(이벤트/사람) 오케스트레이터 결정 권고, TASK-21 정수 타입 고정, TASK-25 전환 표시 동기 설정 권고 |
+| 2026-11-13 22:31 | impl-agent | TASK-19 | 시작 | 재작업: NaN 사람 단위 버림, poses unmodifiable |
+| 2026-11-13 22:32 | impl-agent | TASK-19 | 완료 | 재작업: NaN 사람 단위 버림, poses unmodifiable, 테스트 3건 추가 |
+| 2026-11-13 22:32 | qa-agent | TASK-19 | 시작 | 재검토(NaN 사람 단위 버림 재작업) |
+| 2026-11-13 22:33 | qa-agent | TASK-19 | 완료 | 재검토 PASS. 사람 단위 버림, poses unmodifiable 결정 일치, 374건 통과, 혼합 경계 테스트 2건은 선택 권고 |
