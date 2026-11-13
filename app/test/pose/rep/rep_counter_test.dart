@@ -49,6 +49,18 @@ void main() {
       expect(squat.downDeg, 120);
       expect(squat.minRepMs, 800);
     });
+
+    test('기본 maxRepMs 10000 (TASK-56)', () {
+      expect(RepThresholds.forExercise(ExerciseType.pushUp).maxRepMs, 10000);
+      expect(RepThresholds.forExercise(ExerciseType.squat).maxRepMs, 10000);
+      const custom = RepThresholds(
+        upDeg: 160,
+        descendDeg: 145,
+        downDeg: 120,
+        minRepMs: 600,
+      );
+      expect(custom.maxRepMs, 10000);
+    });
   });
 
   group('RepCounter', () {
@@ -155,7 +167,11 @@ void main() {
     test('푸쉬업 0.3초 안의 반복은 세지 않음', () {
       final counter = _pushUp();
       final events = _feed(counter, [170, 140, 90, 140, 170]);
-      expect(events, isEmpty);
+      expect(events, hasLength(1));
+      final fast = events.single as TooFastRepEvent;
+      expect(fast.startMs, 33);
+      expect(fast.endMs, 133);
+      expect(fast.durationMs, 100);
       expect(counter.count, 0);
       expect(counter.partialCount, 0);
       expect(counter.phase, RepPhase.up);
@@ -175,7 +191,10 @@ void main() {
         140,
         170,
       ], stepMs: 100);
-      expect(shortEvents, isEmpty);
+      expect(shortEvents, hasLength(1));
+      final fast = shortEvents.single as TooFastRepEvent;
+      expect(fast.startMs, 100);
+      expect(fast.endMs, 800);
       expect(short.count, 0);
       expect(short.phase, RepPhase.up);
 
@@ -304,6 +323,131 @@ void main() {
       expect(events, hasLength(1));
       expect(reps.single.repIndex, 1);
       expect(counter.count, 1);
+    });
+  });
+  group('빠른 반복, 최대 반복 시간 (TASK-56)', () {
+    test('빠른 반복 뒤 정상 반복은 repIndex 1', () {
+      final counter = _pushUp();
+      final events = [
+        ..._feed(counter, [170, 140, 90, 140, 170]),
+        ..._feed(counter, repAngleSequence(reps: 1), startMs: 1000),
+      ];
+      expect(events, hasLength(2));
+      expect(events.first, isA<TooFastRepEvent>());
+      final rep = events[1] as RepEvent;
+      expect(rep.repIndex, 1);
+      expect(counter.count, 1);
+      expect(counter.partialCount, 0);
+    });
+
+    test('최저점 3초 정지는 정상 1회 (F-03)', () {
+      final counter = _pushUp();
+      // 0:170, 100:140, 200:120, 300~3300:90, 3400:120, 3500:140, 3600:170
+      final angles = <double>[
+        170,
+        140,
+        120,
+        for (var t = 300; t <= 3300; t += 100) 90,
+        120,
+        140,
+        170,
+      ];
+      final results = [
+        for (var i = 0; i < angles.length; i++)
+          counter.update(timestampMs: i * 100, angle: angles[i]),
+      ];
+      expect(results.sublist(0, results.length - 1).nonNulls, isEmpty);
+      final rep = results.last! as RepEvent;
+      expect(rep.repIndex, 1);
+      expect(counter.count, 1);
+      expect(counter.partialCount, 0);
+    });
+
+    test('DOWN에서 10초 초과면 취소, UP 재도달 뒤부터 셈 (F-03)', () {
+      final counter = _pushUp();
+      var t = 0;
+      RepCounterEvent? feed(double angle) {
+        final e = counter.update(timestampMs: t, angle: angle);
+        t += 100;
+        return e;
+      }
+
+      expect(feed(170), isNull); // 0
+      expect(feed(140), isNull); // 100: 하강 시작
+      while (t <= 10100) {
+        expect(feed(90), isNull, reason: 't=$t');
+      }
+      final cancelled = feed(90); // 10200
+      expect(cancelled, isA<RepCancelledEvent>());
+      final c = cancelled! as RepCancelledEvent;
+      expect(c.startMs, 100);
+      expect(c.cancelledMs, 10200);
+      expect(counter.phase, RepPhase.unknown);
+      expect(counter.count, 0);
+      expect(counter.partialCount, 0);
+
+      for (final a in <double>[90, 90, 90, 140]) {
+        expect(feed(a), isNull);
+        expect(counter.phase, RepPhase.unknown);
+      }
+      expect(feed(170), isNull);
+      expect(counter.phase, RepPhase.up);
+
+      // 정상 1회(하강 시작부터 1초)
+      final events = <RepCounterEvent>[];
+      for (final a in <double>[
+        140, 120, 90, 90, 90, 90, 90, 90, 120, 140, 170, //
+      ]) {
+        final e = feed(a);
+        if (e != null) events.add(e);
+      }
+      final rep = events.single as RepEvent;
+      expect(rep.repIndex, 1);
+      expect(rep.durationMs, 1000);
+      expect(counter.count, 1);
+      expect(counter.partialCount, 0);
+    });
+
+    test('하강(DOWN 미도달)에서 10초 초과도 취소, 부분 반복 아님', () {
+      final counter = _pushUp();
+      final events = <RepCounterEvent>[];
+      final angles = <double>[170, for (var t = 100; t <= 10200; t += 100) 140];
+      for (var i = 0; i < angles.length; i++) {
+        final e = counter.update(timestampMs: i * 100, angle: angles[i]);
+        if (e != null) events.add(e);
+      }
+      final c = events.single as RepCancelledEvent;
+      expect(c.startMs, 100);
+      expect(c.cancelledMs, 10200);
+      expect(counter.partialCount, 0);
+      expect(counter.count, 0);
+      expect(counter.phase, RepPhase.unknown);
+    });
+
+    test('정확히 10초에 UP 복귀는 정상, 10초 초과 UP 복귀는 취소', () {
+      List<double> clip(int upMs) => [
+        170,
+        140,
+        for (var t = 200; t < upMs; t += 100) 90,
+        170,
+      ];
+
+      final onTime = _pushUp();
+      final onTimeEvents = _feed(onTime, clip(10100), stepMs: 100);
+      final rep = onTimeEvents.single as RepEvent;
+      expect(rep.startMs, 100);
+      expect(rep.endMs, 10100);
+      expect(rep.durationMs, 10000);
+      expect(onTime.count, 1);
+
+      final late = _pushUp();
+      final lateEvents = _feed(late, clip(10200), stepMs: 100);
+      final c = lateEvents.single as RepCancelledEvent;
+      expect(c.startMs, 100);
+      expect(c.cancelledMs, 10200);
+      expect(late.count, 0);
+      expect(late.partialCount, 0);
+      expect(late.phase, RepPhase.up);
     });
   });
 }

@@ -1,5 +1,5 @@
 // [파일] 반복 횟수 상태 머신(UP, 하강, DOWN 판정, 부분 반복 감지, 원시 각도 최저점).
-// [Spec] F-03 횟수 판정, F-04 최저 각도(깊이 판정 입력) / [Task] TASK-08
+// [Spec] F-03 횟수 판정, F-04 최저 각도(깊이 판정 입력) / [Task] TASK-08, TASK-56
 // [의존] ExerciseType만 사용 (환경 변수 사용 안 함)
 
 import 'package:atheleo/pose/landmarks/exercise_type.dart';
@@ -12,6 +12,7 @@ class RepThresholds {
     required this.descendDeg,
     required this.downDeg,
     required this.minRepMs,
+    this.maxRepMs = 10000,
   });
 
   /// 운동별 기본 임계값. 푸쉬업 600ms, 스쿼트 800ms.
@@ -38,6 +39,9 @@ class RepThresholds {
 
   /// 하강 시작부터 UP 복귀까지 최소 시간.
   final int minRepMs;
+
+  /// 하강 시작부터 반복이 끝나야 하는 최대 시간. 넘기면 그 반복을 취소한다.
+  final int maxRepMs;
 }
 
 /// 반복 상태.
@@ -55,7 +59,7 @@ enum RepPhase {
   down,
 }
 
-/// 반복이나 부분 반복이 끝난 프레임에서 나오는 사건.
+/// 반복, 부분 반복, 빠른 반복이 끝나거나 반복이 취소된 프레임에서 나오는 사건.
 sealed class RepCounterEvent {
   const new();
 }
@@ -109,6 +113,35 @@ final class PartialRepEvent extends RepCounterEvent {
   final double minAngle;
 }
 
+/// DOWN에 닿은 뒤 UP으로 돌아왔지만 minRepMs보다 빨랐던 반복.
+/// count, partialCount에 넣지 않는다.
+final class TooFastRepEvent extends RepCounterEvent {
+  /// 사건을 만든다.
+  const new({required this.startMs, required this.endMs});
+
+  /// 하강 시작 시각.
+  final int startMs;
+
+  /// UP 복귀 시각.
+  final int endMs;
+
+  /// 1회 시간.
+  int get durationMs => endMs - startMs;
+}
+
+/// 하강 시작 후 maxRepMs를 넘겨 취소된 반복.
+/// 이후 phase는 unknown이고, UP에 다시 닿기 전에는 반복을 시작하지 않는다.
+final class RepCancelledEvent extends RepCounterEvent {
+  /// 사건을 만든다.
+  const new({required this.startMs, required this.cancelledMs});
+
+  /// 하강 시작 시각.
+  final int startMs;
+
+  /// 취소한 프레임 시각.
+  final int cancelledMs;
+}
+
 /// 이동 평균 각도로 UP, 하강, DOWN을 판정해 반복을 센다.
 class RepCounter {
   /// 임계값으로 카운터를 만든다.
@@ -134,7 +167,7 @@ class RepCounter {
 
   /// 프레임 하나를 넣는다. [angle]은 이동 평균 각도(상태 전이용),
   /// [rawAngle]은 원시 각도(최저 각도용, 없으면 [angle]).
-  /// 반복이나 부분 반복이 끝난 프레임에서만 사건을 돌려준다.
+  /// 반복, 부분 반복, 빠른 반복이 끝난 프레임과 취소 프레임에서만 사건을 돌려준다.
   RepCounterEvent? update({
     required int timestampMs,
     required double angle,
@@ -160,6 +193,9 @@ class RepCounter {
         return null;
       case RepPhase.descending:
       case RepPhase.down:
+        if (timestampMs - _startMs > _thresholds.maxRepMs) {
+          return _cancel(timestampMs, angle);
+        }
         _timestamps.add(timestampMs);
         _rawAngles.add(raw);
         if (angle >= _thresholds.upDeg) return _finish(timestampMs);
@@ -168,8 +204,8 @@ class RepCounter {
     }
   }
 
-  /// UP 복귀 프레임에서 반복 또는 부분 반복을 마무리한다.
-  RepCounterEvent? _finish(int endMs) {
+  /// UP 복귀 프레임에서 반복, 부분 반복, 빠른 반복을 마무리한다.
+  RepCounterEvent _finish(int endMs) {
     final reachedDown = _phase == RepPhase.down;
     _phase = RepPhase.up;
     final bottom = _bottom();
@@ -181,7 +217,9 @@ class RepCounter {
         minAngle: bottom.angle,
       );
     }
-    if (endMs - _startMs < _thresholds.minRepMs) return null;
+    if (endMs - _startMs < _thresholds.minRepMs) {
+      return TooFastRepEvent(startMs: _startMs, endMs: endMs);
+    }
     _count++;
     return RepEvent(
       repIndex: _count,
@@ -190,6 +228,18 @@ class RepCounter {
       endMs: endMs,
       minAngle: bottom.angle,
     );
+  }
+
+  /// maxRepMs를 넘긴 반복을 취소한다. 같은 프레임에 unknown 규칙을 적용한다.
+  RepCancelledEvent _cancel(int timestampMs, double angle) {
+    final event = RepCancelledEvent(
+      startMs: _startMs,
+      cancelledMs: timestampMs,
+    );
+    _timestamps.clear();
+    _rawAngles.clear();
+    _phase = angle >= _thresholds.upDeg ? RepPhase.up : RepPhase.unknown;
+    return event;
   }
 
   /// 원시 각도 최저 프레임 시각과, 그 주변 연속 3프레임 중앙값.
@@ -220,10 +270,12 @@ class RepCounter {
   }
 }
 
-// [QA] 2026-11-13 PASS
+// [QA] 2026-11-13 PASS (TASK-56)
 // [보안] 외부 입력, 로그, 시크릿 없음. timestampMs 역행과 NaN 각도는 검증하지 않음
 //   (호출하는 TASK-15가 쓸 수 없는 프레임을 건너뜀). NaN이 들어오면 상태 전이는 멈추고
 //   _bottom이 NaN 프레임을 최저로 고를 수 있음.
-// [유지보수] 하강/DOWN에 머무는 동안 _timestamps, _rawAngles가 계속 늘어남(상한 없음).
-//   최소 시간 미달 반복은 사건 없이 버려지므로 빠른 반복은 사용자에게 아무 피드백이 없음.
-//   바닥에서 오래 쉬다 일어나는 동작도 1회로 셀 수 있음(최대 시간 규칙 없음, 자세 게이트 몫).
+// [유지보수] _timestamps, _rawAngles는 하강 시작 후 maxRepMs(기본 10초) 안의 프레임만
+//   담음(30fps 기준 약 300개). timestampMs가 단조 증가한다는 전제이며, 역행하면 상한이 깨짐.
+//   취소 판단은 프레임이 들어와야 일어나므로 프레임이 끊기면 취소 사건도 나오지 않음.
+//   취소 판단이 UP 복귀보다 먼저이고, 경계는 > 비교(정확히 maxRepMs면 정상 반복).
+//   부분 반복은 최소 시간과 관계없이 PartialRepEvent(빠른 반복 판정은 DOWN 도달 반복만).
