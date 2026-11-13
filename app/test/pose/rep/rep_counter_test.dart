@@ -42,12 +42,12 @@ void main() {
       expect(push.upDeg, 160);
       expect(push.descendDeg, 145);
       expect(push.downDeg, 120);
-      expect(push.minRepMs, 600);
+      expect(push.minRepMs, 500);
       final squat = RepThresholds.forExercise(ExerciseType.squat);
       expect(squat.upDeg, 160);
       expect(squat.descendDeg, 145);
       expect(squat.downDeg, 120);
-      expect(squat.minRepMs, 800);
+      expect(squat.minRepMs, 600);
     });
 
     test('기본 maxRepMs 10000 (TASK-56)', () {
@@ -177,15 +177,13 @@ void main() {
       expect(counter.phase, RepPhase.up);
     });
 
-    test('스쿼트 0.7초 반복은 0, 1.0초 반복은 1', () {
+    test('스쿼트 0.5초 반복은 0, 1.0초 반복은 1', () {
       final short = _squat();
-      // 하강 시작 100ms, 복귀 800ms
+      // 하강 시작 100ms, 복귀 600ms
       final shortEvents = _feed(short, [
         170,
         140,
         120,
-        90,
-        90,
         90,
         120,
         140,
@@ -194,7 +192,7 @@ void main() {
       expect(shortEvents, hasLength(1));
       final fast = shortEvents.single as TooFastRepEvent;
       expect(fast.startMs, 100);
-      expect(fast.endMs, 800);
+      expect(fast.endMs, 600);
       expect(short.count, 0);
       expect(short.phase, RepPhase.up);
 
@@ -448,6 +446,39 @@ void main() {
       expect(late.count, 0);
       expect(late.partialCount, 0);
       expect(late.phase, RepPhase.up);
+    });
+  });
+
+  group('최소 1회 시간 경계 (TASK-49)', () {
+    /// 0ms UP, 100ms 하강 시작(DOWN), [endMs]에 UP 복귀하는 반복 1회.
+    RepCounterEvent? oneRep(RepCounter counter, int endMs) {
+      counter
+        ..update(timestampMs: 0, angle: 170)
+        ..update(timestampMs: 100, angle: 90)
+        ..update(timestampMs: endMs - 1, angle: 90);
+      return counter.update(timestampMs: endMs, angle: 170);
+    }
+
+    test('푸쉬업 499ms는 빠른 반복, 500ms는 1회', () {
+      final fast = _pushUp();
+      expect(oneRep(fast, 599), isA<TooFastRepEvent>());
+      expect(fast.count, 0);
+
+      final ok = _pushUp();
+      final rep = oneRep(ok, 600)! as RepEvent;
+      expect(rep.durationMs, 500);
+      expect(ok.count, 1);
+    });
+
+    test('스쿼트 599ms는 빠른 반복, 600ms는 1회', () {
+      final fast = _squat();
+      expect(oneRep(fast, 699), isA<TooFastRepEvent>());
+      expect(fast.count, 0);
+
+      final ok = _squat();
+      final rep = oneRep(ok, 700)! as RepEvent;
+      expect(rep.durationMs, 600);
+      expect(ok.count, 1);
     });
   });
 }

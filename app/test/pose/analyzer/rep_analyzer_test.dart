@@ -138,7 +138,7 @@ void main() {
       final analyzer = RepAnalyzer(exercise: ExerciseType.squat);
       final clip = buildSyntheticClip(
         exercise: ExerciseType.squat,
-        // 스쿼트 최소 1회 시간 800ms를 넘도록 1.5초 반복.
+        // 스쿼트 최소 1회 시간 600ms를 넘도록 1.5초 반복.
         primaryAngles: repAngleSequence(reps: 3, framesPerRep: 45),
       );
       final outputs = _feed(analyzer, clip.frames);
@@ -225,7 +225,7 @@ void main() {
   });
 
   group('RepAnalyzer 빠른 반복과 취소 (F-03)', () {
-    test('0.6초 미만 반복은 TooFastRep, count와 partialCount 그대로', () {
+    test('0.5초 미만 반복은 TooFastRep, count와 partialCount 그대로', () {
       final analyzer = _pushUp();
       final outputs = _feed(
         analyzer,
@@ -234,7 +234,7 @@ void main() {
 
       expect(outputs, hasLength(1));
       final fast = outputs.single as TooFastRep;
-      expect(fast.durationMs, lessThan(600));
+      expect(fast.durationMs, lessThan(500));
       expect(fast.durationMs, greaterThan(0));
       expect(fast.endMs, greaterThan(0));
       expect(analyzer.count, 0);
@@ -419,5 +419,22 @@ void main() {
     _feed(analyzer, parsed.frames);
 
     expect(analyzer.count, 10);
+  });
+
+  test('실제 1초 스쿼트(이동 평균 기준 약 0.73초)는 정상 반복 (TASK-49)', () {
+    final analyzer = RepAnalyzer(exercise: ExerciseType.squat);
+    final clip = buildSyntheticClip(
+      exercise: ExerciseType.squat,
+      primaryAngles: repAngleSequence(reps: 3),
+    );
+    final outputs = _feed(analyzer, clip.frames);
+
+    final reps = _reps(outputs);
+    expect(reps, hasLength(3));
+    expect(outputs.whereType<TooFastRep>(), isEmpty);
+    expect(analyzer.count, 3);
+    for (final rep in reps) {
+      expect(rep.durationMs, inInclusiveRange(600, 1000));
+    }
   });
 }

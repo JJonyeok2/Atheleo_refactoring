@@ -1,5 +1,5 @@
 // [파일] 반복 횟수 상태 머신(UP, 하강, DOWN 판정, 부분 반복 감지, 원시 각도 최저점).
-// [Spec] F-03 횟수 판정, F-04 최저 각도(깊이 판정 입력) / [Task] TASK-08, TASK-56
+// [Spec] F-03 횟수 판정, F-04 최저 각도(깊이 판정 입력) / [Task] TASK-08, TASK-56, TASK-49(최소 1회 시간 기본값)
 // [의존] ExerciseType만 사용 (환경 변수 사용 안 함)
 
 import 'package:atheleo/pose/landmarks/exercise_type.dart';
@@ -15,7 +15,7 @@ class RepThresholds {
     this.maxRepMs = 10000,
   });
 
-  /// 운동별 기본 임계값. 푸쉬업 600ms, 스쿼트 800ms.
+  /// 운동별 기본 임계값. 최소 1회 시간 푸쉬업 500ms, 스쿼트 600ms.
   // 계약상 static 메서드로 둔다(TASK-08 내보내는 것).
   // ignore: prefer_constructors_over_static_methods
   static RepThresholds forExercise(ExerciseType exercise) => RepThresholds(
@@ -23,8 +23,8 @@ class RepThresholds {
     descendDeg: 145,
     downDeg: 120,
     minRepMs: switch (exercise) {
-      ExerciseType.pushUp => 600,
-      ExerciseType.squat => 800,
+      ExerciseType.pushUp => 500,
+      ExerciseType.squat => 600,
     },
   );
 
@@ -270,7 +270,7 @@ class RepCounter {
   }
 }
 
-// [QA] 2026-11-13 PASS (TASK-56)
+// [QA] 2026-11-13 PASS (TASK-49)
 // [보안] 외부 입력, 로그, 시크릿 없음. timestampMs 역행과 NaN 각도는 검증하지 않음
 //   (호출하는 TASK-15가 쓸 수 없는 프레임을 건너뜀). NaN이 들어오면 상태 전이는 멈추고
 //   _bottom이 NaN 프레임을 최저로 고를 수 있음.
