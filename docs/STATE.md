@@ -1,7 +1,8 @@
 # 진행 상태 (오케스트레이터가 관리)
 
 - 현재 상태: IMPL
-- 현재 Task: TASK-19
+- 현재 Task: TASK-31, TASK-33 (병렬, 순서 조정)
+- 순서 조정(2026-11-13): TASK-20 이후 네이티브 Task는 빌드 도메인(plugins-artifacts.gradle.org, repo.maven.apache.org, repo1.maven.org) 허용 대기. 선행이 끝난 Dart Task(31, 33 → 32, 34 …)를 먼저 진행
 - 대기 중: 없음 (APK 빌드 확인은 plugins-artifacts.gradle.org 허용 후)
 - 마지막 갱신: 2026-11-09 23:09
 
@@ -31,6 +32,9 @@
 | TASK-23 | 병렬 | G5 | 완료 | PASS | 1 | 글자 대비 FIX |
 | TASK-24 | 병렬 | G5 | 완료 | PASS | 0 | 배경 터치 흡수 확인 |
 | TASK-19 | 순차 | - | 완료 | PASS | 0 | NaN 사람 단위 버림(오케스트레이터 결정) |
+| TASK-20 | 순차 | - | 대기 | - | 0 | 빌드 도메인 허용 대기 |
+| TASK-31 | 병렬 | 조정 | 진행 | - | 0 | |
+| TASK-33 | 병렬 | 조정 | 진행 | - | 0 | |
 | TASK-17 | 병렬 | G4 | 완료 | PASS | 0 | |
 | TASK-22 | 병렬 | G4 | 완료 | PASS | 0 | MediaPipe 연결 35개 원문 대조 |
 
