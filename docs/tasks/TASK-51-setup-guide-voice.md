@@ -52,6 +52,7 @@
 ## 바뀔 것으로 예상되는 파일
 - `app/lib/features/workout/presentation/setup_guide_screen.dart`
 - `app/test/features/workout/presentation/setup_guide_voice_test.dart`
+- `app/lib/core/tts/voice_guide.dart`, `app/test/core/tts/voice_guide_test.dart` (ignoreCooldown 추가, TASK-14 QA 반영)
 
 ## 완료 조건
 - [ ] 위 테스트가 모두 통과
@@ -67,3 +68,6 @@
 
 ## 추가 발췌 (오케스트레이터가 보충)
 - (TASK-11 QA 반영) `VoiceGuide.captions`는 broadcast라 구독 전에 나간 unavailableNotice를 놓칠 수 있다. 화면이 열릴 때 `voiceAvailable == false`(init 완료 후)이면 글자 대체 안내를 직접 한 번 보여 준다. 운동 흐름(가이드→운동) 동안 한 번만 보이도록 한다.
+
+- (TASK-14 QA 반영) 마지막으로 말한 status는 null로 시작한다. 그래야 첫 상태(noPerson, '카메라 앞에 서 주세요')도 말한다.
+- (TASK-14 QA 반영) 카운트다운 숫자('3', '2', '1')와 '시작'은 같은 문장 5초 쿨다운에 걸리면 안 된다(카운트다운이 깨졌다가 5초 안에 다시 시작하는 경우). 이를 위해 `VoiceGuide.say`에 선택 인자 `bool ignoreCooldown = false`를 추가하는 것을 이 Task 범위에 포함한다(`app/lib/core/tts/voice_guide.dart`와 그 테스트 수정 허용, 기존 시그니처와 기본 동작은 그대로). ignoreCooldown이면 쿨다운 검사를 건너뛰되 쿨다운 기록은 남긴다.

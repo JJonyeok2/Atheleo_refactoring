@@ -12,7 +12,7 @@
 ## 기능 범위 (Spec 발췌)
 - 촬영 가이드 화면: 운동별 안내 문구, 거리 안내, 전신이 보이는 실루엣 표시
   - 푸쉬업: "휴대폰을 옆에 세우고 측면에서 약 2m 이상 떨어져 주세요. 전신이 화면에 들어와야 해요." 준비 자세 안내 "엎드려 팔을 편 자세를 잡아 주세요"
-  - 스쿼트: "휴대폰을 옆에 세우고 측면에서 약 2m 떨어져 주세요. 전신이 화면에 들어와야 해요." 준비 자세 안내 "옆으로 서 주세요"
+  - 스쿼트: "휴대폰을 옆에 세우고 측면에서 약 2m 떨어져 주세요. 전신이 화면에 들어와야 해요." 준비 자세 안내 "똑바로 서서 무릎을 펴 주세요"
 - 운동별 준비 조건(자세 게이트 포함)이 2초 이상 안정적으로 유지되면 3·2·1 카운트다운과 "시작" 안내 후 운동 화면으로 넘어간다.
 - 자세 게이트: 푸쉬업 몸통이 수평에서 30도 이내, 스쿼트 몸통이 수직에서 30도 이내(촬영 가이드 준비 조건)
 - 정면 판단 시 "옆으로 서 주세요" 안내
@@ -62,7 +62,7 @@
 | 운동별 문구 (F-07) | `setupGuideTextsFor(pushUp)`, `setupGuideTextsFor(squat)` / 발목이 화면 밖인 프레임 | 위 Spec 문구 그대로 / notFullBody, message가 그 운동의 distanceHint |
 | 정면 안내 (F-07) | 정면 프레임(shoulderWidthRatio 0.7) | status frontFacing, message '옆으로 서 주세요' |
 | 서 있는 푸쉬업 (F-07) | pushUp 컨트롤러에 bodyTiltDeg 90 프레임 | notInPosture, '엎드려 팔을 편 자세를 잡아 주세요' |
-| 스쿼트 게이트 (F-07) | squat 컨트롤러에 torsoLeanDeg 45 / 20 프레임 | notInPosture '옆으로 서 주세요' / holding |
+| 스쿼트 게이트 (F-07) | squat 컨트롤러에 torsoLeanDeg 45 / 20 프레임 | notInPosture '똑바로 서서 무릎을 펴 주세요' / holding |
 | 준비 조건 2초 후 카운트다운 (F-07) | pushUp 기본 프레임(엎드림, 팔꿈치 170)을 0~2000ms 30fps로 | 1999ms까지 holding, 2000ms 이후 countdown, countdown 3 |
 | 카운트다운 진행 | 이어서 3초 더 | countdown 3→2→1(message '3'→'2'→'1'), 5000ms 이후 ready, message '시작' |
 | 중간에 깨짐 | holding 1500ms 시점에 정면 프레임, 다시 측면 | frontFacing을 거쳐 다시 2초를 새로 잼 |
@@ -83,6 +83,10 @@
 
 ## 추가 발췌 (오케스트레이터가 보충)
 
+- (QA-TASK-14 FIX 반영) 프레임 간격 상한: 생성자에 선택 인자 `Duration maxFrameGap = const Duration(milliseconds: 500)`을 추가한다(기존 인자와 기본값은 그대로). 직전 `update` 시각과 간격이 maxFrameGap을 넘으면 그 프레임 시각부터 안정 시간을 다시 잰다. holding이든 countdown이든 결과는 holding. 정확히 500ms는 이어서 잰다. reset은 직전 시각도 비운다.
+
 ## 2026-11-13 설계 검토 반영
 - 운동별 컨트롤러(`exercise` 필수), 상태 `notInPosture` 추가, 운동별 거리 안내와 준비 자세 문구(`setupGuideTextsFor`), ready 문구 '시작', countdown message '3', '2', '1'
 - 자세 게이트와 기준 관절 160도 이상을 준비 조건에 포함. 테스트 8행으로 재구성
+
+- (2026-11-13 사용자 결정) 스쿼트 준비 자세 안내(notInPosture)는 '똑바로 서서 무릎을 펴 주세요'. 정면 안내(frontFacing)는 '옆으로 서 주세요' 그대로.
